@@ -15,14 +15,14 @@ import {
   >
     <AccordionItem value="1">
       <AccordionHeader class="m-0">
-        <AccordionTrigger class="flex justify-between w-full border-none">
+        <AccordionTrigger class="flex justify-between w-full border-none px-4 py-3 bg-white c-gray-900 hover:bg-gray-200">
           <span>
             <slot name="header" />
           </span>
           V
         </AccordionTrigger>
       </AccordionHeader>
-      <AccordionContent>
+      <AccordionContent class="border border-solid border-gray-300 p-1">
         <div>
           <slot />
         </div>

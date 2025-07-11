@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 
 import type { BaseOptions } from './views/TreeMap.ts';
 import type { BuildStats, Chunk } from './stats.ts';
-import { BaseAccordion } from './shared/ui';
+import { BaseAccordion, BaseButton } from './shared/ui';
 
 const props = defineProps<{ stats: BuildStats }>();
 
@@ -69,7 +69,7 @@ const sortedChunks = computed<Chunk[]>(() => {
       </template>
 
       <div class="flex justify-between">
-        <button @click="toggleAll">Toggle all</button>
+        <BaseButton @click="toggleAll">Toggle all</BaseButton>
 
         <label>
           Sort by
