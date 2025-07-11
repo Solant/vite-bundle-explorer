@@ -36,22 +36,17 @@ interface TreeMapChartData {
 </script>
 
 <script setup lang="ts">
-import * as echarts from 'echarts/core';
-import { TitleComponent, TooltipComponent } from 'echarts/components';
-import { TreemapChart } from 'echarts/charts';
-import { CanvasRenderer } from 'echarts/renderers';
-import type { EChartsType } from 'echarts/core';
-import { computed, onMounted, onUnmounted, shallowRef, useTemplateRef, watch } from 'vue';
+import { computed, useTemplateRef, watch } from 'vue';
+import * as echarts from 'echarts';
 
 import type { BuildStats } from '../stats.ts';
 import type { TreeMapOptions } from './TreeMap.ts';
+import { useChart } from '../shared/lib';
 
 const props = defineProps<{ stats: BuildStats; options: TreeMapOptions }>();
 
-echarts.use([TitleComponent, TooltipComponent, TreemapChart, CanvasRenderer]);
-
 const main = useTemplateRef('main');
-let chart = shallowRef<EChartsType>();
+const chart = useChart(main);
 
 const data = computed(() => {
   if (!props.stats) {
@@ -127,19 +122,6 @@ const data = computed(() => {
   }
 
   return result;
-});
-
-function resize() {
-  chart.value?.resize();
-}
-
-onMounted(() => {
-  chart.value = echarts.init(main.value);
-  window.addEventListener('resize', resize);
-});
-
-onUnmounted(() => {
-  window.removeEventListener('resize', resize);
 });
 
 watch([chart, () => props.stats, () => props.options], ([newChart, newStats]) => {
