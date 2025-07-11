@@ -1,0 +1,36 @@
+{
+  "name": "vite-bundle-explorer",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build && pnpm build:plugin",
+    "build:plugin": "tsc --module Node16 --moduleResolution node16 plugin/stats-plugin.ts",
+    "preview": "vite preview",
+    "vite-bundle-explorer": "./bin.js"
+  },
+  "exports": {
+    "./plugin": "./plugin/stats-plugin.js"
+  },
+  "bin": {
+    "vite-bundle-explorer": "./bin/index.js"
+  },
+  "dependencies": {
+    "vue": "^3.5.17"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.13",
+    "@unocss/preset-wind3": "^66.3.3",
+    "@unocss/reset": "^66.3.3",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "@vue/tsconfig": "^0.7.0",
+    "echarts": "^5.6.0",
+    "prettier": "^3.6.2",
+    "reka-ui": "^2.3.2",
+    "typescript": "~5.8.3",
+    "unocss": "^66.3.3",
+    "vite": "^7.0.4",
+    "vue-tsc": "^2.2.12"
+  }
+}
