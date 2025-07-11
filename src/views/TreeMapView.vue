@@ -81,7 +81,7 @@ const data = computed(() => {
 
       let currentNode = currentChunk;
       for (let index = 0; index < path.length; index += 1) {
-        const child = currentNode.children.find((c) => c.name === path[0]);
+        const child = currentNode.children.find((c) => c.name === path[index]);
         if (child) {
           currentNode = child;
         } else {
