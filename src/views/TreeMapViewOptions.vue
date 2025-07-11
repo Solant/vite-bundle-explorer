@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 
 import type { TreeMapOptions } from './TreeMap.ts';
+import { BaseSwitch } from '../shared/ui';
 
 const model = defineModel<TreeMapOptions>({ required: true });
 
@@ -15,10 +16,8 @@ const compact = computed({
   <div>
     <div class="c-gray-800 flex justify-between">
       Compact
-      <select v-model="compact">
-        <option :value="true">Yes</option>
-        <option :value="false">No</option>
-      </select>
+
+      <BaseSwitch v-model="compact" />
     </div>
   </div>
 </template>
