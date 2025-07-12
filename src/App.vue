@@ -7,6 +7,7 @@ import { getDefaultTreeMapOptions } from './views/TreeMap.ts';
 import TreeMapViewOptions from './views/TreeMapViewOptions.vue';
 import ModuleFilter from './ModuleFilter.vue';
 import ChunkFilter from './ChunkFilter.vue';
+import ViewToggle from './ViewToggle.vue';
 
 const stats = shallowRef<BuildStats>();
 fetch('stats.json')
@@ -23,12 +24,8 @@ const options = ref(getDefaultTreeMapOptions());
 <template>
   <div class="w-screen h-screen flex bg-gray-200">
     <div class="w-1/3 max-w-[350px] bg-white rounded-lg m-5 p-2">
-      <div class="c-gray-800 flex justify-between">
-        Current View
-        <select v-model="currentView">
-          <option value="treemap">Treemap</option>
-        </select>
-      </div>
+
+      <ViewToggle v-model="currentView" />
 
       <TreeMapViewOptions v-model="options" />
 
