@@ -134,11 +134,13 @@ watch([chart, () => props.stats, () => props.options], ([newChart, newStats]) =>
       formatter(info: any) {
         const value = info.value;
         const treePathInfo = info.treePathInfo;
-        const treePath = [];
+        const treePath: string[] = [];
         for (let i = 1; i < treePathInfo.length; i++) {
           treePath.push(treePathInfo[i].name);
         }
-        return [
+
+        const result: string[] = [];
+        result.push(
           '<div class="tooltip-title">' +
             echarts.format.encodeHTML(
               // @ts-expect-error
@@ -146,7 +148,31 @@ watch([chart, () => props.stats, () => props.options], ([newChart, newStats]) =>
             ) +
             '</div>',
           'Rendered Size: ' + echarts.format.addCommas((value / 1024).toFixed(2)) + ' KB',
-        ].join('');
+        );
+
+        const moduleName = treePath.slice(1).join('/');
+        const currentModuleIndex = props.stats.importGraph.nodes.findIndex(
+          (node) => node === moduleName,
+        );
+        const edges =
+          currentModuleIndex >= 0
+            ? props.stats.importGraph.edges.filter(
+                ([_source, target]) => target === currentModuleIndex,
+              )
+            : [];
+        const parents = edges
+          .map((edge) => props.stats.importGraph.nodes[edge[0]])
+          .reduce((acc, cur) => acc.add(cur), new Set<string>());
+        if (parents.size) {
+          result.push(
+            '<div class="mt-2">Imported by:</div>',
+            '<ul>',
+            ...[...parents].map((p) => `<li>${p}</li>`),
+            '</ul>',
+          );
+        }
+
+        return result.join('');
       },
     },
     series: [
