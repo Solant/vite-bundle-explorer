@@ -16,7 +16,7 @@ fetch('stats.json')
     stats.value = data;
   });
 
-const currentView = ref('treemap');
+const currentView = ref<'treemap' | 'tree'>('treemap');
 
 const options = ref(getDefaultTreeMapOptions());
 </script>
@@ -24,7 +24,6 @@ const options = ref(getDefaultTreeMapOptions());
 <template>
   <div class="w-screen h-screen flex bg-gray-200">
     <div class="w-1/3 max-w-[350px] bg-white rounded-lg m-5 p-2">
-
       <ViewToggle v-model="currentView" />
 
       <TreeMapViewOptions v-model="options" />

@@ -9,17 +9,16 @@ import {
 </script>
 
 <template>
-  <AccordionRoot
-    type="single"
-    :collapsible="true"
-  >
+  <AccordionRoot type="single" :collapsible="true">
     <AccordionItem value="1">
-      <AccordionHeader class="m-0">
-        <AccordionTrigger class="flex justify-between w-full border-none px-4 py-3 bg-white c-gray-900 hover:bg-gray-200">
+      <AccordionHeader class="my-2">
+        <AccordionTrigger
+          class="flex justify-between items-center w-full border-none py-2 bg-white c-slate-800 hover:bg-indigo-300 group"
+        >
           <span>
             <slot name="header" />
           </span>
-          V
+          <span class="i-mdi:chevron-down group-data-[state=open]:rotate-180" />
         </AccordionTrigger>
       </AccordionHeader>
       <AccordionContent class="border border-solid border-gray-300 p-1">

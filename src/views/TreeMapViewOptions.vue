@@ -14,7 +14,7 @@ const compact = computed({
 
 <template>
   <div>
-    <div class="c-gray-800 flex justify-between">
+    <div class="c-slate-800 flex justify-between my-2">
       Compact
 
       <BaseSwitch v-model="compact" />
