@@ -39,9 +39,9 @@ interface TreeMapChartData {
 import { computed, useTemplateRef, watch } from 'vue';
 import * as echarts from 'echarts';
 
-import type { BuildStats } from '../stats.ts';
-import type { TreeMapOptions } from './TreeMap.ts';
-import { useChart } from '../shared/lib';
+import type { BuildStats } from '../../../stats.ts';
+import type { TreeMapOptions } from '../model/TreeMap.ts';
+import { useChart } from '../../../shared/lib';
 
 const props = defineProps<{ stats: BuildStats; options: TreeMapOptions }>();
 

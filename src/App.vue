@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref, shallowRef } from 'vue';
+import { computed, ref, shallowRef, watch } from 'vue';
 
-import TreeMapView from './views/TreeMapView.vue';
 import type { BuildStats } from './stats.ts';
-import { getDefaultTreeMapOptions } from './views/TreeMap.ts';
-import TreeMapViewOptions from './views/TreeMapViewOptions.vue';
 import ModuleFilter from './ModuleFilter.vue';
 import ChunkFilter from './ChunkFilter.vue';
 import ViewToggle from './ViewToggle.vue';
+
+import { TreemapView } from './widgets/treemap-view';
+import { GraphView } from './widgets/graph-view';
 
 const stats = shallowRef<BuildStats>();
 fetch('stats.json')
@@ -16,22 +16,35 @@ fetch('stats.json')
     stats.value = data;
   });
 
-const currentView = ref<'treemap' | 'tree'>('treemap');
+const currentViewKey = ref<'treemap' | 'graph'>('treemap');
+const currentViewOptions = ref(TreemapView.optionsFactory());
+const currentView = computed(() => {
+  if (currentViewKey.value === 'treemap') {
+    return TreemapView;
+  } else if (currentViewKey.value === 'graph') {
+    return GraphView;
+  }
 
-const options = ref(getDefaultTreeMapOptions());
+  return TreemapView;
+});
+watch(currentView, (newView) => {
+  currentViewOptions.value = newView.optionsFactory();
+});
 </script>
 
 <template>
   <div class="w-screen h-screen flex bg-gray-200">
     <div class="w-1/3 max-w-[350px] bg-white rounded-lg m-5 p-2">
-      <ViewToggle v-model="currentView" />
+      <ViewToggle v-model="currentViewKey" />
 
-      <TreeMapViewOptions v-model="options" />
-
-      <ChunkFilter v-if="stats" v-model:options="options" :stats />
-      <ModuleFilter v-if="stats" v-model:options="options" :stats />
+      <currentView.OptionsComponent v-if="stats" v-model="currentViewOptions" :stats />
     </div>
 
-    <TreeMapView v-if="stats" :stats :options class="flex-grow-1 flex-shrink-1" />
+    <currentView.ViewComponent
+      v-if="stats"
+      :stats
+      :options="currentViewOptions"
+      class="flex-grow-1 flex-shrink-1"
+    />
   </div>
 </template>

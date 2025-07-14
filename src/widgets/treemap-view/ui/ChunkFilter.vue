@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
-import type { BaseOptions } from './views/TreeMap.ts';
-import type { BuildStats, Chunk } from './stats.ts';
-import { BaseAccordion, BaseButton } from './shared/ui';
+import type { BaseOptions } from '../model/TreeMap.ts';
+import type { BuildStats, Chunk } from '../../../stats.ts';
+import { BaseAccordion, BaseButton } from '../../../shared/ui';
 
 const props = defineProps<{ stats: BuildStats }>();
 

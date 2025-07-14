@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const model = defineModel<'treemap' | 'tree'>({ required: true });
+const model = defineModel<'treemap' | 'graph'>({ required: true });
 
 const activeLeft = 'bg-indigo-700 rounded-l-md c-white';
 const activeRight = 'bg-indigo-700 rounded-r-md c-white';
@@ -17,10 +17,10 @@ const activeRight = 'bg-indigo-700 rounded-r-md c-white';
 
     <div
       class="flex w-1/2 items-center justify-center py-1 cursor-pointer"
-      :class="{ [activeRight]: model === 'tree' }"
-      @click="model = 'tree'"
+      :class="{ [activeRight]: model === 'graph' }"
+      @click="model = 'graph'"
     >
-      <div class="i-mdi-file-tree" />
+      <div class="i-mdi-graph" />
     </div>
   </div>
 </template>
