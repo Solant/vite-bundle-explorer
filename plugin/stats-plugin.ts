@@ -13,6 +13,7 @@ function upsertNodeIndex(nodes: string[], item: string): number {
 export function statsPlugin() {
   let root = '';
   let outDir = '';
+  let enabled = true;
 
   function truncatePath(filePath: string) {
     let index = 0;
@@ -33,10 +34,15 @@ export function statsPlugin() {
     configResolved(config) {
       root = config.root;
       outDir = `${root}/${config.build.outDir}`;
+      enabled = config.env.PROD;
     },
     resolveId: {
       order: 'pre',
       async handler(source, importer, options) {
+        if (!enabled) {
+          return;
+        }
+
         // skip bundle root element
         if (!importer) {
           return;
@@ -54,6 +60,10 @@ export function statsPlugin() {
     },
     generateBundle: {
       async handler(_options, bundle) {
+        if (!enabled) {
+          return;
+        }
+
         for (const [_name, chunk] of Object.entries(bundle)) {
           if (chunk.type !== 'chunk') {
             continue;
