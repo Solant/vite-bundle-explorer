@@ -1,5 +1,5 @@
 import * as echarts from 'echarts';
-import { onMounted, onUnmounted, readonly, shallowRef, type TemplateRef } from 'vue';
+import { onMounted, onUnmounted, shallowRef, type TemplateRef } from 'vue';
 
 export function useChart(target: TemplateRef<HTMLElement>) {
   const chart = shallowRef<echarts.EChartsType>();
@@ -15,6 +15,7 @@ export function useChart(target: TemplateRef<HTMLElement>) {
 
   onUnmounted(() => {
     window.removeEventListener('resize', resize);
+    chart.value?.dispose();
   });
 
   return chart;
