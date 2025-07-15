@@ -14,20 +14,39 @@ watch([chart, () => props.stats, () => props.options], ([newChart, newStats, _ne
     return;
   }
 
+  const dependencies: string[] = [];
+  for (const node of newStats.importGraph.nodes) {
+    if (node.startsWith('node_modules')) {
+      dependencies.push(node.split('/').slice(1, 2).join('/'));
+    }
+  }
+
+  const selected: Record<string, boolean> = { src: true };
+  for (const dep of dependencies) {
+    selected[dep] = false;
+  }
+
   newChart.setOption({
     title: {
       text: 'Module Import Graph',
     },
     animationDurationUpdate: 1500,
     animationEasingUpdate: 'quinticInOut',
-    legend: [{ data: ['src', 'node_modules'], selected: { src: true, node_modules: false } }],
+    legend: {
+      data: ['src', ...dependencies],
+      selected,
+      top: 20,
+      icon: 'circle',
+    },
     series: [
       {
         type: 'graph',
         layout: 'force',
-        categories: [{ name: 'src' }, { name: 'node_modules' }],
+        categories: [{ name: 'src' }, ...dependencies.map((dep) => ({ name: dep }))],
         data: newStats.importGraph.nodes.map((node, idx) => ({
-          category: node.startsWith('node_modules') ? 1 : 0,
+          category: node.startsWith('node_modules')
+            ? dependencies.findIndex((el) => node.startsWith(`node_modules/${el}`)) + 1
+            : 0,
           id: idx,
           name: node,
           emphasis: {
