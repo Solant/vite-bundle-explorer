@@ -4,12 +4,14 @@ import { useTemplateRef, watch } from 'vue';
 import { type BuildStats, getModuleSize } from '@/entities/bundle-stats';
 import { useChart } from '@/shared/lib';
 
-const props = defineProps<{ stats: BuildStats; options: {} }>();
+import type { GraphOptions } from '../model/graph.ts';
+
+const props = defineProps<{ stats: BuildStats; options: GraphOptions }>();
 
 const main = useTemplateRef('main');
 const chart = useChart(main);
 
-watch([chart, () => props.stats, () => props.options], ([newChart, newStats, _newOptions]) => {
+watch([chart, () => props.stats, () => props.options], ([newChart, newStats, newOptions]) => {
   if (!newChart) {
     return;
   }
@@ -42,6 +44,12 @@ watch([chart, () => props.stats, () => props.options], ([newChart, newStats, _ne
       {
         type: 'graph',
         layout: 'force',
+        force: {
+          friction: newOptions.forceFriction,
+          repulsion: newOptions.forceRepulsion,
+          edgeLength: newOptions.forceEdgeLength,
+          gravity: newOptions.forceGravity,
+        },
         categories: [{ name: 'src' }, ...dependencies.map((dep) => ({ name: dep }))],
         data: newStats.importGraph.nodes.map((node, idx) => ({
           category: node.startsWith('node_modules')

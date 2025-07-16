@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-import type { TreeMapOptions } from '../model/TreeMap.ts';
-import { BaseSwitch } from '../../../shared/ui';
-import ChunkFilter from './ChunkFilter.vue';
-import ModuleFilter from './ModuleFilter.vue';
+import { BaseSwitch } from '@/shared/ui';
 import type { BuildStats } from '@/entities/bundle-stats';
+
+import type { TreeMapOptions } from '../model/TreeMap.ts';
+import ChunkFilter from './ChunkFilter.vue';
 
 const model = defineModel<TreeMapOptions>({ required: true });
 
@@ -25,6 +25,5 @@ const compact = computed({
       <BaseSwitch v-model="compact" />
     </div>
     <ChunkFilter v-model:options="model" :stats />
-    <ModuleFilter v-model:options="model" :stats />
   </div>
 </template>
