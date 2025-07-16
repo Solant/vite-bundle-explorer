@@ -2,8 +2,8 @@
 import { computed, ref } from 'vue';
 
 import type { BaseOptions } from '../model/TreeMap.ts';
-import type { BuildStats, Chunk } from '../../../stats.ts';
-import { BaseAccordion, BaseButton } from '../../../shared/ui';
+import type { BuildStats, Chunk } from '@/entities/bundle-stats';
+import { BaseAccordion, BaseButton } from '@/shared/ui';
 
 const props = defineProps<{ stats: BuildStats }>();
 

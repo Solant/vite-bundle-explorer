@@ -5,7 +5,7 @@ import type { TreeMapOptions } from '../model/TreeMap.ts';
 import { BaseSwitch } from '../../../shared/ui';
 import ChunkFilter from './ChunkFilter.vue';
 import ModuleFilter from './ModuleFilter.vue';
-import type { BuildStats } from '../../../stats.ts';
+import type { BuildStats } from '@/entities/bundle-stats';
 
 const model = defineModel<TreeMapOptions>({ required: true });
 

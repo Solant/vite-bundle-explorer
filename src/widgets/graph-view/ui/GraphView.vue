@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useTemplateRef, watch } from 'vue';
 
-import type { BuildStats } from '@/stats.ts';
+import { type BuildStats, getModuleSize } from '@/entities/bundle-stats';
 import { useChart } from '@/shared/lib';
 
 const props = defineProps<{ stats: BuildStats; options: {} }>();
@@ -49,6 +49,8 @@ watch([chart, () => props.stats, () => props.options], ([newChart, newStats, _ne
             : 0,
           id: idx,
           name: node,
+          // max size should be limited so we don't accidentally create a black hole
+          symbolSize: Math.min((getModuleSize(node, newStats) ?? 0) / 1024, 100),
           emphasis: {
             label: {
               show: true,
@@ -60,6 +62,13 @@ watch([chart, () => props.stats, () => props.options], ([newChart, newStats, _ne
           label: {
             position: 'right',
             show: true,
+          },
+        },
+        label: {
+          show: false,
+          formatter(info: any) {
+            const moduleInfo: string = info.data.name;
+            return `${moduleInfo}\n${((getModuleSize(moduleInfo, newStats) ?? 0) / 1024).toFixed(2)} KB`;
           },
         },
         edges: newStats.importGraph.edges.map((edge) => {

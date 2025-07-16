@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 import { type Plugin } from 'vite';
 
-import type { BuildStats, Chunk } from '../src/stats.ts';
+import type { BuildStats, Chunk } from '../src/entities/bundle-stats/index.js';
 
 function upsertNodeIndex(nodes: string[], item: string): number {
   const index = nodes.indexOf(item);
@@ -17,14 +17,15 @@ export function statsPlugin() {
 
   function truncatePath(filePath: string) {
     let index = 0;
+    const normalizedPath = filePath.replaceAll('\u0000', '');
 
-    if (filePath.startsWith(outDir)) {
+    if (normalizedPath.startsWith(outDir)) {
       index = outDir.length;
-    } else if (filePath.startsWith(root)) {
+    } else if (normalizedPath.startsWith(root)) {
       index = root.length;
     }
 
-    return index > 0 ? filePath.substring(index + 1) : filePath;
+    return index > 0 ? normalizedPath.substring(index + 1) : normalizedPath;
   }
 
   const stats: BuildStats = { chunks: [], importGraph: { nodes: [], edges: [] } };
@@ -74,12 +75,24 @@ export function statsPlugin() {
 
           for (const [moduleName, mod] of Object.entries(chunk.modules)) {
             const fileName = truncatePath(moduleName);
-            currentChunk.modules.push({ fileName, renderedLength: mod.renderedLength });
+            currentChunk.modules.push({
+              fileName,
+              renderedLength: mod.renderedLength,
+              virtual: moduleName.startsWith('\u0000') ? true : undefined,
+            });
           }
         }
 
         await writeFile(join(outDir, 'stats.json'), JSON.stringify(stats));
       },
+    },
+    closeBundle(error) {
+      if (!enabled || error) {
+        return;
+      }
+
+      console.log(`Bundle stats written to ${join(outDir, 'stats.json')}`);
+      console.log(`Run "npx vite-bundle-explorer ${join(outDir, 'stats.json')}" to view the stats`)
     },
   };
 

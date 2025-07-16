@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, shallowRef, watch } from 'vue';
 
-import type { BuildStats } from './stats.ts';
-import ModuleFilter from './ModuleFilter.vue';
-import ChunkFilter from './ChunkFilter.vue';
+import type { BuildStats } from '@/entities/bundle-stats';
 import ViewToggle from './ViewToggle.vue';
 
 import { TreemapView } from './widgets/treemap-view';
@@ -28,6 +26,7 @@ const currentView = computed(() => {
   return TreemapView;
 });
 watch(currentView, (newView) => {
+  // @ts-expect-error
   currentViewOptions.value = newView.optionsFactory();
 });
 </script>

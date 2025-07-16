@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 
 import type { BaseOptions } from '../model/TreeMap.ts';
-import type { BuildStats, Module } from '../../../stats.ts';
+import type { BuildStats, Module } from '@/entities/bundle-stats';
 
 defineProps<{ stats: BuildStats }>();
 
