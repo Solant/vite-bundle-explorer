@@ -1,23 +1,24 @@
 {
   "name": "vite-bundle-explorer",
-  "private": true,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build && pnpm build:plugin",
     "build:plugin": "tsc --module Node16 --moduleResolution node16 plugin/stats-plugin.ts",
-    "preview": "vite preview",
-    "vite-bundle-explorer": "./bin.js"
+    "release": "pnpm build && pnpm changelogen --release --push && pnpm publish"
   },
   "exports": {
     "./plugin": "./plugin/stats-plugin.js"
   },
+  "files": [
+    "./dist/index.html",
+    "./dist/assets",
+    "plugin/stats-plugin.js",
+    "bin/index.js"
+  ],
   "bin": {
     "vite-bundle-explorer": "./bin/index.js"
-  },
-  "dependencies": {
-    "vue": "^3.5.17"
   },
   "devDependencies": {
     "@iconify-json/mdi": "^1.2.3",
@@ -33,6 +34,7 @@
     "typescript": "~5.8.3",
     "unocss": "^66.3.3",
     "vite": "^7.0.4",
+    "vue": "^3.5.17",
     "vue-tsc": "^2.2.12"
   }
 }
