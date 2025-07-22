@@ -1,4 +1,4 @@
-import * as echarts from 'echarts';
+import * as echarts from 'echarts/core';
 import { onMounted, onUnmounted, shallowRef, type TemplateRef } from 'vue';
 
 export function useChart(target: TemplateRef<HTMLElement>) {

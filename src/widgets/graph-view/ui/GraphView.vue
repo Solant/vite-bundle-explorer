@@ -1,3 +1,12 @@
+<script lang="ts">
+import * as echarts from 'echarts/core';
+import { TitleComponent, TooltipComponent } from 'echarts/components';
+import { TreemapChart } from 'echarts/charts';
+import { CanvasRenderer } from 'echarts/renderers';
+
+echarts.use([TitleComponent, TooltipComponent, TreemapChart, CanvasRenderer]);
+</script>
+
 <script setup lang="ts">
 import { useTemplateRef, watch } from 'vue';
 
