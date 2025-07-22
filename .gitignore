@@ -25,3 +25,4 @@ dist-ssr
 
 stats.json
 plugin/stats-plugin.js
+src/entities/bundle-stats/index.js
