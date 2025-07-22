@@ -1,5 +1,7 @@
 # vite-bundle-explorer
 
+![preview](https://raw.githubusercontent.com/Solant/vite-bundle-explorer/refs/heads/main/example.gif)
+
 A utility to help debug and optimize bundle sizes. It gathers Vite bundle statistics,
 including module sizes and import graphs, and visualizes them for an efficient debugging experience.
 
