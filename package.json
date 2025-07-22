@@ -8,6 +8,33 @@
     "build:plugin": "tsc --module Node16 --moduleResolution node16 plugin/stats-plugin.ts",
     "release": "pnpm build && pnpm changelogen --release --push && pnpm publish"
   },
+  "homepage": "https://github.com/Solant/vite-bundle-explorer#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Solant/vite-bundle-explorer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Solant/vite-bundle-explorer/issues"
+  },
+  "keywords": [
+    "vite",
+    "bundle",
+    "explorer",
+    "analyzer",
+    "visualizer",
+    "plugin",
+    "size",
+    "analysis",
+    "optimization",
+    "stats",
+    "visualization",
+    "import-graph",
+    "dependency-graph",
+    "treemap",
+    "rollup",
+    "performance",
+    "build"
+  ],
   "exports": {
     "./plugin": "./plugin/stats-plugin.js"
   },
