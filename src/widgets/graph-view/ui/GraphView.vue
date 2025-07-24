@@ -5,12 +5,21 @@ import { TreemapChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
 
 echarts.use([TitleComponent, TooltipComponent, TreemapChart, CanvasRenderer]);
+
+function minMax(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
 </script>
 
 <script setup lang="ts">
 import { useTemplateRef, watch } from 'vue';
 
-import { type BuildStats, getModuleSize } from '@/entities/bundle-stats';
+import {
+  type BuildStats,
+  getModuleDependencyName,
+  getModuleSize,
+  isDependency,
+} from '@/entities/bundle-stats';
 import { useChart } from '@/shared/lib';
 
 import type { GraphOptions } from '../model/graph.ts';
@@ -25,12 +34,14 @@ watch([chart, () => props.stats, () => props.options], ([newChart, newStats, new
     return;
   }
 
-  const dependencies: string[] = [];
+  const set = new Set<string>();
   for (const node of newStats.importGraph.nodes) {
-    if (node.startsWith('node_modules')) {
-      dependencies.push(node.split('/').slice(1, 2).join('/'));
+    const dep = getModuleDependencyName(node);
+    if (dep) {
+      set.add(dep);
     }
   }
+  const dependencies = Array.from(set);
 
   const selected: Record<string, boolean> = { src: true };
   for (const dep of dependencies) {
@@ -61,13 +72,13 @@ watch([chart, () => props.stats, () => props.options], ([newChart, newStats, new
         },
         categories: [{ name: 'src' }, ...dependencies.map((dep) => ({ name: dep }))],
         data: newStats.importGraph.nodes.map((node, idx) => ({
-          category: node.startsWith('node_modules')
-            ? dependencies.findIndex((el) => node.startsWith(`node_modules/${el}`)) + 1
+          category: isDependency(node)
+            ? dependencies.findIndex((el) => el === getModuleDependencyName(node)) + 1
             : 0,
           id: idx,
           name: node,
           // max size should be limited so we don't accidentally create a black hole
-          symbolSize: Math.min((getModuleSize(node, newStats) ?? 0) / 1024, 100),
+          symbolSize: minMax((getModuleSize(node, newStats) ?? 0) / 1024, 12, 75),
           emphasis: {
             label: {
               show: true,

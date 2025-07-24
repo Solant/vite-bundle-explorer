@@ -26,3 +26,31 @@ export function getModuleSize(moduleFileName: string, stats: BuildStats): number
     }
   }
 }
+
+export function isDependency(moduleFileName: string): boolean {
+  return moduleFileName.startsWith('node_modules');
+}
+
+export function getModuleDependencyName(moduleFileName: string): string {
+  if (!isDependency(moduleFileName)) {
+    return '';
+  }
+
+  // pnpm-specific logic
+  if (moduleFileName.startsWith('node_modules/.pnpm')) {
+    const parts = moduleFileName.split('/');
+    if (parts[4].startsWith('@')) {
+      return `${parts[4]}/${parts[5]}`;
+    } else {
+      return parts[4];
+    }
+  }
+
+  // npm default logic
+  const parts = moduleFileName.split('/');
+  if (parts[1].startsWith('@')) {
+    return `${parts[1]}/${parts[2]}`;
+  } else {
+    return parts[1];
+  }
+}
