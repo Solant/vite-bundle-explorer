@@ -44,9 +44,9 @@ import { useTemplateRef, watch } from 'vue';
 
 import {
   type BuildStats,
+  formatModuleSize,
   getModuleDependencyName,
   getModuleSize,
-  isDependency,
 } from '@/entities/bundle-stats';
 import { useChart } from '@/shared/lib';
 
@@ -99,6 +99,7 @@ watch([chart, () => props.stats], ([newChart, newStats]) => {
   }
 
   newChart.setOption({
+    color: COLORS,
     title: {
       text: 'Module Import Graph',
     },
@@ -133,20 +134,27 @@ watch([chart, () => props.stats], ([newChart, newStats]) => {
             itemStyle: { color: COLORS[index + 1] },
           })),
         ],
-        data: newStats.importGraph.nodes.map((node, idx) => ({
-          category: isDependency(node)
-            ? dependencies.findIndex((el) => el === getModuleDependencyName(node)) + 1
-            : 0,
-          id: idx,
-          name: node,
-          // max size should be limited so we don't accidentally create a black hole
-          symbolSize: minMax((getModuleSize(node, newStats) ?? 0) / 1024, 12, 75),
-          emphasis: {
-            label: {
-              show: true,
+        data: newStats.importGraph.nodes.map((node, idx) => {
+          const size = getModuleSize(node, newStats) ?? 0;
+          const categoryIndex =
+            dependencies.findIndex((el) => el === getModuleDependencyName(node)) + 1;
+          return {
+            category: categoryIndex,
+            id: idx,
+            name: node,
+            // max size should be limited so we don't accidentally create a black hole
+            symbolSize: minMax(size / 1024, 12, 75),
+            itemStyle: {
+              borderColor: size === 0 ? COLORS[categoryIndex % COLORS.length] : undefined,
+              color: size === 0 ? '#ffffff' : undefined,
             },
-          },
-        })),
+            emphasis: {
+              label: {
+                show: true,
+              },
+            },
+          };
+        }),
         emphasis: {
           focus: 'adjacency',
           label: {
@@ -158,7 +166,7 @@ watch([chart, () => props.stats], ([newChart, newStats]) => {
           show: false,
           formatter(info: any) {
             const moduleInfo: string = info.data.name;
-            return `${moduleInfo}\n${((getModuleSize(moduleInfo, newStats) ?? 0) / 1024).toFixed(2)} KB`;
+            return `${moduleInfo}\n${formatModuleSize(moduleInfo, newStats)}`;
           },
         },
         edges: newStats.importGraph.edges.map((edge) => {

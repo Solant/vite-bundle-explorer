@@ -27,6 +27,21 @@ export function getModuleSize(moduleFileName: string, stats: BuildStats): number
   }
 }
 
+export function formatModuleSize(chunkFileName: string, stats: BuildStats) {
+  const size = getModuleSize(chunkFileName, stats);
+  if (!size) {
+    return '0 B';
+  }
+
+  if (size < 1024) {
+    return `${size} B`;
+  } else if (size < 1024 * 1024) {
+    return `${(size / 1024).toFixed(2)} KB`;
+  } else {
+    return `${(size / 1024 / 1024).toFixed(2)} MB`;
+  }
+}
+
 export function isDependency(moduleFileName: string): boolean {
   return moduleFileName.startsWith('node_modules');
 }
