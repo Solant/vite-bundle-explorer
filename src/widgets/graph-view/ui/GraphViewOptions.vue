@@ -16,7 +16,7 @@ const forceGravity = useModelProxy(model, 'forceGravity');
   <div>
     <NumberOption title="Repulsion" v-model="forceRepulsion" />
     <NumberOption title="Edge length" v-model="forceEdgeLength" />
-    <NumberOption title="Friction" v-model="forceFriction" />
-    <NumberOption title="Gravity" v-model="forceGravity" />
+    <NumberOption title="Friction" v-model="forceFriction" :step="0.01" :fixed="2" />
+    <NumberOption title="Gravity" v-model="forceGravity" :step="0.01" :fixed="2" />
   </div>
 </template>

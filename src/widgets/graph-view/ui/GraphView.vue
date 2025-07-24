@@ -29,7 +29,24 @@ const props = defineProps<{ stats: BuildStats; options: GraphOptions }>();
 const main = useTemplateRef('main');
 const chart = useChart(main);
 
-watch([chart, () => props.stats, () => props.options], ([newChart, newStats, newOptions]) => {
+watch(() => props.options, (options) => {
+  if (!chart.value) {
+    return;
+  }
+
+  chart.value.setOption({
+    series: [{
+      force: {
+        friction: options.forceFriction,
+        repulsion: options.forceRepulsion,
+        edgeLength: options.forceEdgeLength,
+        gravity: options.forceGravity,
+      },
+    }]
+  })
+})
+
+watch([chart, () => props.stats], ([newChart, newStats]) => {
   if (!newChart) {
     return;
   }
@@ -65,10 +82,10 @@ watch([chart, () => props.stats, () => props.options], ([newChart, newStats, new
         type: 'graph',
         layout: 'force',
         force: {
-          friction: newOptions.forceFriction,
-          repulsion: newOptions.forceRepulsion,
-          edgeLength: newOptions.forceEdgeLength,
-          gravity: newOptions.forceGravity,
+          friction: props.options.forceFriction,
+          repulsion: props.options.forceRepulsion,
+          edgeLength: props.options.forceEdgeLength,
+          gravity: props.options.forceGravity,
         },
         categories: [{ name: 'src' }, ...dependencies.map((dep) => ({ name: dep }))],
         data: newStats.importGraph.nodes.map((node, idx) => ({
