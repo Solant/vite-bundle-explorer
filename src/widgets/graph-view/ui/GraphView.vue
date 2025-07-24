@@ -9,6 +9,34 @@ echarts.use([TitleComponent, TooltipComponent, TreemapChart, CanvasRenderer]);
 function minMax(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
+
+const COLORS = [
+  '#059669',
+  '#2563EB',
+  '#CA8A04',
+  '#9333EA',
+  '#0D9488',
+  '#65A30D',
+  '#7C3AED',
+  '#EA580C',
+  '#0284C7',
+  '#16A34A',
+  '#4F46E5',
+  '#D97706',
+  '#047857',
+  '#1D4ED8',
+  '#A16207',
+  '#7E22CE',
+  '#0F766E',
+  '#4D7C0F',
+  '#6D28D9',
+  '#C2410C',
+  '#0369A1',
+  '#15803D',
+  '#4338CA',
+  '#B45309',
+  '#0E7490',
+];
 </script>
 
 <script setup lang="ts">
@@ -29,22 +57,27 @@ const props = defineProps<{ stats: BuildStats; options: GraphOptions }>();
 const main = useTemplateRef('main');
 const chart = useChart(main);
 
-watch(() => props.options, (options) => {
-  if (!chart.value) {
-    return;
-  }
+watch(
+  () => props.options,
+  (options) => {
+    if (!chart.value) {
+      return;
+    }
 
-  chart.value.setOption({
-    series: [{
-      force: {
-        friction: options.forceFriction,
-        repulsion: options.forceRepulsion,
-        edgeLength: options.forceEdgeLength,
-        gravity: options.forceGravity,
-      },
-    }]
-  })
-})
+    chart.value.setOption({
+      series: [
+        {
+          force: {
+            friction: options.forceFriction,
+            repulsion: options.forceRepulsion,
+            edgeLength: options.forceEdgeLength,
+            gravity: options.forceGravity,
+          },
+        },
+      ],
+    });
+  },
+);
 
 watch([chart, () => props.stats], ([newChart, newStats]) => {
   if (!newChart) {
@@ -72,7 +105,13 @@ watch([chart, () => props.stats], ([newChart, newStats]) => {
     animationDurationUpdate: 1500,
     animationEasingUpdate: 'quinticInOut',
     legend: {
-      data: ['src', ...dependencies],
+      data: [
+        { name: 'src', itemStyle: { color: COLORS[0] } },
+        ...dependencies.map((dep, index) => ({
+          name: dep,
+          itemStyle: { color: COLORS[index + 1] },
+        })),
+      ],
       selected,
       top: 20,
       icon: 'circle',
@@ -87,7 +126,13 @@ watch([chart, () => props.stats], ([newChart, newStats]) => {
           edgeLength: props.options.forceEdgeLength,
           gravity: props.options.forceGravity,
         },
-        categories: [{ name: 'src' }, ...dependencies.map((dep) => ({ name: dep }))],
+        categories: [
+          { name: 'src', itemStyle: { color: COLORS[0] } },
+          ...dependencies.map((dep, index) => ({
+            name: dep,
+            itemStyle: { color: COLORS[index + 1] },
+          })),
+        ],
         data: newStats.importGraph.nodes.map((node, idx) => ({
           category: isDependency(node)
             ? dependencies.findIndex((el) => el === getModuleDependencyName(node)) + 1
