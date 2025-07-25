@@ -9,17 +9,21 @@ const model = defineModel<number>({ required: true });
 const props = defineProps<{ title: string; step?: number; fixed?: number }>();
 
 const scrollEnabled = ref(false);
-useEventListener('wheel', (e) => {
-  if (!scrollEnabled.value) {
-    return;
-  }
+useEventListener(
+  'wheel',
+  (e) => {
+    if (!scrollEnabled.value) {
+      return;
+    }
 
-  if (e.deltaY < 0) {
-    model.value += props.step ?? 1;
-  } else {
-    model.value -= props.step ?? 1;
-  }
-}, { passive: false });
+    if (e.deltaY < 0) {
+      model.value += props.step ?? 1;
+    } else {
+      model.value -= props.step ?? 1;
+    }
+  },
+  { passive: false },
+);
 </script>
 
 <template>
@@ -27,7 +31,9 @@ useEventListener('wheel', (e) => {
     <input
       type="number"
       :value="model.toFixed(props.fixed ?? 0)"
-      @update="event => model = Number.parseFloat(event.target.value)"
+      @update="
+        (event: InputEvent) => (model = Number.parseFloat((event.target as HTMLInputElement).value))
+      "
       :step
       @mouseenter="scrollEnabled = true"
       @mouseleave="scrollEnabled = false"
