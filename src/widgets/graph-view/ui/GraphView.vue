@@ -37,6 +37,10 @@ const COLORS = [
   '#B45309',
   '#0E7490',
 ];
+
+const EDGE_SYMBOL = [undefined, 'arrow'];
+
+const ROOT_COLOR = '#e7000b';
 </script>
 
 <script setup lang="ts">
@@ -135,6 +139,7 @@ watch([chart, () => props.stats], ([newChart, newStats]) => {
           })),
         ],
         data: newStats.importGraph.nodes.map((node, idx) => {
+          const isRoot = !newStats.importGraph.edges.some(([_source, target]) => target === idx);
           const size = getModuleSize(node, newStats) ?? 0;
           const categoryIndex =
             dependencies.findIndex((el) => el === getModuleDependencyName(node)) + 1;
@@ -146,7 +151,7 @@ watch([chart, () => props.stats], ([newChart, newStats]) => {
             symbolSize: minMax(size / 1024, 12, 75),
             itemStyle: {
               borderColor: size === 0 ? COLORS[categoryIndex % COLORS.length] : undefined,
-              color: size === 0 ? '#ffffff' : undefined,
+              color: isRoot ? ROOT_COLOR : size === 0 ? '#ffffff' : undefined,
             },
             emphasis: {
               label: {
@@ -173,6 +178,7 @@ watch([chart, () => props.stats], ([newChart, newStats]) => {
           return {
             source: edge[0],
             target: edge[1],
+            symbol: EDGE_SYMBOL,
           };
         }),
         roam: true,
