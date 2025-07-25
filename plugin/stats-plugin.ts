@@ -28,6 +28,7 @@ export function statsPlugin() {
     return index > 0 ? normalizedPath.substring(index + 1) : normalizedPath;
   }
 
+  const edges = new Set<string>();
   const stats: BuildStats = { chunks: [], importGraph: { nodes: [], edges: [] } };
 
   const plugin: Plugin = {
@@ -56,7 +57,7 @@ export function statsPlugin() {
 
         const parent = upsertNodeIndex(stats.importGraph.nodes, truncatePath(importer));
         const child = upsertNodeIndex(stats.importGraph.nodes, truncatePath(result.id));
-        stats.importGraph.edges.push([parent, child]);
+        edges.add(`${parent},${child}`);
       },
     },
     generateBundle: {
@@ -83,6 +84,10 @@ export function statsPlugin() {
           }
         }
 
+        stats.importGraph.edges = Array.from(edges).map((edge) => {
+          const pair = edge.split(',');
+          return [Number.parseInt(pair[0], 10), Number.parseInt(pair[1], 10)];
+        });
         await writeFile(join(outDir, 'stats.json'), JSON.stringify(stats));
       },
     },
@@ -92,7 +97,7 @@ export function statsPlugin() {
       }
 
       console.log(`Bundle stats written to ${join(outDir, 'stats.json')}`);
-      console.log(`Run "npx vite-bundle-explorer ${join(outDir, 'stats.json')}" to view the stats`)
+      console.log(`Run "npx vite-bundle-explorer ${join(outDir, 'stats.json')}" to view the stats`);
     },
   };
 
