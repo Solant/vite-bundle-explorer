@@ -83,13 +83,54 @@ watch(
   },
 );
 
-watch([chart, () => props.stats], ([newChart, newStats]) => {
+watch([chart, () => props.stats, () => props.options.compact], ([newChart, newStats, compact]) => {
   if (!newChart) {
     return;
   }
 
+  let { nodes, edges } = newStats.importGraph;
+  if (compact) {
+    let removedNodes = 0;
+    do {
+      const emptyNodes: number[] = [];
+      for (let i = 0; i < nodes.length; i += 1) {
+        const children = [];
+        for (let j = 0; j < edges.length; j += 1) {
+          if (edges[j][0] === i) {
+            children.push(edges[j][1]);
+          }
+        }
+
+        if (children.length === 0 && !getModuleSize(nodes[i], newStats)) {
+          emptyNodes.push(i);
+        }
+      }
+      removedNodes = emptyNodes.length;
+
+      let newNodes = [...nodes];
+      let newEdges = edges.map(([source, target]) => [source, target] as [number, number]);
+
+      for (const k of [...emptyNodes].sort((a, b) => b - a)) {
+        newEdges = newEdges.filter(([source, target]) => source !== k && target !== k);
+        newNodes = newNodes.filter((_node, index) => index !== k);
+
+        newEdges.forEach((edge) => {
+          if (edge[0] > k) {
+            edge[0] -= 1;
+          }
+          if (edge[1] > k) {
+            edge[1] -= 1;
+          }
+        });
+      }
+
+      edges = newEdges;
+      nodes = newNodes;
+    } while (removedNodes);
+  }
+
   const set = new Set<string>();
-  for (const node of newStats.importGraph.nodes) {
+  for (const node of nodes) {
     const dep = getModuleDependencyName(node);
     if (dep) {
       set.add(dep);
@@ -138,8 +179,8 @@ watch([chart, () => props.stats], ([newChart, newStats]) => {
             itemStyle: { color: COLORS[index + 1] },
           })),
         ],
-        data: newStats.importGraph.nodes.map((node, idx) => {
-          const isRoot = !newStats.importGraph.edges.some(([_source, target]) => target === idx);
+        data: nodes.map((node, idx) => {
+          const isRoot = !edges.some(([_source, target]) => target === idx);
           const size = getModuleSize(node, newStats) ?? 0;
           const categoryIndex =
             dependencies.findIndex((el) => el === getModuleDependencyName(node)) + 1;
@@ -174,7 +215,7 @@ watch([chart, () => props.stats], ([newChart, newStats]) => {
             return `${moduleInfo}\n${formatModuleSize(moduleInfo, newStats)}`;
           },
         },
-        edges: newStats.importGraph.edges.map((edge) => {
+        edges: edges.map((edge) => {
           return {
             source: edge[0],
             target: edge[1],
