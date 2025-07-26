@@ -1,20 +1,10 @@
 <script lang="ts">
 import * as echarts from 'echarts/core';
-import {
-  TitleComponent,
-  TooltipComponent,
-  LegendComponent
-} from 'echarts/components';
+import { TitleComponent, TooltipComponent, LegendComponent } from 'echarts/components';
 import { GraphChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
 
-echarts.use([
-  TitleComponent,
-  TooltipComponent,
-  LegendComponent,
-  GraphChart,
-  CanvasRenderer
-]);
+echarts.use([TitleComponent, TooltipComponent, LegendComponent, GraphChart, CanvasRenderer]);
 
 function getLevelOption() {
   return [
@@ -176,16 +166,18 @@ watch([chart, () => props.stats, () => props.options], ([newChart, newStats]) =>
                 ([_source, target]) => target === currentModuleIndex,
               )
             : [];
-        const parents = edges
-          .map((edge) => props.stats.importGraph.nodes[edge[0]])
-          .reduce((acc, cur) => acc.add(cur), new Set<string>());
-        if (parents.size) {
-          result.push(
-            '<div class="mt-2">Imported by:</div>',
-            '<ul>',
-            ...[...parents].map((p) => `<li>${p}</li>`),
-            '</ul>',
-          );
+        const parents = edges.map((edge) => props.stats.importGraph.nodes[edge[0]]);
+        if (parents.length) {
+          result.push('<div class="mt-2">Imported by:</div>', '<ul>');
+
+          if (parents.length > 8) {
+            result.push(...parents.slice(0, 7).map((p) => `<li>${p}</li>`));
+            result.push(`and ${parents.length - 8} more`);
+          } else {
+            result.push(...parents.map((p) => `<li>${p}</li>`));
+          }
+
+          result.push('</ul>');
         }
 
         return result.join('');
