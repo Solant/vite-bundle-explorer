@@ -63,9 +63,10 @@ export function getModuleDependencyName(moduleFileName: string): string {
 
   // npm default logic
   const parts = moduleFileName.split('/');
-  if (parts[1].startsWith('@')) {
-    return `${parts[1]}/${parts[2]}`;
+  const index = parts.lastIndexOf('node_modules');
+  if (parts[index + 1].startsWith('@')) {
+    return `${parts[index + 1]}/${parts[index + 2]}`;
   } else {
-    return parts[1];
+    return parts[index + 1];
   }
 }
