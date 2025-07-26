@@ -1,5 +1,5 @@
 export interface BaseOptions {
-  hiddenModules: string[];
+  hiddenModules: number[];
   hiddenChunks: string[];
 }
 

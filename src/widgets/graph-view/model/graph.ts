@@ -4,6 +4,7 @@ export interface GraphOptions {
   forceEdgeLength: number;
   forceFriction: number;
   compact: boolean;
+  hiddenModules: number[];
 }
 
 export function optionsFactory(): GraphOptions {
@@ -13,5 +14,6 @@ export function optionsFactory(): GraphOptions {
     forceEdgeLength: 30,
     forceFriction: 0.6,
     compact: false,
+    hiddenModules: [],
   };
 }

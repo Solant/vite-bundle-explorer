@@ -36,6 +36,7 @@ function getLevelOption() {
 
 interface TreeMapChartData {
   value: number;
+  moduleIndex?: number;
   name: string;
   path: string;
   children: TreeMapChartData[];
@@ -45,14 +46,45 @@ interface TreeMapChartData {
 <script setup lang="ts">
 import { computed, useTemplateRef, watch } from 'vue';
 
-import type { BuildStats } from '@/entities/bundle-stats';
+import { type BuildStats } from '@/entities/bundle-stats';
 import type { TreeMapOptions } from '../model/TreeMap.ts';
 import { useChart } from '@/shared/lib';
 
-const props = defineProps<{ stats: BuildStats; options: TreeMapOptions }>();
+const props = defineProps<{ stats: BuildStats }>();
+const options = defineModel<TreeMapOptions>('options', { required: true });
 
 const main = useTemplateRef('main');
 const chart = useChart(main);
+
+watch(chart, (newChart) => {
+  if (!newChart) {
+    return;
+  }
+
+  newChart.on('contextmenu', (event) => {
+    event.event!.event.preventDefault();
+    const data = event.data as TreeMapChartData;
+
+    const hiddenModules = new Set<number>();
+    if (data.moduleIndex) {
+      hiddenModules.add(data.moduleIndex);
+    }
+
+    function traverse(node: TreeMapChartData) {
+      node.children.forEach((child) => traverse(child));
+      if (node.moduleIndex) {
+        hiddenModules.add(node.moduleIndex);
+      }
+    }
+
+    traverse(data);
+
+    options.value = {
+      ...options.value,
+      hiddenModules: [...options.value.hiddenModules, ...Array.from(hiddenModules)],
+    };
+  });
+});
 
 const data = computed(() => {
   if (!props.stats) {
@@ -61,7 +93,7 @@ const data = computed(() => {
 
   const result: TreeMapChartData[] = [];
   for (const chunk of props.stats.chunks) {
-    if (props.options.hiddenChunks.includes(chunk.fileName)) {
+    if (options.value.hiddenChunks.includes(chunk.fileName)) {
       continue;
     }
 
@@ -74,11 +106,12 @@ const data = computed(() => {
     result.push(currentChunk);
 
     for (const module of chunk.modules) {
-      if (props.options.hiddenModules.includes(module.fileName)) {
+      const moduleIndex = module.fileNameIndex;
+      if (options.value.hiddenModules.includes(moduleIndex)) {
         continue;
       }
 
-      const path = module.fileName.split('/');
+      const path = props.stats.moduleFileNames[module.fileNameIndex].split('/');
 
       let currentNode = currentChunk;
       for (let index = 0; index < path.length; index += 1) {
@@ -91,6 +124,7 @@ const data = computed(() => {
             path: path[index],
             value: module.renderedLength,
             children: [],
+            moduleIndex,
           };
           currentNode.children.push(newNode);
           currentNode = newNode;
@@ -123,14 +157,14 @@ const data = computed(() => {
     }
   }
 
-  if (props.options.compact) {
+  if (options.value.compact) {
     result.forEach(transformCompact);
   }
 
   return result;
 });
 
-watch([chart, () => props.stats, () => props.options], ([newChart, newStats]) => {
+watch([chart, () => props.stats, data], ([newChart, newStats]) => {
   if (!newChart || !newStats) {
     return;
   }
@@ -157,7 +191,7 @@ watch([chart, () => props.stats, () => props.options], ([newChart, newStats]) =>
         );
 
         const moduleName = treePath.slice(1).join('/');
-        const currentModuleIndex = props.stats.importGraph.nodes.findIndex(
+        const currentModuleIndex = props.stats.moduleFileNames.findIndex(
           (node) => node === moduleName,
         );
         const edges =
@@ -166,7 +200,7 @@ watch([chart, () => props.stats, () => props.options], ([newChart, newStats]) =>
                 ([_source, target]) => target === currentModuleIndex,
               )
             : [];
-        const parents = edges.map((edge) => props.stats.importGraph.nodes[edge[0]]);
+        const parents = edges.map((edge) => props.stats.moduleFileNames[edge[0]]);
         if (parents.length) {
           result.push('<div class="mt-2">Imported by:</div>', '<ul>');
 
