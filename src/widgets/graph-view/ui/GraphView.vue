@@ -56,34 +56,32 @@ import { useChart } from '@/shared/lib';
 
 import type { GraphOptions } from '../model/graph.ts';
 
-const props = defineProps<{ stats: BuildStats; options: GraphOptions }>();
+const props = defineProps<{ stats: BuildStats }>();
+const options = defineModel<GraphOptions>('options', { required: true });
 
 const main = useTemplateRef('main');
 const chart = useChart(main);
 
-watch(
-  () => props.options,
-  (options) => {
-    if (!chart.value) {
-      return;
-    }
+watch(options, (options) => {
+  if (!chart.value) {
+    return;
+  }
 
-    chart.value.setOption({
-      series: [
-        {
-          force: {
-            friction: options.forceFriction,
-            repulsion: options.forceRepulsion,
-            edgeLength: options.forceEdgeLength,
-            gravity: options.forceGravity,
-          },
+  chart.value.setOption({
+    series: [
+      {
+        force: {
+          friction: options.forceFriction,
+          repulsion: options.forceRepulsion,
+          edgeLength: options.forceEdgeLength,
+          gravity: options.forceGravity,
         },
-      ],
-    });
-  },
-);
+      },
+    ],
+  });
+});
 
-watch([chart, () => props.stats, () => props.options.compact], ([newChart, newStats, compact]) => {
+watch([chart, () => props.stats, () => options.value.compact], ([newChart, newStats, compact]) => {
   if (!newChart) {
     return;
   }
@@ -167,10 +165,10 @@ watch([chart, () => props.stats, () => props.options.compact], ([newChart, newSt
         type: 'graph',
         layout: 'force',
         force: {
-          friction: props.options.forceFriction,
-          repulsion: props.options.forceRepulsion,
-          edgeLength: props.options.forceEdgeLength,
-          gravity: props.options.forceGravity,
+          friction: options.value.forceFriction,
+          repulsion: options.value.forceRepulsion,
+          edgeLength: options.value.forceEdgeLength,
+          gravity: options.value.forceGravity,
         },
         categories: [
           { name: 'src', itemStyle: { color: COLORS[0] } },

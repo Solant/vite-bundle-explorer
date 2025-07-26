@@ -42,7 +42,7 @@ watch(currentView, (newView) => {
     <currentView.ViewComponent
       v-if="stats"
       :stats
-      :options="currentViewOptions"
+      v-model:options="currentViewOptions"
       class="flex-grow-1 flex-shrink-1"
     />
   </div>
