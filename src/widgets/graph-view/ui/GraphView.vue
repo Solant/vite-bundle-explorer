@@ -90,44 +90,43 @@ watch([chart, () => props.stats, () => props.options.compact], ([newChart, newSt
 
   let { nodes, edges } = newStats.importGraph;
   if (compact) {
-    const emptyNodes = new Set<number>();
-    let changed = false;
-    // TODO: replace with proper dfs
+    let removedNodes = 0;
     do {
-      changed = false;
-      for (let index = 0; index < nodes.length; index += 1) {
-        const children = edges.filter(([source]) => source === index);
-        if (
-          !emptyNodes.has(index) &&
-          (getModuleSize(nodes[index], newStats) ?? 0) === 0 &&
-          (children.length === 0 || children.every(([_source, target]) => emptyNodes.has(target)))
-        ) {
-          emptyNodes.add(index);
-          changed = true;
+      const emptyNodes: number[] = [];
+      for (let i = 0; i < nodes.length; i += 1) {
+        const children = [];
+        for (let j = 0; j < edges.length; j += 1) {
+          if (edges[j][0] === i) {
+            children.push(edges[j][1]);
+          }
+        }
+
+        if (children.length === 0 && !getModuleSize(nodes[i], newStats)) {
+          emptyNodes.push(i);
         }
       }
-    } while (changed);
-    console.log(emptyNodes);
+      removedNodes = emptyNodes.length;
 
-    let newNodes = [...nodes];
-    let newEdges = edges.map(([source, target]) => [source, target] as [number, number]);
+      let newNodes = [...nodes];
+      let newEdges = edges.map(([source, target]) => [source, target] as [number, number]);
 
-    for (const k of [...emptyNodes].sort((a, b) => b - a)) {
-      newEdges = newEdges.filter(([source, target]) => source !== k && target !== k);
-      newNodes = newNodes.filter((_node, index) => index !== k);
+      for (const k of [...emptyNodes].sort((a, b) => b - a)) {
+        newEdges = newEdges.filter(([source, target]) => source !== k && target !== k);
+        newNodes = newNodes.filter((_node, index) => index !== k);
 
-      newEdges.forEach((edge) => {
-        if (edge[0] > k) {
-          edge[0] -= 1;
-        }
-        if (edge[1] > k) {
-          edge[1] -= 1;
-        }
-      });
-    }
+        newEdges.forEach((edge) => {
+          if (edge[0] > k) {
+            edge[0] -= 1;
+          }
+          if (edge[1] > k) {
+            edge[1] -= 1;
+          }
+        });
+      }
 
-    edges = newEdges;
-    nodes = newNodes;
+      edges = newEdges;
+      nodes = newNodes;
+    } while (removedNodes);
   }
 
   const set = new Set<string>();
@@ -141,9 +140,7 @@ watch([chart, () => props.stats, () => props.options.compact], ([newChart, newSt
 
   const selected: Record<string, boolean> = { src: true };
   for (const dep of dependencies) {
-    if (dep !== 'echarts') {
-      selected[dep] = false;
-    }
+    selected[dep] = false;
   }
 
   newChart.setOption({
