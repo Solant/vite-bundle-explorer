@@ -1,5 +1,5 @@
 export interface Module {
-  fileName: string;
+  fileNameIndex: number;
   renderedLength: number;
   virtual?: true;
 }
@@ -10,17 +10,28 @@ export interface Chunk {
 }
 
 export interface BuildStats {
+  moduleFileNames: string[];
   chunks: Chunk[];
   importGraph: {
-    nodes: string[];
     edges: Array<[source: number, target: number]>;
   };
 }
 
-export function getModuleSize(moduleFileName: string, stats: BuildStats): number | undefined {
+export function getModuleSize(
+  moduleFileName: string | number,
+  stats: BuildStats,
+): number | undefined {
+  const index =
+    typeof moduleFileName === 'string'
+      ? stats.moduleFileNames.indexOf(moduleFileName)
+      : moduleFileName;
+  if (index === -1) {
+    return undefined;
+  }
+
   for (const chunk of stats.chunks) {
     for (const mod of chunk.modules) {
-      if (mod.fileName === moduleFileName) {
+      if (mod.fileNameIndex === index) {
         return mod.renderedLength;
       }
     }

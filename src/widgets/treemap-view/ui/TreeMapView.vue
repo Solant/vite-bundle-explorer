@@ -105,13 +105,13 @@ const data = computed(() => {
     };
     result.push(currentChunk);
 
-    for (let moduleIndex = 0; moduleIndex < chunk.modules.length; moduleIndex += 1) {
-      const module = chunk.modules[moduleIndex];
+    for (const module of chunk.modules) {
+      const moduleIndex = module.fileNameIndex;
       if (options.value.hiddenModules.includes(moduleIndex)) {
         continue;
       }
 
-      const path = module.fileName.split('/');
+      const path = props.stats.moduleFileNames[module.fileNameIndex].split('/');
 
       let currentNode = currentChunk;
       for (let index = 0; index < path.length; index += 1) {
@@ -191,7 +191,7 @@ watch([chart, () => props.stats, data], ([newChart, newStats]) => {
         );
 
         const moduleName = treePath.slice(1).join('/');
-        const currentModuleIndex = props.stats.importGraph.nodes.findIndex(
+        const currentModuleIndex = props.stats.moduleFileNames.findIndex(
           (node) => node === moduleName,
         );
         const edges =
@@ -200,7 +200,7 @@ watch([chart, () => props.stats, data], ([newChart, newStats]) => {
                 ([_source, target]) => target === currentModuleIndex,
               )
             : [];
-        const parents = edges.map((edge) => props.stats.importGraph.nodes[edge[0]]);
+        const parents = edges.map((edge) => props.stats.moduleFileNames[edge[0]]);
         if (parents.length) {
           result.push('<div class="mt-2">Imported by:</div>', '<ul>');
 

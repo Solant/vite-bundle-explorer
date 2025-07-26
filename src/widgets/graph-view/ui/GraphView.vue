@@ -86,7 +86,8 @@ watch([chart, () => props.stats, () => options.value.compact], ([newChart, newSt
     return;
   }
 
-  let { nodes, edges } = newStats.importGraph;
+  let { edges } = newStats.importGraph;
+  let nodes = newStats.moduleFileNames;
   if (compact) {
     let removedNodes = 0;
     do {

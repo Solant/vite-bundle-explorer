@@ -29,7 +29,7 @@ export function statsPlugin() {
   }
 
   const edges = new Set<string>();
-  const stats: BuildStats = { chunks: [], importGraph: { nodes: [], edges: [] } };
+  const stats: BuildStats = { chunks: [], importGraph: { edges: [] }, moduleFileNames: [] };
 
   const plugin: Plugin = {
     name: 'stats-plugin',
@@ -55,8 +55,8 @@ export function statsPlugin() {
           return;
         }
 
-        const parent = upsertNodeIndex(stats.importGraph.nodes, truncatePath(importer));
-        const child = upsertNodeIndex(stats.importGraph.nodes, truncatePath(result.id));
+        const parent = upsertNodeIndex(stats.moduleFileNames, truncatePath(importer));
+        const child = upsertNodeIndex(stats.moduleFileNames, truncatePath(result.id));
         edges.add(`${parent},${child}`);
       },
     },
@@ -77,7 +77,7 @@ export function statsPlugin() {
           for (const [moduleName, mod] of Object.entries(chunk.modules)) {
             const fileName = truncatePath(moduleName);
             currentChunk.modules.push({
-              fileName,
+              fileNameIndex: upsertNodeIndex(stats.moduleFileNames, fileName),
               renderedLength: mod.renderedLength,
               virtual: moduleName.startsWith('\u0000') ? true : undefined,
             });
