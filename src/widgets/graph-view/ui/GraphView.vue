@@ -51,6 +51,8 @@ import {
   formatModuleSize,
   getModuleDependencyName,
   getModuleSize,
+  removeEmptyLeafs,
+  removeNodes,
 } from '@/entities/bundle-stats';
 import { useChart } from '@/shared/lib';
 
@@ -61,6 +63,19 @@ const options = defineModel<GraphOptions>('options', { required: true });
 
 const main = useTemplateRef('main');
 const chart = useChart(main);
+
+watch(chart, (newChart) => {
+  if (!newChart) {
+    return;
+  }
+  newChart.on('contextmenu', (event) => {
+    event.event!.event.preventDefault();
+    options.value = {
+      ...options.value,
+      hiddenModules: [...options.value.hiddenModules, (event.data as { id: number }).id],
+    };
+  });
+});
 
 watch(options, (options) => {
   if (!chart.value) {
@@ -88,44 +103,17 @@ watch([chart, () => props.stats, () => options.value.compact], ([newChart, newSt
 
   let { edges } = newStats.importGraph;
   let nodes = newStats.moduleFileNames;
+
   if (compact) {
-    let removedNodes = 0;
-    do {
-      const emptyNodes: number[] = [];
-      for (let i = 0; i < nodes.length; i += 1) {
-        const children = [];
-        for (let j = 0; j < edges.length; j += 1) {
-          if (edges[j][0] === i) {
-            children.push(edges[j][1]);
-          }
-        }
+    const result = removeEmptyLeafs(nodes, edges, newStats);
+    edges = result.edges;
+    nodes = result.nodes;
+  }
 
-        if (children.length === 0 && !getModuleSize(nodes[i], newStats)) {
-          emptyNodes.push(i);
-        }
-      }
-      removedNodes = emptyNodes.length;
-
-      let newNodes = [...nodes];
-      let newEdges = edges.map(([source, target]) => [source, target] as [number, number]);
-
-      for (const k of [...emptyNodes].sort((a, b) => b - a)) {
-        newEdges = newEdges.filter(([source, target]) => source !== k && target !== k);
-        newNodes = newNodes.filter((_node, index) => index !== k);
-
-        newEdges.forEach((edge) => {
-          if (edge[0] > k) {
-            edge[0] -= 1;
-          }
-          if (edge[1] > k) {
-            edge[1] -= 1;
-          }
-        });
-      }
-
-      edges = newEdges;
-      nodes = newNodes;
-    } while (removedNodes);
+  if (options.value.hiddenModules.length) {
+    const result = removeNodes(nodes, edges, options.value.hiddenModules);
+    edges = result.edges;
+    nodes = result.nodes;
   }
 
   const set = new Set<string>();

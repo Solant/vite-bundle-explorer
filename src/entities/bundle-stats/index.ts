@@ -1,3 +1,5 @@
+export { removeEmptyLeafs, removeNodes } from './model/graph.ts';
+
 export interface Module {
   fileNameIndex: number;
   renderedLength: number;
