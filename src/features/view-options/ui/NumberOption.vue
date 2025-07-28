@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useEventListener } from '@vueuse/core';
 
-import Option from '@/features/view-options/ui/Option.vue';
+import OptionItem from './OptionItem.vue';
 
 const model = defineModel<number>({ required: true });
 
@@ -27,7 +27,7 @@ useEventListener(
 </script>
 
 <template>
-  <Option :title>
+  <OptionItem :title>
     <input
       type="number"
       :value="model.toFixed(props.fixed ?? 0)"
@@ -38,5 +38,5 @@ useEventListener(
       @mouseenter="scrollEnabled = true"
       @mouseleave="scrollEnabled = false"
     />
-  </Option>
+  </OptionItem>
 </template>
