@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
+import { type BuildStats, type Chunk, formatSize } from '@/entities/bundle-stats';
+import { BaseButton } from '@/shared/ui';
+
 import type { BaseOptions } from '../model/TreeMap.ts';
-import type { BuildStats, Chunk } from '@/entities/bundle-stats';
-import { BaseAccordion, BaseButton } from '@/shared/ui';
 
 const props = defineProps<{ stats: BuildStats }>();
 
@@ -41,10 +42,6 @@ function getChunkLength(chunk: Chunk) {
   return chunk.modules.reduce((acc, cur) => acc + cur.renderedLength, 0);
 }
 
-function size(bytes: number) {
-  return `${(bytes / 1024).toFixed(2)} KB`;
-}
-
 const sortOrder = ref<'' | 'size-asc' | 'name-asc' | 'size-desc' | 'name-desc'>('');
 const sortedChunks = computed<Chunk[]>(() => {
   if (sortOrder.value === 'size-asc') {
@@ -79,7 +76,13 @@ const sortedChunks = computed<Chunk[]>(() => {
     </div>
 
     <div class="max-h-400px overflow-auto">
-      <div v-for="chunk in sortedChunks" class="flex gap-1">
+      <div
+        v-for="chunk in sortedChunks"
+        class="flex gap-1 cursor-pointer hover:bg-gray-300"
+        @click="toggle(chunk, options.hiddenChunks.includes(chunk.fileName))"
+        :key="chunk.fileName"
+        :title="chunk.fileName"
+      >
         <input
           type="checkbox"
           :checked="!options.hiddenChunks.includes(chunk.fileName)"
@@ -88,7 +91,7 @@ const sortedChunks = computed<Chunk[]>(() => {
         <div class="flex-grow-1 flex-shrink-1 min-w-0 truncate">
           {{ chunk.fileName }}
         </div>
-        <div class="ml-auto whitespace-nowrap">{{ size(getChunkLength(chunk)) }}</div>
+        <div class="ml-auto whitespace-nowrap">{{ formatSize(getChunkLength(chunk)) }}</div>
       </div>
     </div>
   </div>
