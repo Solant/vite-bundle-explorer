@@ -6,6 +6,7 @@ import type { BuildStats } from '@/entities/bundle-stats';
 
 import type { TreeMapOptions } from '../model/TreeMap.ts';
 import ChunkFilter from './ChunkFilter.vue';
+import { OptionGroup, OptionItem } from '@/features/view-options';
 
 const model = defineModel<TreeMapOptions>({ required: true });
 
@@ -19,11 +20,13 @@ const compact = computed({
 
 <template>
   <div>
-    <div class="c-slate-800 flex justify-between my-2">
-      Compact
-
+    <OptionItem title="Compact">
       <BaseSwitch v-model="compact" />
-    </div>
-    <ChunkFilter v-model:options="model" :stats />
+    </OptionItem>
+    <OptionGroup
+      :title="`Visible chunks (${stats.chunks.length - model.hiddenChunks.length}/${stats.chunks.length})`"
+    >
+      <ChunkFilter v-model:options="model" :stats />
+    </OptionGroup>
   </div>
 </template>

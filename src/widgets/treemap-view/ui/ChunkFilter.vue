@@ -63,39 +63,33 @@ const sortedChunks = computed<Chunk[]>(() => {
 
 <template>
   <div>
-    <BaseAccordion>
-      <template #header>
-        Chunks ({{ stats.chunks.length - options.hiddenChunks.length }} / {{ stats.chunks.length }})
-      </template>
+    <div class="flex justify-between">
+      <BaseButton @click="toggleAll">Toggle all</BaseButton>
 
-      <div class="flex justify-between">
-        <BaseButton @click="toggleAll">Toggle all</BaseButton>
+      <label>
+        Sort by
+        <select v-model="sortOrder">
+          <option value="">-</option>
+          <option value="name-asc">Name asc</option>
+          <option value="name-desc">Name desc</option>
+          <option value="size-asc">Size asc</option>
+          <option value="size-desc">Size desc</option>
+        </select>
+      </label>
+    </div>
 
-        <label>
-          Sort by
-          <select v-model="sortOrder">
-            <option value="">-</option>
-            <option value="name-asc">Name asc</option>
-            <option value="name-desc">Name desc</option>
-            <option value="size-asc">Size asc</option>
-            <option value="size-desc">Size desc</option>
-          </select>
-        </label>
-      </div>
-
-      <div class="max-h-400px overflow-auto">
-        <div v-for="chunk in sortedChunks" class="flex gap-1">
-          <input
-            type="checkbox"
-            :checked="!options.hiddenChunks.includes(chunk.fileName)"
-            @change="toggle(chunk, ($event.target as HTMLInputElement).checked)"
-          />
-          <div class="flex-grow-1 flex-shrink-1 min-w-0 truncate">
-            {{ chunk.fileName }}
-          </div>
-          <div class="ml-auto whitespace-nowrap">{{ size(getChunkLength(chunk)) }}</div>
+    <div class="max-h-400px overflow-auto">
+      <div v-for="chunk in sortedChunks" class="flex gap-1">
+        <input
+          type="checkbox"
+          :checked="!options.hiddenChunks.includes(chunk.fileName)"
+          @change="toggle(chunk, ($event.target as HTMLInputElement).checked)"
+        />
+        <div class="flex-grow-1 flex-shrink-1 min-w-0 truncate">
+          {{ chunk.fileName }}
         </div>
+        <div class="ml-auto whitespace-nowrap">{{ size(getChunkLength(chunk)) }}</div>
       </div>
-    </BaseAccordion>
+    </div>
   </div>
 </template>
