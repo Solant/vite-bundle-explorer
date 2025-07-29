@@ -11,6 +11,7 @@ import {
 } from 'reka-ui';
 import { getBundleOverview } from '@/features/overview/model/overview.ts';
 import type { BuildStats } from '@/entities/bundle-stats';
+import { BaseButton } from '@/shared/ui';
 
 const props = defineProps<{ stats: BuildStats }>();
 
@@ -20,6 +21,11 @@ const overview = getBundleOverview(props.stats);
 <template>
   <DialogRoot>
     <DialogTrigger as-child>
+      <BaseButton :class="$attrs.class">
+        <span v-if="overview.hasWarnings" class="i-mdi:warning-outline" />
+        <span v-else class="i-mdi:info" />
+        Overview
+      </BaseButton>
       <slot />
     </DialogTrigger>
     <DialogPortal>

@@ -1,6 +1,7 @@
 import { type BuildStats, getModuleDependencyName } from '@/entities/bundle-stats';
 
 interface BundleOverview {
+  hasWarnings: boolean;
   numberOfModules: number;
   numberOfVirtualModules: number;
   numberOfChunks: number;
@@ -53,5 +54,6 @@ export function getBundleOverview(stats: BuildStats): BundleOverview {
     numberOfChunks,
     numberOfDependencies: dependencies.size,
     duplicatedDependencies,
+    hasWarnings: duplicatedDependencies.length > 0,
   };
 }

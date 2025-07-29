@@ -6,7 +6,6 @@ import ViewToggle from './ViewToggle.vue';
 
 import { TreemapView } from './widgets/treemap-view';
 import { GraphView } from './widgets/graph-view';
-import { BaseButton } from '@/shared/ui';
 import { OverviewModal } from '@/features/overview';
 
 const stats = shallowRef<BuildStats>();
@@ -35,17 +34,12 @@ watch(currentView, (newView) => {
 
 <template>
   <div class="w-screen h-screen flex bg-gray-200">
-    <div class="w-1/3 max-w-[350px] bg-white rounded-lg m-5 p-2">
+    <div class="w-1/3 max-w-[350px] bg-white rounded-lg m-5 p-2 flex flex-col">
       <ViewToggle v-model="currentViewKey" />
 
       <currentView.OptionsComponent v-if="stats" v-model="currentViewOptions" :stats />
 
-      <OverviewModal v-if="stats" :stats="stats">
-        <BaseButton class="w-full">
-          <span class="i-mdi:info" />
-          Overview
-        </BaseButton>
-      </OverviewModal>
+      <OverviewModal v-if="stats" :stats="stats" class="mt-auto" />
     </div>
 
     <currentView.ViewComponent
