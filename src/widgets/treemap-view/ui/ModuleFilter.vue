@@ -1,0 +1,126 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+
+import {
+  type BuildStats,
+  formatModuleSize,
+  getModuleSize,
+  type Module,
+} from '@/entities/bundle-stats';
+import { BaseButton } from '@/shared/ui';
+
+import type { BaseOptions } from '../model/TreeMap.ts';
+
+const props = defineProps<{ stats: BuildStats }>();
+
+const options = defineModel<BaseOptions>('options', { required: true });
+
+function toggle(module: ModuleWithFileName, value: boolean) {
+  if (!value) {
+    options.value = {
+      ...options.value,
+      hiddenModules: [...options.value.hiddenModules, module.fileNameIndex],
+    };
+  } else {
+    options.value = {
+      ...options.value,
+      hiddenModules: options.value.hiddenModules.filter((m) => m !== module.fileNameIndex),
+    };
+  }
+}
+
+function toggleAll() {
+  if (options.value.hiddenModules.length === 0) {
+    options.value = {
+      ...options.value,
+      hiddenModules: modules.value.map((m) => m.fileNameIndex),
+    };
+  } else {
+    options.value = {
+      ...options.value,
+      hiddenModules: [],
+    };
+  }
+}
+
+interface ModuleWithFileName extends Module {
+  fileName: string;
+}
+
+const modules = computed(() => {
+  const modules: ModuleWithFileName[] = [];
+  for (const chunk of props.stats.chunks) {
+    for (const module of chunk.modules) {
+      modules.push({
+        ...module,
+        fileName: props.stats.moduleFileNames[module.fileNameIndex],
+      });
+    }
+  }
+  return modules;
+});
+
+const sortOrder = ref<'' | 'size-asc' | 'name-asc' | 'size-desc' | 'name-desc'>('');
+const sortedModules = computed(() => {
+  if (sortOrder.value === 'size-asc') {
+    return modules.value.sort(
+      (a, b) =>
+        (getModuleSize(a.fileName, props.stats) ?? 0) -
+        (getModuleSize(b.fileName, props.stats) ?? 0),
+    );
+  } else if (sortOrder.value === 'size-desc') {
+    return modules.value.sort(
+      (a, b) =>
+        (getModuleSize(b.fileName, props.stats) ?? 0) -
+        (getModuleSize(a.fileName, props.stats) ?? 0),
+    );
+  } else if (sortOrder.value === 'name-asc') {
+    return modules.value.sort((a, b) => a.fileName.localeCompare(b.fileName));
+  } else if (sortOrder.value === 'name-desc') {
+    return modules.value.sort((a, b) => b.fileName.localeCompare(a.fileName));
+  }
+
+  return modules.value;
+});
+</script>
+
+<template>
+  <div>
+    <div class="flex justify-between">
+      <BaseButton @click="toggleAll">Toggle all</BaseButton>
+
+      <label>
+        Sort by
+        <select v-model="sortOrder">
+          <option value="">-</option>
+          <option value="name-asc">Name asc</option>
+          <option value="name-desc">Name desc</option>
+          <option value="size-asc">Size asc</option>
+          <option value="size-desc">Size desc</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="max-h-400px overflow-auto">
+      <div
+        v-for="module in sortedModules"
+        class="flex gap-1 cursor-pointer hover:bg-gray-300"
+        @click="toggle(module, options.hiddenModules.includes(module.fileNameIndex))"
+        :title="module.fileName"
+        :key="module.fileNameIndex"
+      >
+        <input
+          type="checkbox"
+          :checked="!options.hiddenModules.includes(module.fileNameIndex)"
+          @change="toggle(module, ($event.target as HTMLInputElement).checked)"
+        />
+        <div class="flex-grow-1 flex-shrink-1 min-w-0 truncate">
+          {{ module.fileName }}
+        </div>
+        <div class="ml-auto whitespace-nowrap">
+          {{ formatModuleSize(module.fileNameIndex, props.stats) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

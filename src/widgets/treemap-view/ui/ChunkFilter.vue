@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
+import { type BuildStats, type Chunk, formatSize } from '@/entities/bundle-stats';
+import { BaseButton } from '@/shared/ui';
+
 import type { BaseOptions } from '../model/TreeMap.ts';
-import type { BuildStats, Chunk } from '@/entities/bundle-stats';
-import { BaseAccordion, BaseButton } from '@/shared/ui';
 
 const props = defineProps<{ stats: BuildStats }>();
 
@@ -41,10 +42,6 @@ function getChunkLength(chunk: Chunk) {
   return chunk.modules.reduce((acc, cur) => acc + cur.renderedLength, 0);
 }
 
-function size(bytes: number) {
-  return `${(bytes / 1024).toFixed(2)} KB`;
-}
-
 const sortOrder = ref<'' | 'size-asc' | 'name-asc' | 'size-desc' | 'name-desc'>('');
 const sortedChunks = computed<Chunk[]>(() => {
   if (sortOrder.value === 'size-asc') {
@@ -63,39 +60,39 @@ const sortedChunks = computed<Chunk[]>(() => {
 
 <template>
   <div>
-    <BaseAccordion>
-      <template #header>
-        Chunks ({{ stats.chunks.length - options.hiddenChunks.length }} / {{ stats.chunks.length }})
-      </template>
+    <div class="flex justify-between">
+      <BaseButton @click="toggleAll">Toggle all</BaseButton>
 
-      <div class="flex justify-between">
-        <BaseButton @click="toggleAll">Toggle all</BaseButton>
+      <label>
+        Sort by
+        <select v-model="sortOrder">
+          <option value="">-</option>
+          <option value="name-asc">Name asc</option>
+          <option value="name-desc">Name desc</option>
+          <option value="size-asc">Size asc</option>
+          <option value="size-desc">Size desc</option>
+        </select>
+      </label>
+    </div>
 
-        <label>
-          Sort by
-          <select v-model="sortOrder">
-            <option value="">-</option>
-            <option value="name-asc">Name asc</option>
-            <option value="name-desc">Name desc</option>
-            <option value="size-asc">Size asc</option>
-            <option value="size-desc">Size desc</option>
-          </select>
-        </label>
-      </div>
-
-      <div class="max-h-400px overflow-auto">
-        <div v-for="chunk in sortedChunks" class="flex gap-1">
-          <input
-            type="checkbox"
-            :checked="!options.hiddenChunks.includes(chunk.fileName)"
-            @change="toggle(chunk, ($event.target as HTMLInputElement).checked)"
-          />
-          <div class="flex-grow-1 flex-shrink-1 min-w-0 truncate">
-            {{ chunk.fileName }}
-          </div>
-          <div class="ml-auto whitespace-nowrap">{{ size(getChunkLength(chunk)) }}</div>
+    <div class="max-h-400px overflow-auto">
+      <div
+        v-for="chunk in sortedChunks"
+        class="flex gap-1 cursor-pointer hover:bg-gray-300"
+        @click="toggle(chunk, options.hiddenChunks.includes(chunk.fileName))"
+        :key="chunk.fileName"
+        :title="chunk.fileName"
+      >
+        <input
+          type="checkbox"
+          :checked="!options.hiddenChunks.includes(chunk.fileName)"
+          @change="toggle(chunk, ($event.target as HTMLInputElement).checked)"
+        />
+        <div class="flex-grow-1 flex-shrink-1 min-w-0 truncate">
+          {{ chunk.fileName }}
         </div>
+        <div class="ml-auto whitespace-nowrap">{{ formatSize(getChunkLength(chunk)) }}</div>
       </div>
-    </BaseAccordion>
+    </div>
   </div>
 </template>

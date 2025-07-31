@@ -40,12 +40,7 @@ export function getModuleSize(
   }
 }
 
-export function formatModuleSize(chunkFileName: string, stats: BuildStats) {
-  const size = getModuleSize(chunkFileName, stats);
-  if (!size) {
-    return '0 B';
-  }
-
+export function formatSize(size: number) {
   if (size < 1024) {
     return `${size} B`;
   } else if (size < 1024 * 1024) {
@@ -53,6 +48,12 @@ export function formatModuleSize(chunkFileName: string, stats: BuildStats) {
   } else {
     return `${(size / 1024 / 1024).toFixed(2)} MB`;
   }
+}
+
+export function formatModuleSize(chunkFileName: string | number, stats: BuildStats) {
+  const size = getModuleSize(chunkFileName, stats);
+
+  return formatSize(size ?? 0);
 }
 
 export function isDependency(moduleFileName: string): boolean {

@@ -6,24 +6,42 @@ import type { BuildStats } from '@/entities/bundle-stats';
 
 import type { TreeMapOptions } from '../model/TreeMap.ts';
 import ChunkFilter from './ChunkFilter.vue';
+import { OptionGroup, OptionItem } from '@/features/view-options';
+import ModuleFilter from '@/widgets/treemap-view/ui/ModuleFilter.vue';
 
 const model = defineModel<TreeMapOptions>({ required: true });
 
-defineProps<{ stats: BuildStats }>();
+const props = defineProps<{ stats: BuildStats }>();
 
 const compact = computed({
   get: () => model.value.compact,
   set: (value) => (model.value = { ...model.value, compact: value }),
 });
+
+const numberOfModules = computed(() => {
+  let total = 0;
+  for (const chunk of props.stats.chunks) {
+    total += chunk.modules.length;
+  }
+
+  return total;
+});
 </script>
 
 <template>
   <div>
-    <div class="c-slate-800 flex justify-between my-2">
-      Compact
-
+    <OptionItem title="Compact">
       <BaseSwitch v-model="compact" />
-    </div>
-    <ChunkFilter v-model:options="model" :stats />
+    </OptionItem>
+    <OptionGroup
+      :title="`Visible chunks (${stats.chunks.length - model.hiddenChunks.length}/${stats.chunks.length})`"
+    >
+      <ChunkFilter v-model:options="model" :stats />
+    </OptionGroup>
+    <OptionGroup
+      :title="`Visible modules (${numberOfModules - model.hiddenModules.length}/${numberOfModules})`"
+    >
+      <ModuleFilter v-model:options="model" :stats />
+    </OptionGroup>
   </div>
 </template>

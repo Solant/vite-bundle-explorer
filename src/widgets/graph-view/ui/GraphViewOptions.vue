@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useModelProxy } from '@/shared/lib';
-import { NumberOption } from '@/features/view-options';
+import { NumberOption, OptionGroup, OptionItem } from '@/features/view-options';
 
 import type { GraphOptions } from '../model/graph.ts';
 import { BaseSwitch } from '@/shared/ui';
@@ -16,14 +16,15 @@ const compact = useModelProxy(model, 'compact');
 
 <template>
   <div>
-    <div class="c-slate-800 flex justify-between my-2">
-      Compact
+    <OptionItem title="Compact">
       <BaseSwitch v-model="compact" />
-    </div>
+    </OptionItem>
 
-    <NumberOption title="Repulsion" v-model="forceRepulsion" />
-    <NumberOption title="Edge length" v-model="forceEdgeLength" />
-    <NumberOption title="Friction" v-model="forceFriction" :step="0.01" :fixed="2" />
-    <NumberOption title="Gravity" v-model="forceGravity" :step="0.01" :fixed="2" />
+    <OptionGroup title="Force layout">
+      <NumberOption title="Repulsion" v-model="forceRepulsion" />
+      <NumberOption title="Edge length" v-model="forceEdgeLength" />
+      <NumberOption title="Friction" v-model="forceFriction" :step="0.01" :fixed="2" />
+      <NumberOption title="Gravity" v-model="forceGravity" :step="0.01" :fixed="2" />
+    </OptionGroup>
   </div>
 </template>
