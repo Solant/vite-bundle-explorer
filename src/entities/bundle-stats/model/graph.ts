@@ -1,9 +1,10 @@
-import { type BuildStats, getModuleSize } from '@/entities/bundle-stats';
+import { type BuildStats, getModuleSize, type Metric } from '@/entities/bundle-stats';
 
 export function removeEmptyLeafs(
   nodes: string[],
   edges: [start: number, end: number][],
   stats: BuildStats,
+  metric: Metric,
 ) {
   let removedNodes = 0;
   do {
@@ -17,7 +18,7 @@ export function removeEmptyLeafs(
         }
       }
 
-      if (children.length === 0 && !getModuleSize(nodes[i], stats)) {
+      if (children.length === 0 && !getModuleSize(nodes[i], stats, metric)) {
         emptyNodes.push(i);
       }
     }

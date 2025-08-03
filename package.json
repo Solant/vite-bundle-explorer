@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build && pnpm build:plugin",
+    "build": "vue-tsc -b && pnpm build:plugin && vite build",
     "build:plugin": "tsc --module Node16 --moduleResolution node16 plugin/stats-plugin.ts",
     "format": "prettier src plugin bin vite.config.ts --write",
     "release": "pnpm build && pnpm changelogen --release --push && pnpm publish"

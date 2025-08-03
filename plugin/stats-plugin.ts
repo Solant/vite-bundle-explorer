@@ -1,9 +1,13 @@
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { gzip } from 'node:zlib';
+import { promisify } from 'node:util';
 
 import { type Plugin } from 'vite';
 
-import type { BuildStats, Chunk } from '../src/entities/bundle-stats/index.js';
+import type { BuildStats, Chunk } from '../src/entities/bundle-stats/model/stats.ts';
+
+const compress = promisify(gzip);
 
 function upsertNodeIndex(nodes: string[], item: string): number {
   const index = nodes.indexOf(item);
@@ -71,7 +75,13 @@ export function statsPlugin() {
             continue;
           }
 
-          const currentChunk: Chunk = { fileName: chunk.fileName, modules: [] };
+          console.log(`Processing chunk "${chunk.fileName}"`);
+          const currentChunk: Chunk = {
+            fileName: chunk.fileName,
+            modules: [],
+            minifiedLength: -1,
+            compressedLength: -1,
+          };
           stats.chunks.push(currentChunk);
 
           for (const [moduleName, mod] of Object.entries(chunk.modules)) {
@@ -88,14 +98,29 @@ export function statsPlugin() {
           const pair = edge.split(',');
           return [Number.parseInt(pair[0], 10), Number.parseInt(pair[1], 10)];
         });
-        await writeFile(join(outDir, 'stats.json'), JSON.stringify(stats));
       },
     },
-    closeBundle(error) {
+    async writeBundle(_options, bundle) {
+      for (const [_name, chunk] of Object.entries(bundle)) {
+        if (chunk.type !== 'chunk') {
+          continue;
+        }
+
+        const c = stats.chunks.find((c) => c.fileName === chunk.fileName);
+        if (!c) {
+          continue;
+        }
+
+        c.minifiedLength = chunk.code.length;
+        c.compressedLength = (await compress(chunk.code)).length;
+      }
+    },
+    async closeBundle(error) {
       if (!enabled || error) {
         return;
       }
 
+      await writeFile(join(outDir, 'stats.json'), JSON.stringify(stats));
       console.log(`Bundle stats written to ${join(outDir, 'stats.json')}`);
       console.log(`Run "npx vite-bundle-explorer ${join(outDir, 'stats.json')}" to view the stats`);
     },
