@@ -4,7 +4,7 @@ import type { BuildStats, Chunk, Module } from './model/stats.ts';
 
 export type { BuildStats, Chunk, Module };
 
-import { Metric, getMetricLabel } from '@/entities/bundle-stats/model/metric.ts';
+import { Metric, getMetricLabel } from '@/entities/bundle-stats/model/metric';
 
 export { Metric, getMetricLabel };
 
@@ -78,7 +78,7 @@ export function getAvailableMetrics(stats: BuildStats): Metric[] {
 
 export function formatSize(size: number) {
   if (size < 1024) {
-    return `${size} B`;
+    return `${Math.ceil(size)} B`;
   } else if (size < 1024 * 1024) {
     return `${(size / 1024).toFixed(2)} KB`;
   } else {

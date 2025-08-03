@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { useModelProxy } from '@/shared/lib';
-import { NumberOption, OptionGroup, OptionItem } from '@/features/view-options';
+import { BaseSwitch, NumberOption, OptionGroup, OptionItem } from '@/shared/ui';
+import { MetricOption } from '@/features/options/metric';
+import type { BuildStats } from '@/entities/bundle-stats';
 
 import type { GraphOptions } from '../model/graph.ts';
-import { BaseSwitch } from '@/shared/ui';
+
+defineProps<{ stats: BuildStats }>();
 
 const model = defineModel<GraphOptions>({ required: true });
 
@@ -12,10 +15,12 @@ const forceEdgeLength = useModelProxy(model, 'forceEdgeLength');
 const forceFriction = useModelProxy(model, 'forceFriction');
 const forceGravity = useModelProxy(model, 'forceGravity');
 const compact = useModelProxy(model, 'compact');
+const metric = useModelProxy(model, 'metric');
 </script>
 
 <template>
   <div>
+    <MetricOption :stats v-model="metric" />
     <OptionItem title="Compact">
       <BaseSwitch v-model="compact" />
     </OptionItem>
