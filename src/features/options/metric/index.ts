@@ -1,1 +1,1 @@
-export { default as MetricOption } from './ui/MetricOption.vue'
+export { default as MetricOption } from './ui/MetricOption.vue';
