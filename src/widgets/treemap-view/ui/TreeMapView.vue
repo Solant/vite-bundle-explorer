@@ -46,7 +46,7 @@ interface TreeMapChartData {
 <script setup lang="ts">
 import { computed, useTemplateRef, watch } from 'vue';
 
-import { type BuildStats } from '@/entities/bundle-stats';
+import { type BuildStats, getMetricLabel, getModuleSize } from '@/entities/bundle-stats';
 import type { TreeMapOptions } from '../model/TreeMap.ts';
 import { useChart } from '@/shared/lib';
 
@@ -122,7 +122,7 @@ const data = computed(() => {
           const newNode: TreeMapChartData = {
             name: path[index],
             path: path[index],
-            value: module.renderedLength,
+            value: getModuleSize(module.fileNameIndex, props.stats, options.value.metric) ?? 0,
             children: [],
             moduleIndex,
           };
@@ -187,7 +187,9 @@ watch([chart, () => props.stats, data], ([newChart, newStats]) => {
               treePath.length === 1 ? treePath : treePath.slice(1).join('/'),
             ) +
             '</div>',
-          'Rendered Size: ' + echarts.format.addCommas((value / 1024).toFixed(2)) + ' KB',
+          `${getMetricLabel(options.value.metric)}: ` +
+            echarts.format.addCommas((value / 1024).toFixed(2)) +
+            ' KB',
         );
 
         const moduleName = treePath.slice(1).join('/');

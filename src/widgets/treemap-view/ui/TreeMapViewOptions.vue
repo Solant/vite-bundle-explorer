@@ -1,8 +1,14 @@
+<script lang="ts">
+import { Metric } from '@/entities/bundle-stats';
+
+const CUSTOM_SORT = [Metric.Rendered, Metric.Minified, Metric.Compressed];
+</script>
+
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 import { BaseSwitch } from '@/shared/ui';
-import { type BuildStats, Metric } from '@/entities/bundle-stats';
+import { type BuildStats, getAvailableMetrics } from '@/entities/bundle-stats';
 
 import type { TreeMapOptions } from '../model/TreeMap.ts';
 import ChunkFilter from './ChunkFilter.vue';
@@ -31,15 +37,15 @@ const metric = computed({
   get: () => model.value.metric,
   set: (value) => (model.value = { ...model.value, metric: value }),
 });
+
+const metrics = getAvailableMetrics(props.stats).sort(
+  (a, b) => CUSTOM_SORT.indexOf(a) - CUSTOM_SORT.indexOf(b),
+);
 </script>
 
 <template>
   <div>
-    <DropdownOption
-      title="Stats"
-      :options="[Metric.Rendered, Metric.Minified, Metric.Compressed]"
-      v-model="metric"
-    />
+    <DropdownOption title="Stats" :options="metrics" v-model="metric" />
     <OptionItem title="Compact">
       <BaseSwitch v-model="compact" />
     </OptionItem>

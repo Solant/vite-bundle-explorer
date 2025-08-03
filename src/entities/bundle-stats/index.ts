@@ -4,13 +4,9 @@ import type { BuildStats, Chunk, Module } from './model/stats.ts';
 
 export type { BuildStats, Chunk, Module };
 
-export const Metric = {
-  Rendered: 'rendered-size',
-  Minified: 'minified-size',
-  Compressed: 'compressed-size',
-};
+import { Metric, getMetricLabel } from '@/entities/bundle-stats/model/metric.ts';
 
-export type Metric = (typeof Metric)[keyof typeof Metric];
+export { Metric, getMetricLabel };
 
 export function getModuleSize(
   moduleFileName: string | number,
