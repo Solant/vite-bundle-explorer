@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-import { BaseSwitch } from '@/shared/ui';
-import type { BuildStats } from '@/entities/bundle-stats';
+import { BaseSwitch, OptionGroup, OptionItem } from '@/shared/ui';
+import { type BuildStats } from '@/entities/bundle-stats';
+import { MetricOption } from '@/features/options/metric';
+import ModuleFilter from '@/widgets/treemap-view/ui/ModuleFilter.vue';
+import { useModelProxy } from '@/shared/lib';
 
 import type { TreeMapOptions } from '../model/TreeMap.ts';
 import ChunkFilter from './ChunkFilter.vue';
-import { OptionGroup, OptionItem } from '@/features/view-options';
-import ModuleFilter from '@/widgets/treemap-view/ui/ModuleFilter.vue';
 
 const model = defineModel<TreeMapOptions>({ required: true });
 
@@ -26,10 +27,13 @@ const numberOfModules = computed(() => {
 
   return total;
 });
+
+const metric = useModelProxy(model, 'metric');
 </script>
 
 <template>
   <div>
+    <MetricOption :stats v-model="metric" />
     <OptionItem title="Compact">
       <BaseSwitch v-model="compact" />
     </OptionItem>

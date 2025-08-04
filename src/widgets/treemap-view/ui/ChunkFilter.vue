@@ -4,11 +4,11 @@ import { computed, ref } from 'vue';
 import { type BuildStats, type Chunk, formatSize } from '@/entities/bundle-stats';
 import { BaseButton } from '@/shared/ui';
 
-import type { BaseOptions } from '../model/TreeMap.ts';
+import type { TreeMapOptions } from '../model/TreeMap.ts';
 
 const props = defineProps<{ stats: BuildStats }>();
 
-const options = defineModel<BaseOptions>('options', { required: true });
+const options = defineModel<TreeMapOptions>('options', { required: true });
 
 function toggle(module: Chunk, value: boolean) {
   if (!value) {

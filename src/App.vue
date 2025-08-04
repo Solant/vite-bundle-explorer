@@ -16,7 +16,11 @@ fetch('stats.json')
   });
 
 const currentViewKey = ref<'treemap' | 'graph'>('treemap');
-const currentViewOptions = ref(TreemapView.optionsFactory());
+const currentViewOptions = ref();
+watch(stats, () => {
+  // @ts-expect-error
+  currentViewOptions.value = currentView.value.optionsFactory(stats.value);
+});
 const currentView = computed(() => {
   if (currentViewKey.value === 'treemap') {
     return TreemapView;
@@ -28,7 +32,7 @@ const currentView = computed(() => {
 });
 watch(currentView, (newView) => {
   // @ts-expect-error
-  currentViewOptions.value = newView.optionsFactory();
+  currentViewOptions.value = newView.optionsFactory(stats.value);
 });
 </script>
 
@@ -37,7 +41,11 @@ watch(currentView, (newView) => {
     <div class="w-1/3 max-w-[350px] bg-white rounded-lg m-5 p-2 flex flex-col">
       <ViewToggle v-model="currentViewKey" />
 
-      <currentView.OptionsComponent v-if="stats" v-model="currentViewOptions" :stats />
+      <currentView.OptionsComponent
+        v-if="stats && currentViewOptions"
+        v-model="currentViewOptions"
+        :stats
+      />
 
       <OverviewModal v-if="stats" :stats="stats" class="mt-auto" />
     </div>

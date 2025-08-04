@@ -44,11 +44,3 @@ npx vite-bundle-analyzer ./dist/stats.json
 ```
 
 This command will open a local server in your browser, providing a comprehensive visualization of your bundle.
-
-## Frequently Asked Questions
-
-### Q: Why do bundle and module sizes appear larger than their actual production values?
-
-A: The module sizes reported by the plugin represent their state _before_ minification and gzip compression.
-
----

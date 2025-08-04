@@ -1,27 +1,17 @@
 export { removeEmptyLeafs, removeNodes } from './model/graph.ts';
 
-export interface Module {
-  fileNameIndex: number;
-  renderedLength: number;
-  virtual?: true;
-}
+import type { BuildStats, Chunk, Module } from './model/stats.ts';
 
-export interface Chunk {
-  fileName: string;
-  modules: Module[];
-}
+export type { BuildStats, Chunk, Module };
 
-export interface BuildStats {
-  moduleFileNames: string[];
-  chunks: Chunk[];
-  importGraph: {
-    edges: Array<[source: number, target: number]>;
-  };
-}
+import { Metric, getMetricLabel } from '@/entities/bundle-stats/model/metric';
+
+export { Metric, getMetricLabel };
 
 export function getModuleSize(
   moduleFileName: string | number,
   stats: BuildStats,
+  metric: Metric,
 ): number | undefined {
   const index =
     typeof moduleFileName === 'string'
@@ -34,26 +24,66 @@ export function getModuleSize(
   for (const chunk of stats.chunks) {
     for (const mod of chunk.modules) {
       if (mod.fileNameIndex === index) {
-        return mod.renderedLength;
+        if (metric === Metric.Rendered) {
+          return mod.renderedLength;
+        }
+        const total = getChunkSize(chunk.fileName, stats, Metric.Rendered)!;
+        const ratio = mod.renderedLength / total;
+        if (metric === Metric.Minified) {
+          return chunk.minifiedLength * ratio;
+        }
+        if (metric === Metric.Compressed) {
+          return chunk.compressedLength * ratio;
+        }
       }
     }
   }
 }
 
+export function getChunkSize(
+  chunkFileName: string,
+  stats: BuildStats,
+  metric: Metric,
+): number | undefined {
+  const chunk = stats.chunks.find((c) => c.fileName === chunkFileName);
+  if (!chunk) {
+    return undefined;
+  }
+
+  switch (metric) {
+    case Metric.Rendered:
+      return chunk.modules.reduce((acc, cur) => acc + cur.renderedLength, 0);
+    case Metric.Minified:
+      return chunk.minifiedLength;
+    case Metric.Compressed:
+      return chunk.compressedLength;
+  }
+}
+
+export function getAvailableMetrics(stats: BuildStats): Metric[] {
+  const result: Metric[] = [];
+
+  if (stats.chunks.every((c) => c.minifiedLength !== -1)) {
+    result.push(Metric.Minified);
+  }
+
+  result.push(Metric.Rendered);
+
+  if (stats.chunks.every((c) => c.compressedLength !== -1)) {
+    result.push(Metric.Compressed);
+  }
+
+  return result;
+}
+
 export function formatSize(size: number) {
   if (size < 1024) {
-    return `${size} B`;
+    return `${Math.ceil(size)} B`;
   } else if (size < 1024 * 1024) {
     return `${(size / 1024).toFixed(2)} KB`;
   } else {
     return `${(size / 1024 / 1024).toFixed(2)} MB`;
   }
-}
-
-export function formatModuleSize(chunkFileName: string | number, stats: BuildStats) {
-  const size = getModuleSize(chunkFileName, stats);
-
-  return formatSize(size ?? 0);
 }
 
 export function isDependency(moduleFileName: string): boolean {

@@ -1,19 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
-import {
-  type BuildStats,
-  formatModuleSize,
-  getModuleSize,
-  type Module,
-} from '@/entities/bundle-stats';
+import { type BuildStats, formatSize, getModuleSize, type Module } from '@/entities/bundle-stats';
 import { BaseButton } from '@/shared/ui';
 
-import type { BaseOptions } from '../model/TreeMap.ts';
+import type { TreeMapOptions } from '../model/TreeMap.ts';
 
 const props = defineProps<{ stats: BuildStats }>();
 
-const options = defineModel<BaseOptions>('options', { required: true });
+const options = defineModel<TreeMapOptions>('options', { required: true });
 
 function toggle(module: ModuleWithFileName, value: boolean) {
   if (!value) {
@@ -65,14 +60,14 @@ const sortedModules = computed(() => {
   if (sortOrder.value === 'size-asc') {
     return modules.value.sort(
       (a, b) =>
-        (getModuleSize(a.fileName, props.stats) ?? 0) -
-        (getModuleSize(b.fileName, props.stats) ?? 0),
+        (getModuleSize(a.fileName, props.stats, options.value.metric) ?? 0) -
+        (getModuleSize(b.fileName, props.stats, options.value.metric) ?? 0),
     );
   } else if (sortOrder.value === 'size-desc') {
     return modules.value.sort(
       (a, b) =>
-        (getModuleSize(b.fileName, props.stats) ?? 0) -
-        (getModuleSize(a.fileName, props.stats) ?? 0),
+        (getModuleSize(b.fileName, props.stats, options.value.metric) ?? 0) -
+        (getModuleSize(a.fileName, props.stats, options.value.metric) ?? 0),
     );
   } else if (sortOrder.value === 'name-asc') {
     return modules.value.sort((a, b) => a.fileName.localeCompare(b.fileName));
@@ -118,7 +113,7 @@ const sortedModules = computed(() => {
           {{ module.fileName }}
         </div>
         <div class="ml-auto whitespace-nowrap">
-          {{ formatModuleSize(module.fileNameIndex, props.stats) }}
+          {{ formatSize(getModuleSize(module.fileNameIndex, props.stats, options.metric) ?? 0) }}
         </div>
       </div>
     </div>
