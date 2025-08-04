@@ -1,10 +1,5 @@
 <script lang="ts">
 import * as echarts from 'echarts/core';
-import { TitleComponent, TooltipComponent, LegendComponent } from 'echarts/components';
-import { GraphChart } from 'echarts/charts';
-import { CanvasRenderer } from 'echarts/renderers';
-
-echarts.use([TitleComponent, TooltipComponent, LegendComponent, GraphChart, CanvasRenderer]);
 
 function getLevelOption() {
   return [
@@ -49,48 +44,117 @@ import { computed, useTemplateRef, watch } from 'vue';
 import { type BuildStats, getMetricLabel, getModuleSize } from '@/entities/bundle-stats';
 import type { TreeMapOptions } from '../model/TreeMap.ts';
 import { useChart } from '@/shared/lib';
+import { LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
+import { GraphChart, TreemapChart } from 'echarts/charts';
+import { CanvasRenderer } from 'echarts/renderers';
 
 const props = defineProps<{ stats: BuildStats }>();
 const options = defineModel<TreeMapOptions>('options', { required: true });
 
 const main = useTemplateRef('main');
-const chart = useChart(main);
+const chart = useChart(
+  main,
+  [TitleComponent, TooltipComponent, LegendComponent, GraphChart, CanvasRenderer, TreemapChart],
+  (c) => {
+    c.on('contextmenu', (event) => {
+      event.event!.event.preventDefault();
+      const data = event.data as TreeMapChartData;
 
-watch(chart, (newChart) => {
-  if (!newChart) {
-    return;
-  }
-
-  newChart.on('contextmenu', (event) => {
-    event.event!.event.preventDefault();
-    const data = event.data as TreeMapChartData;
-
-    const hiddenModules = new Set<number>();
-    if (data.moduleIndex) {
-      hiddenModules.add(data.moduleIndex);
-    }
-
-    function traverse(node: TreeMapChartData) {
-      node.children.forEach((child) => traverse(child));
-      if (node.moduleIndex) {
-        hiddenModules.add(node.moduleIndex);
+      const hiddenModules = new Set<number>();
+      if (data.moduleIndex) {
+        hiddenModules.add(data.moduleIndex);
       }
-    }
 
-    traverse(data);
+      function traverse(node: TreeMapChartData) {
+        node.children.forEach((child) => traverse(child));
+        if (node.moduleIndex) {
+          hiddenModules.add(node.moduleIndex);
+        }
+      }
 
-    options.value = {
-      ...options.value,
-      hiddenModules: [...options.value.hiddenModules, ...Array.from(hiddenModules)],
-    };
-  });
-});
+      traverse(data);
+
+      options.value = {
+        ...options.value,
+        hiddenModules: [...options.value.hiddenModules, ...Array.from(hiddenModules)],
+      };
+    });
+
+    c.setOption({
+      tooltip: {
+        formatter(info: any) {
+          const value = info.value;
+          const treePathInfo = info.treePathInfo;
+          const treePath: string[] = [];
+          for (let i = 1; i < treePathInfo.length; i++) {
+            treePath.push(treePathInfo[i].name);
+          }
+
+          const result: string[] = [];
+          result.push(
+            '<div class="tooltip-title">' +
+              echarts.format.encodeHTML(
+                // @ts-expect-error
+                treePath.length === 1 ? treePath : treePath.slice(1).join('/'),
+              ) +
+              '</div>',
+            `${getMetricLabel(options.value.metric)}: ` +
+              echarts.format.addCommas((value / 1024).toFixed(2)) +
+              ' KB',
+          );
+
+          const moduleName = treePath.slice(1).join('/');
+          const currentModuleIndex = props.stats.moduleFileNames.findIndex(
+            (node) => node === moduleName,
+          );
+          const edges =
+            currentModuleIndex >= 0
+              ? props.stats.importGraph.edges.filter(
+                  ([_source, target]) => target === currentModuleIndex,
+                )
+              : [];
+          const parents = edges.map((edge) => props.stats.moduleFileNames[edge[0]]);
+          if (parents.length) {
+            result.push('<div class="mt-2">Imported by:</div>', '<ul>');
+
+            if (parents.length > 8) {
+              result.push(...parents.slice(0, 7).map((p) => `<li>${p}</li>`));
+              result.push(`and ${parents.length - 8} more`);
+            } else {
+              result.push(...parents.map((p) => `<li>${p}</li>`));
+            }
+
+            result.push('</ul>');
+          }
+
+          return result.join('');
+        },
+      },
+      series: [
+        {
+          name: 'Disk Usage',
+          type: 'treemap',
+          visibleMin: 300,
+          label: {
+            show: true,
+            formatter: '{b}',
+          },
+          upperLabel: {
+            show: true,
+            height: 30,
+          },
+          itemStyle: {
+            borderColor: '#fff',
+          },
+          levels: getLevelOption(),
+          data: data.value,
+        },
+      ],
+    });
+  },
+);
 
 const data = computed(() => {
-  if (!props.stats) {
-    return;
-  }
-
   const result: TreeMapChartData[] = [];
   for (const chunk of props.stats.chunks) {
     if (options.value.hiddenChunks.includes(chunk.fileName)) {
@@ -164,78 +228,10 @@ const data = computed(() => {
   return result;
 });
 
-watch([chart, () => props.stats, data], ([newChart, newStats]) => {
-  if (!newChart || !newStats) {
-    return;
-  }
-
-  newChart.setOption({
-    tooltip: {
-      formatter(info: any) {
-        const value = info.value;
-        const treePathInfo = info.treePathInfo;
-        const treePath: string[] = [];
-        for (let i = 1; i < treePathInfo.length; i++) {
-          treePath.push(treePathInfo[i].name);
-        }
-
-        const result: string[] = [];
-        result.push(
-          '<div class="tooltip-title">' +
-            echarts.format.encodeHTML(
-              // @ts-expect-error
-              treePath.length === 1 ? treePath : treePath.slice(1).join('/'),
-            ) +
-            '</div>',
-          `${getMetricLabel(options.value.metric)}: ` +
-            echarts.format.addCommas((value / 1024).toFixed(2)) +
-            ' KB',
-        );
-
-        const moduleName = treePath.slice(1).join('/');
-        const currentModuleIndex = props.stats.moduleFileNames.findIndex(
-          (node) => node === moduleName,
-        );
-        const edges =
-          currentModuleIndex >= 0
-            ? props.stats.importGraph.edges.filter(
-                ([_source, target]) => target === currentModuleIndex,
-              )
-            : [];
-        const parents = edges.map((edge) => props.stats.moduleFileNames[edge[0]]);
-        if (parents.length) {
-          result.push('<div class="mt-2">Imported by:</div>', '<ul>');
-
-          if (parents.length > 8) {
-            result.push(...parents.slice(0, 7).map((p) => `<li>${p}</li>`));
-            result.push(`and ${parents.length - 8} more`);
-          } else {
-            result.push(...parents.map((p) => `<li>${p}</li>`));
-          }
-
-          result.push('</ul>');
-        }
-
-        return result.join('');
-      },
-    },
+watch(data, () => {
+  chart.value?.setOption({
     series: [
       {
-        name: 'Disk Usage',
-        type: 'treemap',
-        visibleMin: 300,
-        label: {
-          show: true,
-          formatter: '{b}',
-        },
-        upperLabel: {
-          show: true,
-          height: 30,
-        },
-        itemStyle: {
-          borderColor: '#fff',
-        },
-        levels: getLevelOption(),
         data: data.value,
       },
     ],
