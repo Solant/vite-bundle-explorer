@@ -1,14 +1,12 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends Record<any, any>">
 import { computed, ref } from 'vue';
 
 import { type BuildStats, formatSize, getModuleSize, type Module } from '@/entities/bundle-stats';
-import { BaseButton } from '@/shared/ui';
-
-import type { TreeMapOptions } from '../model/TreeMap.ts';
+import { BaseButton, OptionGroup } from '@/shared/ui';
 
 const props = defineProps<{ stats: BuildStats }>();
 
-const options = defineModel<TreeMapOptions>('options', { required: true });
+const options = defineModel<T>('options', { required: true });
 
 function toggle(module: ModuleWithFileName, value: boolean) {
   if (!value) {
@@ -19,7 +17,7 @@ function toggle(module: ModuleWithFileName, value: boolean) {
   } else {
     options.value = {
       ...options.value,
-      hiddenModules: options.value.hiddenModules.filter((m) => m !== module.fileNameIndex),
+      hiddenModules: options.value.hiddenModules.filter((m: number) => m !== module.fileNameIndex),
     };
   }
 }
@@ -77,11 +75,22 @@ const sortedModules = computed(() => {
 
   return modules.value;
 });
+
+const numberOfModules = computed(() => {
+  let total = 0;
+  for (const chunk of props.stats.chunks) {
+    total += chunk.modules.length;
+  }
+
+  return total;
+});
 </script>
 
 <template>
-  <div>
-    <div class="flex justify-between">
+  <OptionGroup
+    :title="`Visible modules (${numberOfModules - options.hiddenModules.length}/${numberOfModules})`"
+  >
+    <div class="flex justify-between p-1">
       <BaseButton @click="toggleAll">Toggle all</BaseButton>
 
       <label>
@@ -96,7 +105,7 @@ const sortedModules = computed(() => {
       </label>
     </div>
 
-    <div class="max-h-400px overflow-auto">
+    <div class="max-h-400px overflow-auto p-1">
       <div
         v-for="module in sortedModules"
         class="flex gap-1 cursor-pointer hover:bg-gray-300"
@@ -117,5 +126,5 @@ const sortedModules = computed(() => {
         </div>
       </div>
     </div>
-  </div>
+  </OptionGroup>
 </template>

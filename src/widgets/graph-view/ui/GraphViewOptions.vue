@@ -3,6 +3,7 @@ import { useModelProxy } from '@/shared/lib';
 import { BaseSwitch, NumberOption, OptionGroup, OptionItem } from '@/shared/ui';
 import { MetricOption } from '@/features/options/metric';
 import type { BuildStats } from '@/entities/bundle-stats';
+import { ModuleFilterOption } from '@/features/options/module';
 
 import type { GraphOptions } from '../model/graph.ts';
 
@@ -24,6 +25,7 @@ const metric = useModelProxy(model, 'metric');
     <OptionItem title="Compact">
       <BaseSwitch v-model="compact" />
     </OptionItem>
+    <ModuleFilterOption v-model:options="model" :stats />
 
     <OptionGroup title="Force layout">
       <NumberOption title="Repulsion" v-model="forceRepulsion" />

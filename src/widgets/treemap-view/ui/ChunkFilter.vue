@@ -60,7 +60,7 @@ const sortedChunks = computed<Chunk[]>(() => {
 
 <template>
   <div>
-    <div class="flex justify-between">
+    <div class="flex justify-between p-1">
       <BaseButton @click="toggleAll">Toggle all</BaseButton>
 
       <label>
@@ -75,7 +75,7 @@ const sortedChunks = computed<Chunk[]>(() => {
       </label>
     </div>
 
-    <div class="max-h-400px overflow-auto">
+    <div class="max-h-400px overflow-auto p-1">
       <div
         v-for="chunk in sortedChunks"
         class="flex gap-1 cursor-pointer hover:bg-gray-300"

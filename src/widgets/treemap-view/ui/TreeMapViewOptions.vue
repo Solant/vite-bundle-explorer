@@ -4,7 +4,7 @@ import { computed } from 'vue';
 import { BaseSwitch, OptionGroup, OptionItem } from '@/shared/ui';
 import { type BuildStats } from '@/entities/bundle-stats';
 import { MetricOption } from '@/features/options/metric';
-import ModuleFilter from '@/widgets/treemap-view/ui/ModuleFilter.vue';
+import { ModuleFilterOption } from '@/features/options/module';
 import { useModelProxy } from '@/shared/lib';
 
 import type { TreeMapOptions } from '../model/TreeMap.ts';
@@ -12,20 +12,11 @@ import ChunkFilter from './ChunkFilter.vue';
 
 const model = defineModel<TreeMapOptions>({ required: true });
 
-const props = defineProps<{ stats: BuildStats }>();
+defineProps<{ stats: BuildStats }>();
 
 const compact = computed({
   get: () => model.value.compact,
   set: (value) => (model.value = { ...model.value, compact: value }),
-});
-
-const numberOfModules = computed(() => {
-  let total = 0;
-  for (const chunk of props.stats.chunks) {
-    total += chunk.modules.length;
-  }
-
-  return total;
 });
 
 const metric = useModelProxy(model, 'metric');
@@ -42,10 +33,6 @@ const metric = useModelProxy(model, 'metric');
     >
       <ChunkFilter v-model:options="model" :stats />
     </OptionGroup>
-    <OptionGroup
-      :title="`Visible modules (${numberOfModules - model.hiddenModules.length}/${numberOfModules})`"
-    >
-      <ModuleFilter v-model:options="model" :stats />
-    </OptionGroup>
+    <ModuleFilterOption v-model:options="model" :stats />
   </div>
 </template>
