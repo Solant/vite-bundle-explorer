@@ -13,7 +13,7 @@ import {
     <AccordionItem value="1">
       <AccordionHeader class="my-2">
         <AccordionTrigger
-          class="flex justify-between items-center w-full border-none py-2 bg-white c-slate-800 hover:bg-indigo-300 group"
+          class="flex justify-between items-center w-full border-none py-2 bg-white c-slate-800 hover:bg-blue-300 group"
         >
           <span>
             <slot name="header" />

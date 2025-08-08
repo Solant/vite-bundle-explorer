@@ -132,7 +132,7 @@ const chart = useChart(
       },
       series: [
         {
-          name: 'Disk Usage',
+          name: 'Chunks',
           type: 'treemap',
           visibleMin: 300,
           label: {

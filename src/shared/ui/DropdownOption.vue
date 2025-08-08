@@ -11,8 +11,11 @@ const model = defineModel<T>({ required: true });
 
 <template>
   <OptionItem :title>
-    <select v-model="model">
-      <option v-for="option in options" :key="option" :value="option">
+    <select
+      v-model="model"
+      class="bg-transparent border-px border-solid border-blue-400 rounded capitalize focus:outline-none"
+    >
+      <option v-for="option in options" :key="option" :value="option" class="capitalize">
         {{ option }}
       </option>
     </select>

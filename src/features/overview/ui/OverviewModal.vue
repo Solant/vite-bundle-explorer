@@ -24,7 +24,7 @@ const overview = getBundleOverview(props.stats);
       <BaseButton :class="$attrs.class">
         <span v-if="overview.hasWarnings" class="i-mdi:warning-outline" />
         <span v-else class="i-mdi:info" />
-        Overview
+        Report
       </BaseButton>
       <slot />
     </DialogTrigger>
@@ -33,7 +33,7 @@ const overview = getBundleOverview(props.stats);
       <DialogContent
         class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] bg-white rounded z-30"
       >
-        <DialogTitle class="py-2 px-4 flex justify-center"> Overview</DialogTitle>
+        <DialogTitle class="py-2 px-4 flex justify-center">Report</DialogTitle>
         <DialogDescription class="px-4 py-2">
           <div>Number of chunks: {{ overview.numberOfChunks }}</div>
           <div>
