@@ -3,34 +3,6 @@ function minMax(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
-const COLORS = [
-  '#059669',
-  '#2563EB',
-  '#CA8A04',
-  '#9333EA',
-  '#0D9488',
-  '#65A30D',
-  '#7C3AED',
-  '#EA580C',
-  '#0284C7',
-  '#16A34A',
-  '#4F46E5',
-  '#D97706',
-  '#047857',
-  '#1D4ED8',
-  '#A16207',
-  '#7E22CE',
-  '#0F766E',
-  '#4D7C0F',
-  '#6D28D9',
-  '#C2410C',
-  '#0369A1',
-  '#15803D',
-  '#4338CA',
-  '#B45309',
-  '#0E7490',
-];
-
 const EDGE_SYMBOL = [undefined, 'arrow'];
 
 const ROOT_COLOR = '#e7000b';
@@ -54,6 +26,7 @@ import { TitleComponent, TooltipComponent } from 'echarts/components';
 import { TreemapChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { ECBasicOption } from 'echarts/types/dist/shared';
+import { colors } from '@/shared/config';
 
 const props = defineProps<{ stats: BuildStats }>();
 const options = defineModel<GraphOptions>('options', { required: true });
@@ -72,7 +45,7 @@ const chart = useChart(
     });
 
     c.setOption({
-      color: COLORS,
+      color: colors,
       title: {
         text: 'Module Import Graph',
       },
@@ -193,10 +166,10 @@ const data = computed<ECBasicOption>((prev) => {
   return {
     legend: {
       data: [
-        { name: 'src', itemStyle: { color: COLORS[0] } },
+        { name: 'src', itemStyle: { color: colors[0] } },
         ...dependencies.map((dep, index) => ({
           name: dep,
-          itemStyle: { color: COLORS[index + 1] },
+          itemStyle: { color: colors[index + 1] },
         })),
       ],
       selected,
@@ -206,10 +179,10 @@ const data = computed<ECBasicOption>((prev) => {
     series: [
       {
         categories: [
-          { name: 'src', itemStyle: { color: COLORS[0] } },
+          { name: 'src', itemStyle: { color: colors[0] } },
           ...dependencies.map((dep, index) => ({
             name: dep,
-            itemStyle: { color: COLORS[index + 1] },
+            itemStyle: { color: colors[index + 1] },
           })),
         ],
         edges: edges.map((edge) => {
@@ -231,7 +204,7 @@ const data = computed<ECBasicOption>((prev) => {
             // max size should be limited so we don't accidentally create a black hole
             symbolSize: minMax(size / 1024, 12, 75),
             itemStyle: {
-              borderColor: size === 0 ? COLORS[categoryIndex % COLORS.length] : undefined,
+              borderColor: size === 0 ? colors[categoryIndex % colors.length] : undefined,
               color: isRoot ? ROOT_COLOR : size === 0 ? '#ffffff' : undefined,
             },
             emphasis: {

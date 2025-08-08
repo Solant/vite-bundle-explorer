@@ -47,6 +47,7 @@ import { useChart } from '@/shared/lib';
 import { LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
 import { GraphChart, TreemapChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
+import { colors } from '@/shared/config';
 
 const props = defineProps<{ stats: BuildStats }>();
 const options = defineModel<TreeMapOptions>('options', { required: true });
@@ -81,6 +82,7 @@ const chart = useChart(
     });
 
     c.setOption({
+      color: colors,
       tooltip: {
         formatter(info: any) {
           const value = info.value;
