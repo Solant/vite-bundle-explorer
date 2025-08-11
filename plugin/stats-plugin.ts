@@ -18,6 +18,7 @@ export function statsPlugin() {
   let root = '';
   let outDir = '';
   let enabled = true;
+  let reportCompressed = false;
 
   function truncatePath(filePath: string) {
     let index = 0;
@@ -41,6 +42,7 @@ export function statsPlugin() {
       root = config.root;
       outDir = `${root}/${config.build.outDir}`;
       enabled = config.env.PROD;
+      reportCompressed = config.build.reportCompressedSize;
     },
     resolveId: {
       order: 'pre',
@@ -112,7 +114,9 @@ export function statsPlugin() {
         }
 
         c.minifiedLength = chunk.code.length;
-        c.compressedLength = (await compress(chunk.code)).length;
+        if (reportCompressed) {
+          c.compressedLength = (await compress(chunk.code)).length;
+        }
       }
     },
     async closeBundle(error) {
