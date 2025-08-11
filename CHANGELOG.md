@@ -1,6 +1,57 @@
 # Changelog
 
 
+## v0.2.0
+
+[compare changes](https://github.com/Solant/vite-bundle-explorer/compare/v0.1.1...v0.2.0)
+
+### 🚀 Enhancements
+
+- Prevent chart rerender on changed options, allow dynamic option changing ([5ff0207](https://github.com/Solant/vite-bundle-explorer/commit/5ff0207))
+- Add custom color mapping for the graph view ([1661443](https://github.com/Solant/vite-bundle-explorer/commit/1661443))
+- Format module size, add styling for empty modules ([c9f451d](https://github.com/Solant/vite-bundle-explorer/commit/c9f451d))
+- Add edge arrows, add root module style ([bbe9e41](https://github.com/Solant/vite-bundle-explorer/commit/bbe9e41))
+- Add option to trim graph ([#1](https://github.com/Solant/vite-bundle-explorer/pull/1))
+- ⚠️  Add right-click actions ([fa4ccb4](https://github.com/Solant/vite-bundle-explorer/commit/fa4ccb4))
+- Add overview info dialog ([#3](https://github.com/Solant/vite-bundle-explorer/pull/3))
+- Design improvements ([#4](https://github.com/Solant/vite-bundle-explorer/pull/4))
+- ⚠️  Add metric selector ([#5](https://github.com/Solant/vite-bundle-explorer/pull/5))
+- Reuse module filter ([6a933a3](https://github.com/Solant/vite-bundle-explorer/commit/6a933a3))
+- Change accent color ([e54cf24](https://github.com/Solant/vite-bundle-explorer/commit/e54cf24))
+
+### 🔥 Performance
+
+- Optimize chart option updates ([84bf44e](https://github.com/Solant/vite-bundle-explorer/commit/84bf44e))
+
+### 🩹 Fixes
+
+- Improve dependency handling for pnpm projects ([735a52e](https://github.com/Solant/vite-bundle-explorer/commit/735a52e))
+- Remove duplicate edges ([7ff578d](https://github.com/Solant/vite-bundle-explorer/commit/7ff578d))
+- Unify dependency name resolution between npm and pnpm ([faa7939](https://github.com/Solant/vite-bundle-explorer/commit/faa7939))
+- Truncate an importer list in the tooltip for better readability ([61f571a](https://github.com/Solant/vite-bundle-explorer/commit/61f571a))
+
+### 💅 Refactors
+
+- Move stats functions from index.ts ([a672e17](https://github.com/Solant/vite-bundle-explorer/commit/a672e17))
+- Centralize color definitions in shared config ([a87af35](https://github.com/Solant/vite-bundle-explorer/commit/a87af35))
+
+### 📖 Documentation
+
+- Update readme, description and preview ([#6](https://github.com/Solant/vite-bundle-explorer/pull/6))
+
+### 🏡 Chore
+
+- Fix build and formatting ([718cdf0](https://github.com/Solant/vite-bundle-explorer/commit/718cdf0))
+
+#### ⚠️ Breaking Changes
+
+- ⚠️  Add right-click actions ([fa4ccb4](https://github.com/Solant/vite-bundle-explorer/commit/fa4ccb4))
+- ⚠️  Add metric selector ([#5](https://github.com/Solant/vite-bundle-explorer/pull/5))
+
+### ❤️ Contributors
+
+- Solant <runner62v6@gmail.com>
+
 ## v0.1.1
 
 
