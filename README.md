@@ -1,29 +1,32 @@
 # vite-bundle-explorer
 
-![preview](https://raw.githubusercontent.com/Solant/vite-bundle-explorer/refs/heads/main/example.gif)
+Bundle analyzer and visualizer tool for vite.
 
-A utility to help debug and optimize bundle sizes. It gathers Vite bundle statistics,
-including module sizes and import graphs, and visualizes them for an efficient debugging experience.
+Current features:
+- Chunk size treemap
+- Module import graph
+- Build stats report
+- Detect duplicated dependencies
 
-We're always open to suggestions for improving the visualization, so feel free to share your ideas via GitHub issues!
+![preview](https://raw.githubusercontent.com/Solant/vite-bundle-explorer/refs/heads/main/preview.gif)
 
 ## How it works
 
-`vite-bundle-explorer` comprises two main components:
+`vite-bundle-explorer` consists of two main parts:
 
-- Vite Plugin: Gathers detailed build statistics.
-- CLI Utility: Serves a user-friendly web interface for visualizing the data.
+- Vite Plugin: Gathers detailed build statistics in JSON format
+- CLI Utility: Serves a web interface for visualizing the data.
 
 ## Usage
 
-Install the package as a development dependency using your preferred package manager:
+Install the package as a development dependency
 
 ```shell
 npm install -D vite-bundle-explorer
 ```
 
 Next, add the `statsPlugin` to your vite config. This plugin will generate a `stats.json` file in your output directory
-after a successful build, containing all the necessary bundle statistics.
+on successful build, containing all bundle stats.
 
 ```javascript
 import { defineConfig } from 'vite';
@@ -42,5 +45,3 @@ Once your build is complete and `stats.json` is generated, you can launch the we
 ```shell
 npx vite-bundle-analyzer ./dist/stats.json
 ```
-
-This command will open a local server in your browser, providing a comprehensive visualization of your bundle.
