@@ -1,6 +1,23 @@
 # Changelog
 
 
+## v0.2.1
+
+[compare changes](https://github.com/Solant/vite-bundle-explorer/compare/v0.2.0...v0.2.1)
+
+### 🩹 Fixes
+
+- Add types for stats plugin ([225e3b6](https://github.com/Solant/vite-bundle-explorer/commit/225e3b6))
+- Remove warning icon if there are no duplicated dependencies ([7c21e94](https://github.com/Solant/vite-bundle-explorer/commit/7c21e94))
+
+### 📖 Documentation
+
+- Fix README.md instructions ([d9d1fc5](https://github.com/Solant/vite-bundle-explorer/commit/d9d1fc5))
+
+### ❤️ Contributors
+
+- Solant <runner62v6@gmail.com>
+
 ## v0.2.0
 
 [compare changes](https://github.com/Solant/vite-bundle-explorer/compare/v0.1.1...v0.2.0)
