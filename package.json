@@ -38,7 +38,10 @@
     "build"
   ],
   "exports": {
-    "./plugin": "./plugin/stats-plugin.js"
+    "./plugin": {
+      "types": "./plugin/stats-plugin.d.ts",
+      "default": "./plugin/stats-plugin.js"
+    }
   },
   "files": [
     "./dist/index.html",
