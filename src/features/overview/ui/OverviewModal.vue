@@ -44,7 +44,8 @@ const overview = getBundleOverview(props.stats);
           <div class="flex items-center gap-1">
             <div
               v-if="overview.numberOfDependencies > 0"
-              class="i-mdi:alert-circle-outline c-yellow-500"
+              class="i-mdi:alert-circle-outline"
+              :class="overview.duplicatedDependencies.length > 0 ? 'c-yellow-500' : ''"
             />
             Duplicated dependencies: {{ overview.duplicatedDependencies.length }}
           </div>
