@@ -23,6 +23,8 @@ Install the package as a development dependency
 
 ```shell
 npm install -D vite-bundle-explorer
+# yarn add -D vite-bundle-explorer
+# pnpm add -D vite-bundle-explorer
 ```
 
 Next, add the `statsPlugin` to your vite config. This plugin will generate a `stats.json` file in your output directory
@@ -30,7 +32,7 @@ on successful build, containing all bundle stats.
 
 ```javascript
 import { defineConfig } from 'vite';
-import { statsPlugin } from 'vite-bundle-analyzer/plugin';
+import { statsPlugin } from 'vite-bundle-explorer/plugin';
 
 export default defineConfig({
   plugins: [
@@ -43,5 +45,5 @@ export default defineConfig({
 Once your build is complete and `stats.json` is generated, you can launch the web interface using the CLI utility:
 
 ```shell
-npx vite-bundle-analyzer ./dist/stats.json
+npx vite-bundle-explorer ./dist/stats.json
 ```
