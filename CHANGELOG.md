@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.2.2
+
+[compare changes](https://github.com/Solant/vite-bundle-explorer/compare/v0.2.1...v0.2.2)
+
+### 🩹 Fixes
+
+- Add a missing dts file ([fcc9e44](https://github.com/Solant/vite-bundle-explorer/commit/fcc9e44))
+
+### ❤️ Contributors
+
+- Solant <runner62v6@gmail.com>
+
 ## v0.2.1
 
 [compare changes](https://github.com/Solant/vite-bundle-explorer/compare/v0.2.0...v0.2.1)
