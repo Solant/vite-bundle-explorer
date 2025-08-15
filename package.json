@@ -47,6 +47,7 @@
     "./dist/index.html",
     "./dist/assets",
     "plugin/stats-plugin.js",
+    "plugin/stats-plugin.d.ts",
     "bin/index.js"
   ],
   "bin": {
