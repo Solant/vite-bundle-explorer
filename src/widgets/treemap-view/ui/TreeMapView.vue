@@ -1,40 +1,19 @@
 <script lang="ts">
 import * as echarts from 'echarts/core';
 
-function getLevelOption() {
-  return [
-    {
-      itemStyle: {
-        gapWidth: 10,
-      },
-      upperLabel: {
-        show: false,
-      },
-    },
-    {
-      itemStyle: {
-        borderColor: '#d3d3d3',
-        borderWidth: 5,
-        gapWidth: 1,
-      },
-    },
-    {
-      colorSaturation: [0.35, 0.5],
-      itemStyle: {
-        borderWidth: 5,
-        gapWidth: 1,
-        borderColorSaturation: 0.6,
-      },
-    },
-  ];
-}
-
 interface TreeMapChartData {
   value: number;
   moduleIndex?: number;
   name: string;
   path: string;
   children: TreeMapChartData[];
+  upperLabel: {
+    backgroundColor: string;
+  };
+  itemStyle: {
+    color: string;
+    borderColor: string;
+  };
 }
 </script>
 
@@ -47,7 +26,7 @@ import { useChart } from '@/shared/lib';
 import { LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
 import { GraphChart, TreemapChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
-import { colors } from '@/shared/config';
+import { accentColors, palette } from '@/shared/config';
 
 const props = defineProps<{ stats: BuildStats }>();
 const options = defineModel<TreeMapOptions>('options', { required: true });
@@ -81,8 +60,29 @@ const chart = useChart(
       };
     });
 
+    const upperLabel = {
+      show: true,
+      textBorderColor: 'black',
+      textBorderWidth: 0,
+      height: 30,
+    };
+
+    function level() {
+      return {
+        upperLabel: {
+          ...upperLabel,
+          color: 'white',
+        },
+        itemStyle: {
+          textColor: 'black',
+          borderWidth: 8,
+          gapWidth: 4,
+        },
+      };
+    }
+
     c.setOption({
-      color: colors,
+      color: accentColors,
       tooltip: {
         formatter(info: any) {
           const value = info.value;
@@ -136,19 +136,22 @@ const chart = useChart(
         {
           name: 'Chunks',
           type: 'treemap',
-          visibleMin: 300,
           label: {
             show: true,
             formatter: '{b}',
           },
-          upperLabel: {
-            show: true,
-            height: 30,
-          },
+          upperLabel,
           itemStyle: {
-            borderColor: '#fff',
+            borderColor: 'white',
           },
-          levels: getLevelOption(),
+          levels: [
+            {
+              itemStyle: {
+                gapWidth: 8,
+              },
+            },
+            ...Array.from({ length: 30 }).map(level),
+          ],
           data: data.value,
         },
       ],
@@ -158,7 +161,9 @@ const chart = useChart(
 
 const data = computed(() => {
   const result: TreeMapChartData[] = [];
-  for (const chunk of props.stats.chunks) {
+  for (let chunkIndex = 0; chunkIndex < props.stats.chunks.length; chunkIndex += 1) {
+    const chunk = props.stats.chunks[chunkIndex];
+    const chunkColor = palette[chunkIndex % palette.length];
     if (options.value.hiddenChunks.includes(chunk.fileName)) {
       continue;
     }
@@ -168,6 +173,13 @@ const data = computed(() => {
       name: chunk.fileName,
       path: chunk.fileName,
       children: [],
+      upperLabel: {
+        backgroundColor: chunkColor[0],
+      },
+      itemStyle: {
+        color: chunkColor[0],
+        borderColor: chunkColor[0],
+      },
     };
     result.push(currentChunk);
 
@@ -191,6 +203,13 @@ const data = computed(() => {
             value: getModuleSize(module.fileNameIndex, props.stats, options.value.metric) ?? 0,
             children: [],
             moduleIndex,
+            upperLabel: {
+              backgroundColor: chunkColor[(1 + index) % chunkColor.length],
+            },
+            itemStyle: {
+              color: chunkColor[(1 + index) % chunkColor.length],
+              borderColor: chunkColor[(1 + index) % chunkColor.length],
+            },
           };
           currentNode.children.push(newNode);
           currentNode = newNode;
