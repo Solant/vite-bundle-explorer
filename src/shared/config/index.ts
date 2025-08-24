@@ -1,14 +1,6 @@
+type Palette = string[];
+
 const colors = {
-  blue: {
-    '300': '#93C5FD',
-    '400': '#60A5FA',
-    '500': '#3B82F6',
-    '600': '#2563EB',
-    '700': '#1D4ED8',
-    '800': '#1E40AF',
-    '900': '#1E3A8A',
-    '950': '#172554',
-  },
   indigo: {
     '300': '#A5B4FC',
     '400': '#818CF8',
@@ -161,6 +153,30 @@ const colors = {
   },
 };
 
-export const palette = Object.values(colors).map((color) => Object.values(color));
+export const palettes: Palette[] = Object.values(colors).map((color) => Object.values(color));
 
-export const accentColors = palette.map((color) => color[2]);
+export const accentColors = palettes.map((color) => color[2]);
+
+const sourceColors = {
+  blue: {
+    '300': '#93C5FD',
+    '400': '#60A5FA',
+    '500': '#3B82F6',
+    '600': '#2563EB',
+    '700': '#1D4ED8',
+    '800': '#1E40AF',
+    '900': '#1E3A8A',
+    '950': '#172554',
+  },
+};
+
+export const sourcePalette: Palette = Object.values(sourceColors.blue);
+
+export const sourceAccentColor = sourcePalette[2];
+
+export function getColor(palette: Palette, index: number) {
+  const length = palette.length;
+  const start = Math.floor(index / length) % 2 === 1 ? length - 2 : 0;
+  const offset = start === 0 ? 1 : -1;
+  return palette[start + offset * (index % palette.length)];
+}
