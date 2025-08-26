@@ -1,6 +1,6 @@
 import { default as TreeMapView } from './ui/TreeMapView.vue';
 import { default as TreeMapOptions } from './ui/TreeMapViewOptions.vue';
-import { getDefaultTreeMapOptions } from './model/TreeMap.ts';
+import { getDefaultTreeMapOptions } from './model/options';
 import type { BuildStats } from '@/entities/bundle-stats';
 
 export const TreemapView = {

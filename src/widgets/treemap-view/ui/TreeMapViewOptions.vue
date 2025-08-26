@@ -7,7 +7,7 @@ import { MetricOption } from '@/features/options/metric';
 import { ModuleFilterOption } from '@/features/options/module';
 import { useModelProxy } from '@/shared/lib';
 
-import type { TreeMapOptions } from '../model/TreeMap.ts';
+import type { TreeMapOptions } from '../model/options.ts';
 import ChunkFilter from './ChunkFilter.vue';
 
 const model = defineModel<TreeMapOptions>({ required: true });

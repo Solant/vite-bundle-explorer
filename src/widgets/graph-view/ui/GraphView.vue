@@ -26,7 +26,7 @@ import { TitleComponent, TooltipComponent } from 'echarts/components';
 import { TreemapChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { ECBasicOption } from 'echarts/types/dist/shared';
-import { colors } from '@/shared/config';
+import { accentColors, sourceAccentColor } from '@/shared/config';
 
 const props = defineProps<{ stats: BuildStats }>();
 const options = defineModel<GraphOptions>('options', { required: true });
@@ -45,7 +45,7 @@ const chart = useChart(
     });
 
     c.setOption({
-      color: colors,
+      color: accentColors,
       title: {
         text: 'Module Import Graph',
       },
@@ -131,6 +131,8 @@ const hiddenModules = computed<(typeof options)['value']['hiddenModules']>((oldV
 });
 const compact = computed(() => options.value.compact);
 
+const colors = [sourceAccentColor, ...accentColors];
+
 const data = computed<ECBasicOption>((prev) => {
   let { edges } = props.stats.importGraph;
   let nodes = props.stats.moduleFileNames;
@@ -182,7 +184,7 @@ const data = computed<ECBasicOption>((prev) => {
           { name: 'src', itemStyle: { color: colors[0] } },
           ...dependencies.map((dep, index) => ({
             name: dep,
-            itemStyle: { color: colors[index + 1] },
+            itemStyle: { color: accentColors[index + 1] },
           })),
         ],
         edges: edges.map((edge) => {
@@ -204,7 +206,7 @@ const data = computed<ECBasicOption>((prev) => {
             // max size should be limited so we don't accidentally create a black hole
             symbolSize: minMax(size / 1024, 12, 75),
             itemStyle: {
-              borderColor: size === 0 ? colors[categoryIndex % colors.length] : undefined,
+              borderColor: size === 0 ? colors[categoryIndex % accentColors.length] : undefined,
               color: isRoot ? ROOT_COLOR : size === 0 ? '#ffffff' : undefined,
             },
             emphasis: {

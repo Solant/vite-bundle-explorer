@@ -1,53 +1,20 @@
-<script lang="ts">
-import * as echarts from 'echarts/core';
-
-function getLevelOption() {
-  return [
-    {
-      itemStyle: {
-        gapWidth: 10,
-      },
-      upperLabel: {
-        show: false,
-      },
-    },
-    {
-      itemStyle: {
-        borderColor: '#d3d3d3',
-        borderWidth: 5,
-        gapWidth: 1,
-      },
-    },
-    {
-      colorSaturation: [0.35, 0.5],
-      itemStyle: {
-        borderWidth: 5,
-        gapWidth: 1,
-        borderColorSaturation: 0.6,
-      },
-    },
-  ];
-}
-
-interface TreeMapChartData {
-  value: number;
-  moduleIndex?: number;
-  name: string;
-  path: string;
-  children: TreeMapChartData[];
-}
-</script>
-
 <script setup lang="ts">
 import { computed, useTemplateRef, watch } from 'vue';
+import * as echarts from 'echarts/core';
 
-import { type BuildStats, getMetricLabel, getModuleSize } from '@/entities/bundle-stats';
-import type { TreeMapOptions } from '../model/TreeMap.ts';
+import {
+  type BuildStats,
+  getMetricLabel,
+  getModuleSize,
+  isDependency,
+} from '@/entities/bundle-stats';
+import type { TreeMapOptions } from '../model/options.ts';
 import { useChart } from '@/shared/lib';
 import { LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
 import { GraphChart, TreemapChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
-import { colors } from '@/shared/config';
+import { accentColors, getColor, palettes, sourcePalette } from '@/shared/config';
+import { dfs, type TreeMapChartNode } from '../model/tree-map';
 
 const props = defineProps<{ stats: BuildStats }>();
 const options = defineModel<TreeMapOptions>('options', { required: true });
@@ -59,14 +26,14 @@ const chart = useChart(
   (c) => {
     c.on('contextmenu', (event) => {
       event.event!.event.preventDefault();
-      const data = event.data as TreeMapChartData;
+      const data = event.data as TreeMapChartNode;
 
       const hiddenModules = new Set<number>();
       if (data.moduleIndex) {
         hiddenModules.add(data.moduleIndex);
       }
 
-      function traverse(node: TreeMapChartData) {
+      function traverse(node: TreeMapChartNode) {
         node.children.forEach((child) => traverse(child));
         if (node.moduleIndex) {
           hiddenModules.add(node.moduleIndex);
@@ -81,8 +48,29 @@ const chart = useChart(
       };
     });
 
+    const upperLabel = {
+      show: true,
+      textBorderColor: 'black',
+      textBorderWidth: 0,
+      height: 30,
+    };
+
+    function level() {
+      return {
+        upperLabel: {
+          ...upperLabel,
+          color: 'white',
+        },
+        itemStyle: {
+          textColor: 'black',
+          borderWidth: 8,
+          gapWidth: 4,
+        },
+      };
+    }
+
     c.setOption({
-      color: colors,
+      color: accentColors,
       tooltip: {
         formatter(info: any) {
           const value = info.value;
@@ -136,19 +124,22 @@ const chart = useChart(
         {
           name: 'Chunks',
           type: 'treemap',
-          visibleMin: 300,
           label: {
             show: true,
             formatter: '{b}',
           },
-          upperLabel: {
-            show: true,
-            height: 30,
-          },
+          upperLabel,
           itemStyle: {
-            borderColor: '#fff',
+            borderColor: 'white',
           },
-          levels: getLevelOption(),
+          levels: [
+            {
+              itemStyle: {
+                gapWidth: 8,
+              },
+            },
+            ...Array.from({ length: 30 }).map(level),
+          ],
           data: data.value,
         },
       ],
@@ -157,17 +148,26 @@ const chart = useChart(
 );
 
 const data = computed(() => {
-  const result: TreeMapChartData[] = [];
-  for (const chunk of props.stats.chunks) {
+  const result: TreeMapChartNode[] = [];
+  for (let chunkIndex = 0; chunkIndex < props.stats.chunks.length; chunkIndex += 1) {
+    const chunk = props.stats.chunks[chunkIndex];
+    const chunkColor = palettes[chunkIndex % palettes.length];
     if (options.value.hiddenChunks.includes(chunk.fileName)) {
       continue;
     }
 
-    const currentChunk: TreeMapChartData = {
+    const currentChunk: TreeMapChartNode = {
       value: 0,
       name: chunk.fileName,
       path: chunk.fileName,
       children: [],
+      upperLabel: {
+        backgroundColor: chunkColor[0],
+      },
+      itemStyle: {
+        color: chunkColor[0],
+        borderColor: chunkColor[0],
+      },
     };
     result.push(currentChunk);
 
@@ -185,12 +185,25 @@ const data = computed(() => {
         if (child) {
           currentNode = child;
         } else {
-          const newNode: TreeMapChartData = {
+          const newNode: TreeMapChartNode = {
             name: path[index],
             path: path[index],
             value: getModuleSize(module.fileNameIndex, props.stats, options.value.metric) ?? 0,
             children: [],
             moduleIndex,
+            upperLabel: {
+              backgroundColor: isDependency(path[0])
+                ? getColor(chunkColor, index + 1)
+                : getColor(sourcePalette, index),
+            },
+            itemStyle: {
+              color: isDependency(path[0])
+                ? getColor(chunkColor, index + 1)
+                : getColor(sourcePalette, index),
+              borderColor: isDependency(path[0])
+                ? getColor(chunkColor, index + 1)
+                : getColor(sourcePalette, index),
+            },
           };
           currentNode.children.push(newNode);
           currentNode = newNode;
@@ -199,32 +212,22 @@ const data = computed(() => {
     }
   }
 
-  function transformSize(node: TreeMapChartData) {
-    for (const child of node.children) {
-      transformSize(child);
-    }
-
+  // calculate the total size for groups
+  dfs(result, (node) => {
     if (node.children.length) {
       node.value = node.children.reduce((acc, cur) => acc + cur.value, 0);
     }
-  }
+  });
 
-  result.forEach(transformSize);
-
-  function transformCompact(node: TreeMapChartData) {
-    for (const child of node.children) {
-      transformCompact(child);
-    }
-
-    if (node.children.length === 1) {
-      node.path = `${node.path}/${node.children[0].path}`;
-      node.name = `${node.name}/${node.children[0].name}`;
-      node.children = node.children[0].children;
-    }
-  }
-
+  // join groups with only 1 child
   if (options.value.compact) {
-    result.forEach(transformCompact);
+    dfs(result, (node) => {
+      if (node.children.length === 1) {
+        node.path = `${node.path}/${node.children[0].path}`;
+        node.name = `${node.name}/${node.children[0].name}`;
+        node.children = node.children[0].children;
+      }
+    });
   }
 
   return result;
