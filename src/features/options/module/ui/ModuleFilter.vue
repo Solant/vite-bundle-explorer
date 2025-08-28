@@ -105,7 +105,7 @@ const numberOfModules = computed(() => {
       </label>
     </div>
 
-    <div class="max-h-400px overflow-auto p-1">
+    <div class="overflow-auto p-1">
       <div
         v-for="module in sortedModules"
         class="flex gap-1 cursor-pointer hover:bg-gray-300"
