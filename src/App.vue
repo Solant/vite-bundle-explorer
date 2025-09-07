@@ -38,7 +38,7 @@ watch(currentView, (newView) => {
 
 <template>
   <div class="w-screen h-screen flex bg-gray-200">
-    <div class="w-1/3 max-w-[350px] bg-white rounded-lg m-5 p-2 flex flex-col">
+    <div class="w-1/3 max-w-[350px] bg-white rounded-lg m-5 p-2 flex flex-col overflow-auto">
       <ViewToggle v-model="currentViewKey" />
 
       <currentView.OptionsComponent

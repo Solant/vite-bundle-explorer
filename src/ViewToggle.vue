@@ -1,26 +1,28 @@
 <script lang="ts" setup>
 const model = defineModel<'treemap' | 'graph'>({ required: true });
 
-const activeLeft = 'bg-blue-700 rounded-l-md c-white';
-const activeRight = 'bg-blue-700 rounded-r-md c-white';
+const activeLeft = 'bg-blue-600 rounded-l-md c-white';
+const activeRight = 'bg-blue-600 rounded-r-md c-white';
 </script>
 
 <template>
-  <div class="flex border border-solid border-blue-700 rounded-lg">
-    <div
-      class="flex w-1/2 items-center justify-center py-1 cursor-pointer"
+  <div class="flex border border-solid border-blue-600 rounded-lg overflow-hidden flex-shrink-0">
+    <button
+      type="button"
+      class="flex w-1/2 items-center justify-center py-2 cursor-pointer transition-colors hover:bg-blue-700 hover:c-white active:bg-blue-800"
       :class="{ [activeLeft]: model === 'treemap' }"
       @click="model = 'treemap'"
     >
-      <div class="i-mdi-chart-tree" />
-    </div>
+      <span class="i-mdi-chart-tree" />
+    </button>
 
-    <div
-      class="flex w-1/2 items-center justify-center py-1 cursor-pointer"
+    <button
+      type="button"
+      class="flex w-1/2 items-center justify-center py-2 cursor-pointer transition-colors hover:bg-blue-700 hover:c-white active:bg-blue-800"
       :class="{ [activeRight]: model === 'graph' }"
       @click="model = 'graph'"
     >
-      <div class="i-mdi-graph" />
-    </div>
+      <span class="i-mdi-graph" />
+    </button>
   </div>
 </template>
