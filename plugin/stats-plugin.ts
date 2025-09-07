@@ -1,13 +1,15 @@
-import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { gzip } from 'node:zlib';
 import { promisify } from 'node:util';
+import fs from 'node:fs/promises';
 
 import { type Plugin } from 'vite';
 
 import type { BuildStats, Chunk } from '../src/entities/bundle-stats/model/stats.ts';
 
 const compress = promisify(gzip);
+
+const REPORT_FOLDER_NAME = 'bundle-report';
 
 function upsertNodeIndex(nodes: string[], item: string): number {
   const index = nodes.indexOf(item);
@@ -124,7 +126,25 @@ export function statsPlugin() {
         return;
       }
 
-      await writeFile(join(outDir, 'stats.json'), JSON.stringify(stats));
+      // const bundleStats = JSON.stringify(stats);
+      const target = join(root, REPORT_FOLDER_NAME);
+      try {
+        const stat = await fs.stat(target);
+        if (stat.isDirectory()) {
+          await fs.rmdir(target, { recursive: true });
+        }
+      } catch (e) {}
+      await fs.mkdir(target);
+
+      const source = new URL('../dist', import.meta.url);
+      const names = await fs.readdir(source);
+
+      await Promise.all(
+        names.map((name) => {
+          return fs.cp(join(source.pathname, name), join(target, name), { recursive: true });
+        }),
+      );
+
       console.log(`Bundle stats written to ${join(outDir, 'stats.json')}`);
       console.log(`Run "npx vite-bundle-explorer ${join(outDir, 'stats.json')}" to view the stats`);
     },
