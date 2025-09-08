@@ -126,12 +126,11 @@ export function statsPlugin() {
         return;
       }
 
-      // const bundleStats = JSON.stringify(stats);
       const target = join(root, REPORT_FOLDER_NAME);
       try {
         const stat = await fs.stat(target);
         if (stat.isDirectory()) {
-          await fs.rmdir(target, { recursive: true });
+          await fs.rm(target, { recursive: true });
         }
       } catch (e) {}
       await fs.mkdir(target);
@@ -145,8 +144,11 @@ export function statsPlugin() {
         }),
       );
 
-      console.log(`Bundle stats written to ${join(outDir, 'stats.json')}`);
-      console.log(`Run "npx vite-bundle-explorer ${join(outDir, 'stats.json')}" to view the stats`);
+      let html = await fs.readFile(join(target, 'index.html'), 'utf-8');
+      html = html.replace('%BUNDLE_STATS%', JSON.stringify(stats).replaceAll("'", "\\'"));
+      fs.writeFile(join(target, 'index.html'), html);
+
+      console.log(`Bundle stats saved to ${target}`);
     },
   };
 
