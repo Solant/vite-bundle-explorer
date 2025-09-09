@@ -149,6 +149,7 @@ export function statsPlugin() {
       fs.writeFile(join(target, 'index.html'), html);
 
       console.log(`Bundle stats saved to ${target}`);
+      console.log(`Run "npx vite-bundle-explorer ${target}" to view the stats`);
     },
   };
 
