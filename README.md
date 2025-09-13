@@ -3,6 +3,7 @@
 Bundle analyzer and visualizer tool for vite.
 
 Current features:
+
 - Chunk size treemap
 - Module import graph
 - Build stats report
@@ -47,3 +48,24 @@ Once your build is complete and `stats.json` is generated, you can launch the we
 ```shell
 npx vite-bundle-explorer ./dist/stats.json
 ```
+
+## Options
+
+You can pass options to stats plugin
+
+```javascript
+export default defineConfig({
+  plugins: [
+    statsPlugin({
+      // ...options
+    })
+  ]
+});
+```
+
+| Parameter              | Type      | Default                                                                                                            | Description                                                    |
+|------------------------|-----------|--------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------|
+| `reportCompressedSize` | `boolean` | Same as Vite's [build.reportCompressedSize](https://vite.dev/config/build-options.html#build-reportcompressedsize) | Calculate compressed size of chunks. Might affect performance. |
+| `reportDirectoryName`  | `string`  | `"bundle-report"`                                                                                                  | Name of the output directory                                   |
+| `emitHtml`             | `boolean` | `true`                                                                                                             | Generate interactive HTML report                               |
+| `emitJson`             | `boolean` | `false`                                                                                                            | Generate `stats.json` file                                     |

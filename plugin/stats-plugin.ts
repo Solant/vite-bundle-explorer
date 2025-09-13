@@ -9,14 +9,24 @@ import type { BuildStats, Chunk } from '../src/entities/bundle-stats/model/stats
 
 const compress = promisify(gzip);
 
-const REPORT_FOLDER_NAME = 'bundle-report';
+const REPORT_DIR_NAME = 'bundle-report';
 
 function upsertNodeIndex(nodes: string[], item: string): number {
   const index = nodes.indexOf(item);
   return index === -1 ? nodes.push(item) - 1 : index;
 }
 
-export function statsPlugin() {
+interface StatsPluginOptions {
+  reportDirectoryName?: string;
+  reportCompressedSize?: boolean;
+  emitHtml?: boolean;
+  emitJson?: boolean;
+}
+
+export function statsPlugin(options?: StatsPluginOptions) {
+  const emitHtml = options?.emitHtml ?? true;
+  const emitJson = options?.emitJson ?? false;
+
   let root = '';
   let outDir = '';
   let enabled = true;
@@ -44,7 +54,7 @@ export function statsPlugin() {
       root = config.root;
       outDir = `${root}/${config.build.outDir}`;
       enabled = config.env.PROD;
-      reportCompressed = config.build.reportCompressedSize;
+      reportCompressed = options?.reportCompressedSize ?? config.build.reportCompressedSize;
     },
     resolveId: {
       order: 'pre',
@@ -126,7 +136,8 @@ export function statsPlugin() {
         return;
       }
 
-      const target = join(root, REPORT_FOLDER_NAME);
+      // create a target directory
+      const target = join(root, options?.reportDirectoryName ?? REPORT_DIR_NAME);
       try {
         const stat = await fs.stat(target);
         if (stat.isDirectory()) {
@@ -135,21 +146,29 @@ export function statsPlugin() {
       } catch (e) {}
       await fs.mkdir(target);
 
-      const source = new URL('../dist', import.meta.url);
-      const names = await fs.readdir(source);
+      if (emitHtml) {
+        const source = new URL('../dist', import.meta.url);
+        const names = await fs.readdir(source);
 
-      await Promise.all(
-        names.map((name) => {
-          return fs.cp(join(source.pathname, name), join(target, name), { recursive: true });
-        }),
-      );
+        await Promise.all(
+          names.map((name) => {
+            return fs.cp(join(source.pathname, name), join(target, name), { recursive: true });
+          }),
+        );
 
-      let html = await fs.readFile(join(target, 'index.html'), 'utf-8');
-      html = html.replace('%BUNDLE_STATS%', JSON.stringify(stats).replaceAll("'", "\\'"));
-      fs.writeFile(join(target, 'index.html'), html);
+        let html = await fs.readFile(join(target, 'index.html'), 'utf-8');
+        html = html.replace('%BUNDLE_STATS%', JSON.stringify(stats).replaceAll("'", "\\'"));
+        fs.writeFile(join(target, 'index.html'), html);
+      }
+
+      if (emitJson) {
+        fs.writeFile(join(target, 'stats.json'), JSON.stringify(stats, null, 2));
+      }
 
       console.log(`Bundle stats saved to ${target}`);
-      console.log(`Run "npx vite-bundle-explorer ${target}" to view the stats`);
+      if (emitHtml) {
+        console.log(`Run "npx vite-bundle-explorer ${target}" to view the stats`);
+      }
     },
   };
 
