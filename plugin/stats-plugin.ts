@@ -1,7 +1,7 @@
-import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { gzip } from 'node:zlib';
 import { promisify } from 'node:util';
+import fs from 'node:fs/promises';
 
 import { type Plugin } from 'vite';
 
@@ -9,12 +9,24 @@ import type { BuildStats, Chunk } from '../src/entities/bundle-stats/model/stats
 
 const compress = promisify(gzip);
 
+const REPORT_DIR_NAME = 'bundle-report';
+
 function upsertNodeIndex(nodes: string[], item: string): number {
   const index = nodes.indexOf(item);
   return index === -1 ? nodes.push(item) - 1 : index;
 }
 
-export function statsPlugin() {
+interface StatsPluginOptions {
+  reportDirectoryName?: string;
+  reportCompressedSize?: boolean;
+  emitHtml?: boolean;
+  emitJson?: boolean;
+}
+
+export function statsPlugin(options?: StatsPluginOptions) {
+  const emitHtml = options?.emitHtml ?? true;
+  const emitJson = options?.emitJson ?? false;
+
   let root = '';
   let outDir = '';
   let enabled = true;
@@ -42,7 +54,7 @@ export function statsPlugin() {
       root = config.root;
       outDir = `${root}/${config.build.outDir}`;
       enabled = config.env.PROD;
-      reportCompressed = config.build.reportCompressedSize;
+      reportCompressed = options?.reportCompressedSize ?? config.build.reportCompressedSize;
     },
     resolveId: {
       order: 'pre',
@@ -124,9 +136,39 @@ export function statsPlugin() {
         return;
       }
 
-      await writeFile(join(outDir, 'stats.json'), JSON.stringify(stats));
-      console.log(`Bundle stats written to ${join(outDir, 'stats.json')}`);
-      console.log(`Run "npx vite-bundle-explorer ${join(outDir, 'stats.json')}" to view the stats`);
+      // create a target directory
+      const target = join(root, options?.reportDirectoryName ?? REPORT_DIR_NAME);
+      try {
+        const stat = await fs.stat(target);
+        if (stat.isDirectory()) {
+          await fs.rm(target, { recursive: true });
+        }
+      } catch (e) {}
+      await fs.mkdir(target);
+
+      if (emitHtml) {
+        const source = new URL('../dist', import.meta.url);
+        const names = await fs.readdir(source);
+
+        await Promise.all(
+          names.map((name) => {
+            return fs.cp(join(source.pathname, name), join(target, name), { recursive: true });
+          }),
+        );
+
+        let html = await fs.readFile(join(target, 'index.html'), 'utf-8');
+        html = html.replace('%BUNDLE_STATS%', JSON.stringify(stats).replaceAll("'", "\\'"));
+        fs.writeFile(join(target, 'index.html'), html);
+      }
+
+      if (emitJson) {
+        fs.writeFile(join(target, 'stats.json'), JSON.stringify(stats, null, 2));
+      }
+
+      console.log(`Bundle stats saved to ${target}`);
+      if (emitHtml) {
+        console.log(`Run "npx vite-bundle-explorer ${target}" to view the stats`);
+      }
     },
   };
 
