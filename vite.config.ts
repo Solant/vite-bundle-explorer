@@ -15,7 +15,9 @@ export default defineConfig({
   plugins: [
     vue(),
     UnoCSS(),
-    statsPlugin(),
+    statsPlugin({
+      emitJson: true,
+    }),
     {
       name: 'json-proxy',
       configureServer(server) {

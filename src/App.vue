@@ -9,18 +9,18 @@ import { GraphView } from './widgets/graph-view';
 import { OverviewModal } from '@/features/overview';
 
 const stats = shallowRef<BuildStats>();
-fetch('stats.json')
-  .then((res) => res.json())
-  .then((data) => {
-    stats.value = data;
-  });
+try {
+  const payload = JSON.parse(window.BUNDLE_STATS ?? '');
+  stats.value = payload as BuildStats;
+} catch (e) {
+  fetch('stats.json')
+    .then((res) => res.json())
+    .then((data) => {
+      stats.value = data;
+    });
+}
 
 const currentViewKey = ref<'treemap' | 'graph'>('treemap');
-const currentViewOptions = ref();
-watch(stats, () => {
-  // @ts-expect-error
-  currentViewOptions.value = currentView.value.optionsFactory(stats.value);
-});
 const currentView = computed(() => {
   if (currentViewKey.value === 'treemap') {
     return TreemapView;
@@ -30,6 +30,20 @@ const currentView = computed(() => {
 
   return TreemapView;
 });
+
+const currentViewOptions = ref();
+watch(
+  stats,
+  () => {
+    if (!stats.value) {
+      return;
+    }
+
+    currentViewOptions.value = currentView.value.optionsFactory(stats.value);
+  },
+  { immediate: true },
+);
+
 watch(currentView, (newView) => {
   // @ts-expect-error
   currentViewOptions.value = newView.optionsFactory(stats.value);
