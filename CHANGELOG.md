@@ -1,6 +1,27 @@
 # Changelog
 
 
+## v0.3.0
+
+[compare changes](https://github.com/Solant/vite-bundle-explorer/compare/v0.2.2...v0.3.0)
+
+### 🚀 Enhancements
+
+- Improve treemap colors ([#7](https://github.com/Solant/vite-bundle-explorer/pull/7))
+- ⚠️  Generate static html report ([#16](https://github.com/Solant/vite-bundle-explorer/pull/16))
+
+### 🩹 Fixes
+
+- Improve design for smaller screens ([#15](https://github.com/Solant/vite-bundle-explorer/pull/15))
+
+#### ⚠️ Breaking Changes
+
+- ⚠️  Generate static html report ([#16](https://github.com/Solant/vite-bundle-explorer/pull/16))
+
+### ❤️ Contributors
+
+- Solant <runner62v6@gmail.com>
+
 ## v0.2.2
 
 [compare changes](https://github.com/Solant/vite-bundle-explorer/compare/v0.2.1...v0.2.2)
