@@ -1,6 +1,7 @@
 import { type Plugin } from 'vite';
 
 interface StatsPluginOptions {
+  enabled?: boolean;
   reportDirectoryName?: string;
   reportCompressedSize?: boolean;
   emitHtml?: boolean;

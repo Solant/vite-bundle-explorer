@@ -54,11 +54,7 @@ export function statsPlugin(options?: StatsPluginOptions) {
     // vite specific hook
     configResolved(config) {
       // disable during dev mode
-      enabled = config.env.PROD;
-    },
-    outputOptions(opts) {
-      // workaround for libraries with multiple output formats
-      enabled = opts.format === 'es';
+      enabled = enabled && config.env.PROD;
     },
     resolveId: {
       order: 'pre',
@@ -138,6 +134,8 @@ export function statsPlugin(options?: StatsPluginOptions) {
       if (!enabled || error) {
         return;
       }
+      // prevent this hook from being called again for a different format
+      enabled = false;
 
       // create a target directory
       const target = join(root, options?.reportDirectoryName ?? REPORT_DIR_NAME);

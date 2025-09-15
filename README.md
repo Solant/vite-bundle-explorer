@@ -2,12 +2,11 @@
 
 Bundle analyzer and visualizer tool for vite.
 
-Current features:
-
-- Chunk size treemap
-- Module import graph
-- Build stats report
-- Detect duplicated dependencies
+- ✅ Supports both applications and libraries
+- ✅ Supports `vite`, `rollup`, `rolldown` and `tsdown`
+- ✅ Chunk treemap
+- ✅ Module import graph
+- ✅ Detect duplicated dependencies
 
 ![preview](https://raw.githubusercontent.com/Solant/vite-bundle-explorer/refs/heads/main/preview.gif)
 
@@ -63,9 +62,10 @@ export default defineConfig({
 });
 ```
 
-| Parameter              | Type      | Default                                                                                                            | Description                                                    |
-|------------------------|-----------|--------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------|
-| `reportCompressedSize` | `boolean` | Same as Vite's [build.reportCompressedSize](https://vite.dev/config/build-options.html#build-reportcompressedsize) | Calculate compressed size of chunks. Might affect performance. |
-| `reportDirectoryName`  | `string`  | `"bundle-report"`                                                                                                  | Name of the output directory                                   |
-| `emitHtml`             | `boolean` | `true`                                                                                                             | Generate interactive HTML report                               |
-| `emitJson`             | `boolean` | `false`                                                                                                            | Generate `stats.json` file                                     |
+| Parameter              | Type      | Default           | Description                                                                                                |
+|------------------------|-----------|-------------------|------------------------------------------------------------------------------------------------------------|
+| `enabled`              | `boolean` | `true`            | Disables stats collection and report generation. This option is disabled automatically for `vite dev` mode |
+| `reportCompressedSize` | `boolean` | `true`            | Calculate compressed size of chunks. Might affect performance.                                             |
+| `reportDirectoryName`  | `string`  | `"bundle-report"` | Name of the output directory                                                                               |
+| `emitHtml`             | `boolean` | `true`            | Generate interactive HTML report                                                                           |
+| `emitJson`             | `boolean` | `false`           | Generate `stats.json` file                                                                                 |
