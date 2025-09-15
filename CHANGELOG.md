@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.3.1
+
+[compare changes](https://github.com/Solant/vite-bundle-explorer/compare/v0.3.0...v0.3.1)
+
+### 🚀 Enhancements
+
+- Add support for libs and rollup/rolldown bundlers ([8436d72](https://github.com/Solant/vite-bundle-explorer/commit/8436d72))
+
+### ❤️ Contributors
+
+- Solant <runner62v6@gmail.com>
+
 ## v0.3.0
 
 [compare changes](https://github.com/Solant/vite-bundle-explorer/compare/v0.2.2...v0.3.0)
