@@ -17,6 +17,7 @@ function upsertNodeIndex(nodes: string[], item: string): number {
 }
 
 interface StatsPluginOptions {
+  enabled?: boolean;
   reportDirectoryName?: string;
   reportCompressedSize?: boolean;
   emitHtml?: boolean;
@@ -27,18 +28,18 @@ export function statsPlugin(options?: StatsPluginOptions) {
   const emitHtml = options?.emitHtml ?? true;
   const emitJson = options?.emitJson ?? false;
 
-  let root = '';
+  let root = process.cwd();
   let outDir = '';
-  let enabled = true;
-  let reportCompressed = false;
+  let enabled = options?.enabled ?? true;
+  let reportCompressed = true;
 
   function truncatePath(filePath: string) {
     let index = 0;
     const normalizedPath = filePath.replaceAll('\u0000', '');
 
-    if (normalizedPath.startsWith(outDir)) {
+    if (outDir && normalizedPath.startsWith(outDir)) {
       index = outDir.length;
-    } else if (normalizedPath.startsWith(root)) {
+    } else if (root && normalizedPath.startsWith(root)) {
       index = root.length;
     }
 
@@ -50,11 +51,14 @@ export function statsPlugin(options?: StatsPluginOptions) {
 
   const plugin: Plugin = {
     name: 'stats-plugin',
+    // vite specific hook
     configResolved(config) {
-      root = config.root;
-      outDir = `${root}/${config.build.outDir}`;
+      // disable during dev mode
       enabled = config.env.PROD;
-      reportCompressed = options?.reportCompressedSize ?? config.build.reportCompressedSize;
+    },
+    outputOptions(opts) {
+      // workaround for libraries with multiple output formats
+      enabled = opts.format === 'es';
     },
     resolveId: {
       order: 'pre',
@@ -89,7 +93,6 @@ export function statsPlugin(options?: StatsPluginOptions) {
             continue;
           }
 
-          console.log(`Processing chunk "${chunk.fileName}"`);
           const currentChunk: Chunk = {
             fileName: chunk.fileName,
             modules: [],
