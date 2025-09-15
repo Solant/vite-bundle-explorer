@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.3.2
+
+[compare changes](https://github.com/Solant/vite-bundle-explorer/compare/v0.3.1...v0.3.2)
+
+### 🩹 Fixes
+
+- Prevent error when closeBundle is executed twice, update documentation ([d808f7d](https://github.com/Solant/vite-bundle-explorer/commit/d808f7d))
+
+### ❤️ Contributors
+
+- Solant <runner62v6@gmail.com>
+
 ## v0.3.1
 
 [compare changes](https://github.com/Solant/vite-bundle-explorer/compare/v0.3.0...v0.3.1)
