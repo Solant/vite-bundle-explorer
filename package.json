@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && pnpm build:plugin && vite build",
-    "build:plugin": "tsc --module Node16 --moduleResolution node16 plugin/stats-plugin.ts",
+    "build:plugin": "tsdown",
     "format": "prettier src plugin bin vite.config.ts --write",
     "release": "pnpm build && pnpm changelogen --release --push && pnpm publish"
   },
@@ -39,15 +39,15 @@
   ],
   "exports": {
     "./plugin": {
-      "types": "./plugin/stats-plugin.d.ts",
-      "default": "./plugin/stats-plugin.js"
+      "types": "./dist-plugin/stats-plugin.d.ts",
+      "default": "./dist-plugin/stats-plugin.js"
     }
   },
   "files": [
-    "./dist/index.html",
-    "./dist/assets",
-    "plugin/stats-plugin.js",
-    "plugin/stats-plugin.d.ts",
+    "dist-ui/index.html",
+    "dist-ui/assets",
+    "dist-plugin/stats-plugin.js",
+    "dist-plugin/stats-plugin.d.ts",
     "bin/index.js"
   ],
   "bin": {
@@ -66,6 +66,7 @@
     "echarts": "^5.6.0",
     "prettier": "^3.6.2",
     "reka-ui": "^2.3.2",
+    "tsdown": "^0.15.4",
     "typescript": "~5.8.3",
     "unocss": "^66.3.3",
     "vite": "^7.0.4",

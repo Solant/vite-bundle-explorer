@@ -148,7 +148,8 @@ export function statsPlugin(options?: StatsPluginOptions) {
       await fs.mkdir(target);
 
       if (emitHtml) {
-        const source = new URL('../dist', import.meta.url);
+        const base = new URL(import.meta.url);
+        const source = new URL('../dist-ui', base);
         const names = await fs.readdir(source);
 
         await Promise.all(
