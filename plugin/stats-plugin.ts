@@ -5,7 +5,8 @@ import fs from 'node:fs/promises';
 
 import { type Plugin } from 'vite';
 
-import type { BuildStats, Chunk } from '../src/entities/bundle-stats/model/stats.ts';
+import type { BuildStats, Chunk } from '@/entities/bundle-stats/model/stats';
+import { getBundleOverview } from '@/features/overview/model/overview';
 
 const compress = promisify(gzip);
 
@@ -22,11 +23,15 @@ interface StatsPluginOptions {
   reportCompressedSize?: boolean;
   emitHtml?: boolean;
   emitJson?: boolean;
+  check?: boolean;
+  failOnWarning?: boolean;
 }
 
 export function statsPlugin(options?: StatsPluginOptions) {
   const emitHtml = options?.emitHtml ?? true;
   const emitJson = options?.emitJson ?? false;
+  const check = options?.check ?? true;
+  const failOnWarning = options?.failOnWarning ?? false;
 
   let root = process.cwd();
   let outDir = '';
@@ -170,6 +175,22 @@ export function statsPlugin(options?: StatsPluginOptions) {
       console.log(`Bundle stats saved to ${target}`);
       if (emitHtml) {
         console.log(`Run "npx vite-bundle-explorer ${target}" to view the stats`);
+      }
+
+      if (check) {
+        const report = getBundleOverview(stats);
+        if (report.duplicatedDependencies.length > 0) {
+          this.warn('Output bundle has duplicated dependencies');
+          for (const dep of report.duplicatedDependencies) {
+            this.warn(`- ${dep.name} has ${dep.count} different versions`);
+          }
+        }
+
+        if (failOnWarning && report.hasWarnings) {
+          throw new Error(
+            '[plugin stats-plugin] Cancelling build due to failOnWarning option. Check [plugin stats-plugin] warnings for more details.',
+          );
+        }
       }
     },
   };

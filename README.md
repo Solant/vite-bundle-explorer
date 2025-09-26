@@ -7,6 +7,7 @@ Bundle analyzer and visualizer tool for vite.
 - ✅ Chunk treemap
 - ✅ Module import graph
 - ✅ Detect duplicated dependencies
+- ✅ Run checks during build
 
 ![preview](https://raw.githubusercontent.com/Solant/vite-bundle-explorer/refs/heads/main/preview.gif)
 
@@ -69,3 +70,5 @@ export default defineConfig({
 | `reportDirectoryName`  | `string`  | `"bundle-report"` | Name of the output directory                                                                               |
 | `emitHtml`             | `boolean` | `true`            | Generate interactive HTML report                                                                           |
 | `emitJson`             | `boolean` | `false`           | Generate `stats.json` file                                                                                 |
+| `check`                | `boolean` | `true`            | Run report checks during build                                                                             |
+| `failOnWarning`        | `boolean` | `false`           | Cancel build if bundle has any report warnings                                                             |

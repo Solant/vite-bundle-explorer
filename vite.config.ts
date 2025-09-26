@@ -7,7 +7,7 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import UnoCSS from 'unocss/vite';
 
-import { statsPlugin } from './plugin/stats-plugin.ts';
+import { statsPlugin } from './dist-plugin/stats-plugin';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -17,6 +17,7 @@ export default defineConfig({
     UnoCSS(),
     statsPlugin({
       emitJson: true,
+      failOnWarning: true,
     }),
     {
       name: 'json-proxy',
