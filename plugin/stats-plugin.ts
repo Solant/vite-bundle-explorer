@@ -7,6 +7,7 @@ import { type Plugin } from 'vite';
 
 import type { BuildStats, Chunk } from '@/entities/bundle-stats/model/stats';
 import { getBundleOverview } from '@/features/overview/model/overview';
+import { fileURLToPath } from 'node:url';
 
 const compress = promisify(gzip);
 
@@ -153,13 +154,12 @@ export function statsPlugin(options?: StatsPluginOptions) {
       await fs.mkdir(target);
 
       if (emitHtml) {
-        const base = new URL(import.meta.url);
-        const source = new URL('../dist-ui', base);
+        const source = join(fileURLToPath(import.meta.url), '..', 'dist-ui');
         const names = await fs.readdir(source);
 
         await Promise.all(
           names.map((name) => {
-            return fs.cp(join(source.pathname, name), join(target, name), { recursive: true });
+            return fs.cp(join(source, name), join(target, name), { recursive: true });
           }),
         );
 
