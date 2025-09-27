@@ -1,7 +1,7 @@
 {
   "name": "vite-bundle-explorer",
   "description": "Bundle analyzer and visualizer tool for Vite",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "type": "module",
   "scripts": {
     "dev": "vite",

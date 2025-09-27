@@ -1,6 +1,27 @@
 # Changelog
 
 
+## v0.3.3
+
+[compare changes](https://github.com/Solant/vite-bundle-explorer/compare/v0.3.2...v0.3.3)
+
+### 🚀 Enhancements
+
+- Add `check` and `failOnWarning` options, run the bundle report during build ([0cad6e9](https://github.com/Solant/vite-bundle-explorer/commit/0cad6e9))
+
+### 🩹 Fixes
+
+- Fix build after report change ([e9bf7d7](https://github.com/Solant/vite-bundle-explorer/commit/e9bf7d7))
+
+### 🏡 Chore
+
+- Migrate custom build step to tsdown ([0ae099b](https://github.com/Solant/vite-bundle-explorer/commit/0ae099b))
+- Update vite version ([a48ce34](https://github.com/Solant/vite-bundle-explorer/commit/a48ce34))
+
+### ❤️ Contributors
+
+- Solant <runner62v6@gmail.com>
+
 ## v0.3.2
 
 [compare changes](https://github.com/Solant/vite-bundle-explorer/compare/v0.3.1...v0.3.2)
