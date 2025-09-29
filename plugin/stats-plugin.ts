@@ -154,7 +154,7 @@ export function statsPlugin(options?: StatsPluginOptions) {
       await fs.mkdir(target);
 
       if (emitHtml) {
-        const source = join(fileURLToPath(import.meta.url), '..', 'dist-ui');
+        const source = join(fileURLToPath(import.meta.url), '..', '..', 'dist-ui');
         const names = await fs.readdir(source);
 
         await Promise.all(
@@ -165,11 +165,11 @@ export function statsPlugin(options?: StatsPluginOptions) {
 
         let html = await fs.readFile(join(target, 'index.html'), 'utf-8');
         html = html.replace('%BUNDLE_STATS%', JSON.stringify(stats).replaceAll("'", "\\'"));
-        fs.writeFile(join(target, 'index.html'), html);
+        await fs.writeFile(join(target, 'index.html'), html);
       }
 
       if (emitJson) {
-        fs.writeFile(join(target, 'stats.json'), JSON.stringify(stats, null, 2));
+        await fs.writeFile(join(target, 'stats.json'), JSON.stringify(stats, null, 2));
       }
 
       console.log(`Bundle stats saved to ${target}`);
