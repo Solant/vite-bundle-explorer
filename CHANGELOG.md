@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.3.4
+
+[compare changes](https://github.com/Solant/vite-bundle-explorer/compare/v0.3.3...v0.3.4)
+
+### 🩹 Fixes
+
+- Fix compiled bundle path, prevent empty stats from being created ([5a33eab](https://github.com/Solant/vite-bundle-explorer/commit/5a33eab))
+
+### ❤️ Contributors
+
+- Solant <runner62v6@gmail.com>
+
 ## v0.3.3
 
 [compare changes](https://github.com/Solant/vite-bundle-explorer/compare/v0.3.2...v0.3.3)
