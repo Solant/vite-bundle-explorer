@@ -16,6 +16,7 @@ import { CanvasRenderer } from 'echarts/renderers';
 import { accentColors, getColor, palettes, sourcePalette } from '@/shared/config';
 import { dfs, type TreeMapChartNode } from '../model/tree-map';
 import { BaseContextMenu } from '@/shared/ui';
+import { getPath } from '../model/path.ts';
 
 const props = defineProps<{ stats: BuildStats }>();
 const options = defineModel<TreeMapOptions>('options', { required: true });
@@ -48,6 +49,26 @@ function hideSelectedNode() {
     ...options.value,
     hiddenModules: [...options.value.hiddenModules, ...Array.from(hiddenModules)],
   };
+}
+
+function printPath() {
+  const data = selectedNode.value;
+  if (!data) {
+    return;
+  }
+
+  const target = data.moduleIndex;
+  if (target == null) {
+    return;
+  }
+
+  const source = 0;
+  const path = getPath(props.stats.importGraph.edges, source, target);
+  if (!path) {
+    return;
+  }
+
+  console.log(path.map((node) => props.stats.moduleFileNames[node]));
 }
 
 const main = useTemplateRef('main');
@@ -271,7 +292,7 @@ defineOptions({
     v-model="visible"
     :items="[
       { label: 'Hide', onClick: hideSelectedNode },
-      { label: 'Show import path', onClick: () => {} },
+      { label: 'Show import path', onClick: printPath },
     ]"
   />
 </template>
