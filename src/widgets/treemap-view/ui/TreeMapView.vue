@@ -18,6 +18,9 @@ import { dfs, type TreeMapChartNode } from '../model/tree-map';
 import { BaseContextMenu } from '@/shared/ui';
 import { getPath } from '../model/path.ts';
 
+const emit = defineEmits<{
+  updateView: [view: string, options: Record<any, any>];
+}>();
 const props = defineProps<{ stats: BuildStats }>();
 const options = defineModel<TreeMapOptions>('options', { required: true });
 
@@ -68,7 +71,10 @@ function printPath() {
     return;
   }
 
-  console.log(path.map((node) => props.stats.moduleFileNames[node]));
+  const hiddenModules = props.stats.moduleFileNames
+    .map((_, index) => index)
+    .filter((index) => !path.includes(index));
+  emit('updateView', 'graph', { hiddenModules });
 }
 
 const main = useTemplateRef('main');
