@@ -33,6 +33,6 @@ const metric = useModelProxy(model, 'metric');
     >
       <ChunkFilter v-model:options="model" :stats />
     </OptionGroup>
-    <ModuleFilterOption v-model:options="model" :stats />
+    <ModuleFilterOption v-model:options="model" :stats modules="bundled" />
   </div>
 </template>

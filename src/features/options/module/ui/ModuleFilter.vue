@@ -4,7 +4,7 @@ import { computed, ref } from 'vue';
 import { type BuildStats, formatSize, getModuleSize, type Module } from '@/entities/bundle-stats';
 import { BaseButton, OptionGroup } from '@/shared/ui';
 
-const props = defineProps<{ stats: BuildStats }>();
+const props = defineProps<{ stats: BuildStats; modules: 'bundled' | 'all' }>();
 
 const options = defineModel<T>('options', { required: true });
 
@@ -42,13 +42,26 @@ interface ModuleWithFileName extends Module {
 
 const modules = computed(() => {
   const modules: ModuleWithFileName[] = [];
-  for (const name of props.stats.moduleFileNames) {
-    modules.push({
-      fileName: name,
-      fileNameIndex: props.stats.moduleFileNames.indexOf(name),
-      renderedLength: 0,
-    });
+  if (props.modules === 'bundled') {
+    for (const chunk of props.stats.chunks) {
+      for (const module of chunk.modules) {
+        modules.push({
+          ...module,
+          fileName: props.stats.moduleFileNames[module.fileNameIndex],
+          fileNameIndex: chunk.modules.indexOf(module),
+        });
+      }
+    }
+  } else {
+    for (const name of props.stats.moduleFileNames) {
+      modules.push({
+        fileName: name,
+        fileNameIndex: props.stats.moduleFileNames.indexOf(name),
+        renderedLength: 0,
+      });
+    }
   }
+
   return modules;
 });
 
@@ -75,7 +88,10 @@ const sortedModules = computed(() => {
   return modules.value;
 });
 
-const numberOfModules = props.stats.moduleFileNames.length;
+const numberOfModules =
+  props.modules === 'all'
+    ? props.stats.moduleFileNames.length
+    : props.stats.chunks.reduce((acc, cur) => acc + cur.modules.length, 0);
 </script>
 
 <template>
