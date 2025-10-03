@@ -47,7 +47,9 @@ const chart = useChart(
     c.setOption({
       color: accentColors,
       title: {
-        text: 'Module Import Graph',
+        text: 'Dependencies',
+        top: 20,
+        left: 0,
       },
       animationDurationUpdate: 1500,
       animationEasingUpdate: 'quinticInOut',
@@ -175,8 +177,14 @@ const data = computed<ECBasicOption>((prev) => {
         })),
       ],
       selected,
-      top: 20,
+      top: 50,
+      left: 0,
       icon: 'circle',
+      orient: 'vertical',
+      type: 'scroll',
+      backgroundColor: '#e5e7ebd9',
+      inactiveColor: '#333',
+      inactiveBorderColor: 'blue',
     },
     series: [
       {
