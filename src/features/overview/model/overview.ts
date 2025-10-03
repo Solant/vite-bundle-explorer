@@ -12,10 +12,9 @@ interface BundleOverview {
 export function getBundleOverview(stats: BuildStats): BundleOverview {
   const numberOfChunks = stats.chunks.length;
 
-  let numberOfModules = 0;
+  let numberOfModules = stats.moduleFileNames.length;
   let numberOfVirtualModules = 0;
   for (const chunk of stats.chunks) {
-    numberOfModules += chunk.modules.length;
     for (const mod of chunk.modules) {
       if (mod.virtual) {
         numberOfVirtualModules += 1;

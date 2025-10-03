@@ -42,13 +42,12 @@ interface ModuleWithFileName extends Module {
 
 const modules = computed(() => {
   const modules: ModuleWithFileName[] = [];
-  for (const chunk of props.stats.chunks) {
-    for (const module of chunk.modules) {
-      modules.push({
-        ...module,
-        fileName: props.stats.moduleFileNames[module.fileNameIndex],
-      });
-    }
+  for (const name of props.stats.moduleFileNames) {
+    modules.push({
+      fileName: name,
+      fileNameIndex: props.stats.moduleFileNames.indexOf(name),
+      renderedLength: 0,
+    });
   }
   return modules;
 });
@@ -76,14 +75,7 @@ const sortedModules = computed(() => {
   return modules.value;
 });
 
-const numberOfModules = computed(() => {
-  let total = 0;
-  for (const chunk of props.stats.chunks) {
-    total += chunk.modules.length;
-  }
-
-  return total;
-});
+const numberOfModules = props.stats.moduleFileNames.length;
 </script>
 
 <template>

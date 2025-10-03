@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, shallowRef, watch } from 'vue';
+import { computed, nextTick, ref, shallowRef, watch } from 'vue';
 
 import type { BuildStats } from '@/entities/bundle-stats';
 import ViewToggle from './ViewToggle.vue';
@@ -48,6 +48,13 @@ watch(currentView, (newView) => {
   // @ts-expect-error
   currentViewOptions.value = newView.optionsFactory(stats.value);
 });
+
+function changeView(view: 'treemap' | 'graph', options: any) {
+  currentViewKey.value = view;
+  nextTick(() => {
+    currentViewOptions.value = { ...currentViewOptions.value, ...options };
+  });
+}
 </script>
 
 <template>
@@ -67,6 +74,7 @@ watch(currentView, (newView) => {
     <currentView.ViewComponent
       v-if="stats"
       :stats
+      @update-view="changeView"
       v-model:options="currentViewOptions"
       class="flex-grow-1 flex-shrink-1"
     />

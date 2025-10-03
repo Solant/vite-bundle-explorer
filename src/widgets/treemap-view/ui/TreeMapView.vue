@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, useTemplateRef, watch } from 'vue';
+import { computed, ref, useTemplateRef, watch } from 'vue';
 import * as echarts from 'echarts/core';
 
 import {
@@ -15,9 +15,67 @@ import { GraphChart, TreemapChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
 import { accentColors, getColor, palettes, sourcePalette } from '@/shared/config';
 import { dfs, type TreeMapChartNode } from '../model/tree-map';
+import { BaseContextMenu } from '@/shared/ui';
+import { getPath } from '../model/path.ts';
 
+const emit = defineEmits<{
+  updateView: [view: string, options: Record<any, any>];
+}>();
 const props = defineProps<{ stats: BuildStats }>();
 const options = defineModel<TreeMapOptions>('options', { required: true });
+
+const selectedNode = ref<TreeMapChartNode>();
+const visible = ref(false);
+const pos = ref({ x: 0, y: 0 });
+
+function hideSelectedNode() {
+  const data = selectedNode.value;
+  if (!data) {
+    return;
+  }
+
+  const hiddenModules = new Set<number>();
+  if (data.moduleIndex) {
+    hiddenModules.add(data.moduleIndex);
+  }
+
+  function traverse(node: TreeMapChartNode) {
+    node.children.forEach((child) => traverse(child));
+    if (node.moduleIndex) {
+      hiddenModules.add(node.moduleIndex);
+    }
+  }
+
+  traverse(data);
+
+  options.value = {
+    ...options.value,
+    hiddenModules: [...options.value.hiddenModules, ...Array.from(hiddenModules)],
+  };
+}
+
+function printPath() {
+  const data = selectedNode.value;
+  if (!data) {
+    return;
+  }
+
+  const target = data.moduleIndex;
+  if (target == null) {
+    return;
+  }
+
+  const source = 0;
+  const path = getPath(props.stats.importGraph.edges, source, target);
+  if (!path) {
+    return;
+  }
+
+  const hiddenModules = props.stats.moduleFileNames
+    .map((_, index) => index)
+    .filter((index) => !path.includes(index));
+  emit('updateView', 'graph', { hiddenModules });
+}
 
 const main = useTemplateRef('main');
 const chart = useChart(
@@ -26,26 +84,10 @@ const chart = useChart(
   (c) => {
     c.on('contextmenu', (event) => {
       event.event!.event.preventDefault();
-      const data = event.data as TreeMapChartNode;
-
-      const hiddenModules = new Set<number>();
-      if (data.moduleIndex) {
-        hiddenModules.add(data.moduleIndex);
-      }
-
-      function traverse(node: TreeMapChartNode) {
-        node.children.forEach((child) => traverse(child));
-        if (node.moduleIndex) {
-          hiddenModules.add(node.moduleIndex);
-        }
-      }
-
-      traverse(data);
-
-      options.value = {
-        ...options.value,
-        hiddenModules: [...options.value.hiddenModules, ...Array.from(hiddenModules)],
-      };
+      const e = event.event!.event as MouseEvent;
+      pos.value = { x: e.clientX, y: e.clientY };
+      visible.value = true;
+      selectedNode.value = event.data as TreeMapChartNode;
     });
 
     const upperLabel = {
@@ -242,8 +284,21 @@ watch(data, () => {
     ],
   });
 });
+
+defineOptions({
+  inheritAttrs: false,
+});
 </script>
 
 <template>
-  <div ref="main" />
+  <div ref="main" :class="$attrs.class" />
+  <base-context-menu
+    :x="pos.x"
+    :y="pos.y"
+    v-model="visible"
+    :items="[
+      { label: 'Hide', onClick: hideSelectedNode },
+      { label: 'Show import path', onClick: printPath },
+    ]"
+  />
 </template>
