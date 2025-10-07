@@ -1,23 +1,26 @@
 <script setup lang="ts" generic="T extends Record<any, any>">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
-import { type BuildStats, formatSize, getModuleSize, type Module } from '@/entities/bundle-stats';
+import { type BuildStats, getModuleSize } from '@/entities/bundle-stats';
 import { BaseButton, OptionGroup } from '@/shared/ui';
+import { getModuleTree, type ModuleTreeNode } from '../model/module-tree';
+import { default as Tree } from './Tree.vue';
+import { dfs, sort } from '@/shared/graph';
 
 const props = defineProps<{ stats: BuildStats; modules: 'bundled' | 'all' }>();
 
 const options = defineModel<T>('options', { required: true });
 
-function toggle(module: ModuleWithFileName, value: boolean) {
-  if (!value) {
+function toggle(modules: number[], flag: boolean) {
+  if (!flag) {
     options.value = {
       ...options.value,
-      hiddenModules: [...options.value.hiddenModules, module.fileNameIndex],
+      hiddenModules: [...options.value.hiddenModules, ...modules],
     };
   } else {
     options.value = {
       ...options.value,
-      hiddenModules: options.value.hiddenModules.filter((m: number) => m !== module.fileNameIndex),
+      hiddenModules: options.value.hiddenModules.filter((m: number) => !modules.includes(m)),
     };
   }
 }
@@ -26,7 +29,7 @@ function toggleAll() {
   if (options.value.hiddenModules.length === 0) {
     options.value = {
       ...options.value,
-      hiddenModules: modules.value.map((m) => m.fileNameIndex),
+      hiddenModules: modules.value.map((m) => props.stats.moduleFileNames.indexOf(m)),
     };
   } else {
     options.value = {
@@ -36,62 +39,76 @@ function toggleAll() {
   }
 }
 
-interface ModuleWithFileName extends Module {
-  fileName: string;
-}
-
 const modules = computed(() => {
-  const modules: ModuleWithFileName[] = [];
+  const modules: string[] = [];
+
   if (props.modules === 'bundled') {
     for (const chunk of props.stats.chunks) {
       for (const module of chunk.modules) {
-        modules.push({
-          ...module,
-          fileName: props.stats.moduleFileNames[module.fileNameIndex],
-          fileNameIndex: chunk.modules.indexOf(module),
-        });
+        modules.push(props.stats.moduleFileNames[module.fileNameIndex]);
       }
     }
   } else {
-    for (const name of props.stats.moduleFileNames) {
-      modules.push({
-        fileName: name,
-        fileNameIndex: props.stats.moduleFileNames.indexOf(name),
-        renderedLength: 0,
-      });
-    }
+    modules.push(...props.stats.moduleFileNames);
   }
 
   return modules;
-});
-
-const sortOrder = ref<'' | 'size-asc' | 'name-asc' | 'size-desc' | 'name-desc'>('');
-const sortedModules = computed(() => {
-  if (sortOrder.value === 'size-asc') {
-    return modules.value.sort(
-      (a, b) =>
-        (getModuleSize(a.fileName, props.stats, options.value.metric) ?? 0) -
-        (getModuleSize(b.fileName, props.stats, options.value.metric) ?? 0),
-    );
-  } else if (sortOrder.value === 'size-desc') {
-    return modules.value.sort(
-      (a, b) =>
-        (getModuleSize(b.fileName, props.stats, options.value.metric) ?? 0) -
-        (getModuleSize(a.fileName, props.stats, options.value.metric) ?? 0),
-    );
-  } else if (sortOrder.value === 'name-asc') {
-    return modules.value.sort((a, b) => a.fileName.localeCompare(b.fileName));
-  } else if (sortOrder.value === 'name-desc') {
-    return modules.value.sort((a, b) => b.fileName.localeCompare(a.fileName));
-  }
-
-  return modules.value;
 });
 
 const numberOfModules =
   props.modules === 'all'
     ? props.stats.moduleFileNames.length
     : props.stats.chunks.reduce((acc, cur) => acc + cur.modules.length, 0);
+
+// prepare a file tree
+const tree = ref(getModuleTree(modules.value));
+dfs(
+  tree.value,
+  (node) => {
+    if (node.fileName) {
+      node.size = getModuleSize(node.fileName, props.stats, options.value.metric) ?? 0;
+    }
+    if (node.children) {
+      node.size = node.children?.reduce((acc, cur) => acc + (cur.size ?? 0), 0) ?? 0;
+    }
+  },
+  0,
+  undefined,
+  'post',
+);
+
+// sort order
+const sortOrder = ref<'size' | 'name'>('size');
+watch(
+  sortOrder,
+  (newOrder) => {
+    if (newOrder === 'size') {
+      sort(tree.value, (a, b) => (b.size ?? 0) - (a.size ?? 0));
+    } else if (newOrder === 'name') {
+      sort(tree.value, (a, b) => a.title.localeCompare(b.title));
+    }
+  },
+  { immediate: true },
+);
+
+function toggleVisibility(node: ModuleTreeNode) {
+  node.visible = !node.visible;
+
+  if (node.fileName != null) {
+    toggle([props.stats.moduleFileNames.indexOf(node.fileName)], node.visible);
+  }
+
+  if (node.children) {
+    const modulesToHide: Array<number> = [];
+    dfs(node.children, (child) => {
+      child.visible = node.visible;
+      if (child.fileName) {
+        modulesToHide.push(props.stats.moduleFileNames.indexOf(child.fileName));
+      }
+    });
+    toggle(modulesToHide, node.visible);
+  }
+}
 </script>
 
 <template>
@@ -104,35 +121,16 @@ const numberOfModules =
       <label>
         Sort by
         <select v-model="sortOrder">
-          <option value="">-</option>
-          <option value="name-asc">Name asc</option>
-          <option value="name-desc">Name desc</option>
-          <option value="size-asc">Size asc</option>
-          <option value="size-desc">Size desc</option>
+          <option value="name">Name</option>
+          <option value="size">Size</option>
         </select>
       </label>
     </div>
 
-    <div class="overflow-auto p-1">
-      <div
-        v-for="module in sortedModules"
-        class="flex gap-1 cursor-pointer hover:bg-gray-300"
-        @click="toggle(module, options.hiddenModules.includes(module.fileNameIndex))"
-        :title="module.fileName"
-        :key="module.fileNameIndex"
-      >
-        <input
-          type="checkbox"
-          :checked="!options.hiddenModules.includes(module.fileNameIndex)"
-          @change="toggle(module, ($event.target as HTMLInputElement).checked)"
-        />
-        <div class="flex-grow-1 flex-shrink-1 min-w-0 truncate">
-          {{ module.fileName }}
-        </div>
-        <div class="ml-auto whitespace-nowrap">
-          {{ formatSize(getModuleSize(module.fileNameIndex, props.stats, options.metric) ?? 0) }}
-        </div>
-      </div>
-    </div>
+    <Tree
+      :data="tree"
+      @toggle="$event.collapsed = !$event.collapsed"
+      @toggle-visibility="toggleVisibility"
+    />
   </OptionGroup>
 </template>
