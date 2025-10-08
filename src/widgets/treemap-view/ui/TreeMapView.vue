@@ -139,6 +139,10 @@ const chart = useChart(
           const currentModuleIndex = props.stats.moduleFileNames.findIndex(
             (node) => node === moduleName,
           );
+          if (currentModuleIndex >= 0) {
+            result.push(`<div>Module index: ${currentModuleIndex}</div>`);
+          }
+
           const edges =
             currentModuleIndex >= 0
               ? props.stats.importGraph.edges.filter(
