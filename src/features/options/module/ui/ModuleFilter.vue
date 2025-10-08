@@ -7,7 +7,7 @@ import { getModuleTree, type ModuleTreeNode } from '../model/module-tree';
 import { default as Tree } from './Tree.vue';
 import { dfs, sort } from '@/shared/graph';
 
-const props = defineProps<{ stats: BuildStats; modules: 'bundled' | 'all' }>();
+const props = defineProps<{ stats: BuildStats }>();
 
 const options = defineModel<T>('options', { required: true });
 
@@ -39,29 +39,10 @@ function toggleAll() {
   }
 }
 
-const modules = computed(() => {
-  const modules: string[] = [];
-
-  if (props.modules === 'bundled') {
-    for (const chunk of props.stats.chunks) {
-      for (const module of chunk.modules) {
-        modules.push(props.stats.moduleFileNames[module.fileNameIndex]);
-      }
-    }
-  } else {
-    modules.push(...props.stats.moduleFileNames);
-  }
-
-  return modules;
-});
-
-const numberOfModules =
-  props.modules === 'all'
-    ? props.stats.moduleFileNames.length
-    : props.stats.chunks.reduce((acc, cur) => acc + cur.modules.length, 0);
+const numberOfModules = props.stats.moduleFileNames.length;
 
 // prepare a file tree
-const tree = ref(getModuleTree(modules.value));
+const tree = ref(getModuleTree(props.stats.moduleFileNames));
 dfs(
   tree.value,
   (node) => {

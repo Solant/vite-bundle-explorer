@@ -25,7 +25,7 @@ const metric = useModelProxy(model, 'metric');
     <OptionItem title="Compact">
       <BaseSwitch v-model="compact" />
     </OptionItem>
-    <ModuleFilterOption v-model:options="model" :stats modules="all" />
+    <ModuleFilterOption v-model:options="model" :stats />
 
     <OptionGroup title="Force layout">
       <NumberOption title="Repulsion" v-model="forceRepulsion" />
