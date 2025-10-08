@@ -82,6 +82,31 @@ watch(
   },
   { immediate: true },
 );
+watch(
+  () => options.value.hiddenModules,
+  (hiddenModules) => {
+    dfs(tree.value, (node) => {
+      const index = node.fileName ? props.stats.moduleFileNames.indexOf(node.fileName) : -1;
+      if (hiddenModules.includes(index)) {
+        node.visible = false;
+      } else if (index !== -1) {
+        node.visible = true;
+      }
+    });
+
+    dfs(
+      tree.value,
+      (node) => {
+        if (node.children) {
+          node.visible = !node.children.every((c) => c.visible === false);
+        }
+      },
+      0,
+      undefined,
+      'post',
+    );
+  },
+);
 
 // sort order
 const sortOrder = ref<'size' | 'name'>('size');
