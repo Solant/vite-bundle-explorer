@@ -7,7 +7,7 @@ import { getModuleTree, type ModuleTreeNode } from '../model/module-tree';
 import { default as Tree } from './Tree.vue';
 import { dfs, sort } from '@/shared/graph';
 
-const props = defineProps<{ stats: BuildStats }>();
+const props = defineProps<{ stats: BuildStats; modules: 'bundled' | 'all' }>();
 
 const options = defineModel<T>('options', { required: true });
 
@@ -25,6 +25,22 @@ function toggle(modules: number[], flag: boolean) {
   }
 }
 
+const modules = computed(() => {
+  const modules: string[] = [];
+
+  if (props.modules === 'bundled') {
+    for (const chunk of props.stats.chunks) {
+      for (const module of chunk.modules) {
+        modules.push(props.stats.moduleFileNames[module.fileNameIndex]);
+      }
+    }
+  } else {
+    modules.push(...props.stats.moduleFileNames);
+  }
+
+  return modules;
+});
+
 function toggleAll() {
   if (options.value.hiddenModules.length === 0) {
     options.value = {
@@ -39,23 +55,32 @@ function toggleAll() {
   }
 }
 
-const numberOfModules = props.stats.moduleFileNames.length;
+const numberOfModules =
+  props.modules === 'all'
+    ? props.stats.moduleFileNames.length
+    : props.stats.chunks.reduce((acc, cur) => acc + cur.modules.length, 0);
 
 // prepare a file tree
-const tree = ref(getModuleTree(props.stats.moduleFileNames));
-dfs(
-  tree.value,
-  (node) => {
-    if (node.fileName) {
-      node.size = getModuleSize(node.fileName, props.stats, options.value.metric) ?? 0;
-    }
-    if (node.children) {
-      node.size = node.children?.reduce((acc, cur) => acc + (cur.size ?? 0), 0) ?? 0;
-    }
+const tree = ref(getModuleTree(modules.value));
+watch(
+  () => options.value.metric,
+  (metric) => {
+    dfs(
+      tree.value,
+      (node) => {
+        if (node.fileName) {
+          node.size = getModuleSize(node.fileName, props.stats, metric) ?? 0;
+        }
+        if (node.children) {
+          node.size = node.children?.reduce((acc, cur) => acc + (cur.size ?? 0), 0) ?? 0;
+        }
+      },
+      0,
+      undefined,
+      'post',
+    );
   },
-  0,
-  undefined,
-  'post',
+  { immediate: true },
 );
 
 // sort order

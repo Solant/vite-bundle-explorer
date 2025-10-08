@@ -5,7 +5,7 @@ import { dfs } from '@/shared/graph';
 import { formatSize } from '@/entities/bundle-stats';
 
 export default defineComponent({
-  emits: ['toggle', 'toggle-visibility'],
+  emits: ['toggle', 'toggle-visibility', 'hover'],
   props: {
     data: {
       type: Object as PropType<ModuleTree>,
