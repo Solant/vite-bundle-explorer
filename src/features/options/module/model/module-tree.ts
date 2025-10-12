@@ -42,12 +42,20 @@ const EXTENSIONS: Record<string, string> = {
   less: 'i-vscode-icons:file-type-less',
   // Assets
   svg: 'i-vscode-icons:file-type-svg',
+  html: 'i-vscode-icons:file-type-html',
 };
+
+const KNOWN_VIRTUAL_MODULES = ['plugin-vue:export-helper'];
 
 function getModuleIcons(node: ModuleTreeNode) {
   const result: string[] = [];
   const fileName = node.fileName;
   if (!fileName) {
+    return result;
+  }
+
+  if (KNOWN_VIRTUAL_MODULES.includes(fileName)) {
+    result.push('i-vscode-icons:file-type-vite');
     return result;
   }
 
@@ -89,6 +97,7 @@ export function getModuleTree(moduleNames: string[]) {
         if (index !== parts.length - 1) {
           newNode.children = [];
           newNode.collapsed = true;
+          newNode.icons = ['i-vscode-icons:default-folder'];
         } else {
           const queryIndex = parts[index].indexOf('?');
           if (queryIndex !== -1) {
