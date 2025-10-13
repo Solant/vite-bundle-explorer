@@ -28,7 +28,7 @@ export default defineComponent({
                 onClick() {
                   emit('toggle', node);
                 },
-                class: 'flex items-center cursor-pointer hover:bg-gray-100 overflow-hidden',
+                class: 'flex items-center cursor-pointer hover:bg-gray-100 overflow-hidden py-1',
               },
               [
                 h('div', {
@@ -51,10 +51,14 @@ export default defineComponent({
                     class: `inline-block flex-none ${icon} mr-1`,
                   }),
                 ),
-                h('div', { class: 'flex-1-1 min-w-0 truncate', title: node.title }, node.title),
+                h(
+                  'div',
+                  { class: 'flex-1-1 min-w-0 truncate text-sm', title: node.title },
+                  node.title,
+                ),
                 node.query && h('div', { class: 'flex-none ml-1 i-mdi:help', title: node.query }),
                 typeof node.size === 'number' &&
-                  h('div', { class: 'flex-none ml-auto' }, formatSize(node.size)),
+                  h('div', { class: 'flex-none ml-auto text-sm' }, formatSize(node.size)),
               ],
             ),
           );
