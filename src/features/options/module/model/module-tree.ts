@@ -1,3 +1,5 @@
+import { type BuildStats, isVirtual } from '@/entities/bundle-stats';
+
 export interface ModuleTreeNode {
   title: string;
   query?: string;
@@ -45,16 +47,14 @@ const EXTENSIONS: Record<string, string> = {
   html: 'i-vscode-icons:file-type-html',
 };
 
-const KNOWN_VIRTUAL_MODULES = ['plugin-vue:export-helper'];
-
-function getModuleIcons(node: ModuleTreeNode) {
+function getModuleIcons(node: ModuleTreeNode, stats: BuildStats) {
   const result: string[] = [];
   const fileName = node.fileName;
   if (!fileName) {
     return result;
   }
 
-  if (KNOWN_VIRTUAL_MODULES.includes(fileName)) {
+  if (isVirtual(fileName, stats)) {
     result.push('i-vscode-icons:file-type-vite');
     return result;
   }
@@ -80,7 +80,7 @@ function getModuleIcons(node: ModuleTreeNode) {
   return result;
 }
 
-export function getModuleTree(moduleNames: string[]) {
+export function getModuleTree(moduleNames: string[], stats: BuildStats) {
   const tree: ModuleTree = [];
 
   for (const name of moduleNames) {
@@ -106,7 +106,7 @@ export function getModuleTree(moduleNames: string[]) {
 
           newNode.title = newNode.title.substring(0, queryIndex !== -1 ? queryIndex : undefined);
           newNode.fileName = name;
-          newNode.icons = getModuleIcons(newNode);
+          newNode.icons = getModuleIcons(newNode, stats);
         }
 
         branch.push(newNode);

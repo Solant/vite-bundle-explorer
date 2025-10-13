@@ -61,7 +61,7 @@ const numberOfModules =
     : props.stats.chunks.reduce((acc, cur) => acc + cur.modules.length, 0);
 
 // prepare a file tree
-const tree = ref(getModuleTree(modules.value));
+const tree = ref(getModuleTree(modules.value, props.stats));
 watch(
   () => options.value.metric,
   (metric) => {
