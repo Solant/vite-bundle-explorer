@@ -41,10 +41,11 @@ export default defineComponent({
                   },
                   style: { marginRight: `${depth ? depth * 12 : 4}px` },
                 }),
-                node.children &&
-                  h('div', {
-                    class: `${node.collapsed ? 'i-mdi:chevron-right' : 'i-mdi:chevron-down'} flex-none`,
-                  }),
+                node.children
+                  ? h('div', {
+                      class: `${node.collapsed ? 'i-mdi:chevron-right' : 'i-mdi:chevron-down'} flex-none`,
+                    })
+                  : h('div', { class: 'flex-none w-4 h-4' }),
                 node.icons?.map((icon) =>
                   h('div', {
                     class: `inline-block flex-none ${icon} mr-1`,
