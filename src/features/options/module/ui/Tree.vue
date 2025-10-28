@@ -5,7 +5,7 @@ import { dfs } from '@/shared/graph';
 import { formatSize } from '@/entities/bundle-stats';
 
 export default defineComponent({
-  emits: ['toggle', 'toggle-visibility', 'hover'],
+  emits: ['toggle', 'toggle-visibility', 'hover', 'context-menu'],
   props: {
     data: {
       type: Object as PropType<ModuleTree>,
@@ -27,6 +27,10 @@ export default defineComponent({
                 ariaLevel: depth + 1,
                 onClick() {
                   emit('toggle', node);
+                },
+                onContextmenu(event) {
+                  event.preventDefault();
+                  emit('context-menu', { node, event });
                 },
                 class: 'flex items-center cursor-pointer hover:bg-gray-100 overflow-hidden py-1',
               },

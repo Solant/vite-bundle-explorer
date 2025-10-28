@@ -2,12 +2,17 @@
 import { computed, ref, watch } from 'vue';
 
 import { type BuildStats, getModuleSize } from '@/entities/bundle-stats';
-import { BaseButton, OptionGroup } from '@/shared/ui';
+import { BaseButton, BaseContextMenu, OptionGroup } from '@/shared/ui';
 import { getModuleTree, type ModuleTreeNode } from '../model/module-tree';
 import { default as Tree } from './Tree.vue';
 import { dfs, sort } from '@/shared/graph';
+import { getPath } from '@/widgets/treemap-view/model/path.ts';
 
 const props = defineProps<{ stats: BuildStats; modules: 'bundled' | 'all' }>();
+
+const emit = defineEmits<{
+  updateView: [view: string, options: any];
+}>();
 
 const options = defineModel<T>('options', { required: true });
 
@@ -140,6 +145,49 @@ function toggleVisibility(node: ModuleTreeNode) {
     toggle(modulesToHide, node.visible);
   }
 }
+
+const selectedNode = ref<ModuleTreeNode>();
+const open = ref(false);
+const pos = ref({ x: 0, y: 0 });
+function onContextMenu(payload: { event: MouseEvent; node: ModuleTreeNode }) {
+  const { event, node } = payload;
+
+  pos.value.x = event.clientX;
+  pos.value.y = event.clientY;
+  selectedNode.value = node;
+  open.value = true;
+}
+
+function toggleSelectedNode() {
+  if (selectedNode.value) {
+    toggleVisibility(selectedNode.value);
+  }
+}
+
+function printPath() {
+  const data = selectedNode.value;
+  if (!data) {
+    return;
+  }
+
+  const fileName = data.fileName;
+  if (fileName == null) {
+    return;
+  }
+
+  const target = props.stats.moduleFileNames.indexOf(fileName);
+  const source = 0;
+  const path = getPath(props.stats.importGraph.edges, source, target);
+  if (!path) {
+    return;
+  }
+
+  const hiddenModules = props.stats.moduleFileNames
+    .map((_, index) => index)
+    .filter((index) => !path.includes(index));
+  console.log(hiddenModules);
+  emit('updateView', 'graph', { hiddenModules });
+}
 </script>
 
 <template>
@@ -162,6 +210,23 @@ function toggleVisibility(node: ModuleTreeNode) {
       :data="tree"
       @toggle="$event.collapsed = !$event.collapsed"
       @toggle-visibility="toggleVisibility"
+      @context-menu="onContextMenu"
+    />
+
+    <BaseContextMenu
+      v-model="open"
+      :x="pos.x"
+      :y="pos.y"
+      :items="[
+        {
+          label: 'Toggle visibility',
+          onClick: toggleSelectedNode,
+        },
+        {
+          label: 'Show import path',
+          onClick: printPath,
+        },
+      ]"
     />
   </OptionGroup>
 </template>
