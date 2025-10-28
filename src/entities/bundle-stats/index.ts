@@ -14,6 +14,20 @@ export function isDependency(moduleFileName: string): boolean {
   return moduleFileName.startsWith('node_modules');
 }
 
+export function isVirtual(module: string | number, stats: BuildStats): boolean {
+  const index = typeof module === 'string' ? stats.moduleFileNames.indexOf(module) : module;
+
+  for (const chunk of stats.chunks) {
+    for (const mod of chunk.modules) {
+      if (mod.fileNameIndex === index) {
+        return mod.virtual ?? false;
+      }
+    }
+  }
+
+  return false;
+}
+
 export function getModuleDependencyName(moduleFileName: string): string {
   if (!isDependency(moduleFileName)) {
     return '';

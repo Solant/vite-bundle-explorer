@@ -7,8 +7,10 @@ export default defineConfig({
     presetWind3(),
     presetIcons({
       collections: {
-        mdi: () => import('@iconify-json/mdi/icons.json').then(i => i.default),
-      }
+        mdi: () => import('@iconify-json/mdi/icons.json').then((i) => i.default),
+        'vscode-icons': () =>
+          import('@iconify-json/vscode-icons/icons.json').then((i) => i.default),
+      },
     }),
   ],
 });

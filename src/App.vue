@@ -65,6 +65,7 @@ function changeView(view: 'treemap' | 'graph', options: any) {
       <currentView.OptionsComponent
         v-if="stats && currentViewOptions"
         v-model="currentViewOptions"
+        @update-view="changeView"
         :stats
       />
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useMagicKeys } from '@vueuse/core';
-import { watch } from 'vue';
+import { onClickOutside, useMagicKeys } from '@vueuse/core';
+import { useTemplateRef, watch } from 'vue';
 
 defineProps<{ x: number; y: number; items: Array<{ label: string; onClick: () => void }> }>();
 
@@ -13,6 +13,11 @@ watch(escape, () => {
   }
 });
 
+const root = useTemplateRef('root');
+onClickOutside(root, () => {
+  model.value = false;
+});
+
 function toggle(item: { label: string; onClick: () => void }) {
   model.value = false;
   item.onClick();
@@ -20,8 +25,8 @@ function toggle(item: { label: string; onClick: () => void }) {
 </script>
 
 <template>
-  <div v-if="model" class="fixed" :style="{ left: `${x}px`, top: `${y}px` }">
-    <ul role="menu">
+  <div v-if="model" class="fixed" :style="{ left: `${x}px`, top: `${y}px` }" ref="root">
+    <ul role="menu" class="border border-solid border-gray-300">
       <li
         v-for="item in items"
         role="menuitem"

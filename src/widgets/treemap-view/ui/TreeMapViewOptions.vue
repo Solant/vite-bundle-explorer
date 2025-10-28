@@ -14,12 +14,20 @@ const model = defineModel<TreeMapOptions>({ required: true });
 
 defineProps<{ stats: BuildStats }>();
 
+const emit = defineEmits<{
+  updateView: [view: string, options: any];
+}>();
+
 const compact = computed({
   get: () => model.value.compact,
   set: (value) => (model.value = { ...model.value, compact: value }),
 });
 
 const metric = useModelProxy(model, 'metric');
+
+function updateView(view: string, options: any) {
+  emit('updateView', view, options);
+}
 </script>
 
 <template>
@@ -33,6 +41,12 @@ const metric = useModelProxy(model, 'metric');
     >
       <ChunkFilter v-model:options="model" :stats />
     </OptionGroup>
-    <ModuleFilterOption v-model:options="model" :stats modules="bundled" />
+
+    <ModuleFilterOption
+      v-model:options="model"
+      :stats
+      modules="bundled"
+      @update-view="updateView"
+    />
   </div>
 </template>
