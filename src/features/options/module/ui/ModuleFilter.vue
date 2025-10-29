@@ -111,6 +111,7 @@ watch(
       'post',
     );
   },
+  { immediate: true },
 );
 
 // sort order

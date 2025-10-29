@@ -1,4 +1,10 @@
-import { type BuildStats, getAvailableMetrics, type Metric } from '@/entities/bundle-stats';
+import {
+  type BuildStats,
+  getAvailableMetrics,
+  isDependency,
+  isVirtual,
+  type Metric,
+} from '@/entities/bundle-stats';
 
 export interface GraphOptions {
   metric: Metric;
@@ -11,6 +17,14 @@ export interface GraphOptions {
 }
 
 export function optionsFactory(buildStats: BuildStats): GraphOptions {
+  const hiddenModules = buildStats.moduleFileNames.reduce((acc, name, index) => {
+    if (isDependency(name) || isVirtual(name, buildStats)) {
+      acc.push(index);
+    }
+
+    return acc;
+  }, [] as number[]);
+
   return {
     metric: getAvailableMetrics(buildStats)[0],
     forceRepulsion: 50,
@@ -18,6 +32,6 @@ export function optionsFactory(buildStats: BuildStats): GraphOptions {
     forceEdgeLength: 30,
     forceFriction: 0.6,
     compact: false,
-    hiddenModules: [],
+    hiddenModules,
   };
 }

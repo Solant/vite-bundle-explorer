@@ -135,7 +135,7 @@ const compact = computed(() => options.value.compact);
 
 const colors = [sourceAccentColor, ...accentColors];
 
-const data = computed<ECBasicOption>((prev) => {
+const data = computed<ECBasicOption>(() => {
   let { edges } = props.stats.importGraph;
   let nodes = props.stats.moduleFileNames;
 
@@ -160,13 +160,6 @@ const data = computed<ECBasicOption>((prev) => {
   }
   const dependencies = Array.from(set);
 
-  const selected: Record<string, boolean> = { src: true };
-  if (prev === undefined) {
-    for (const dep of dependencies) {
-      selected[dep] = false;
-    }
-  }
-
   return {
     legend: {
       data: [
@@ -176,7 +169,6 @@ const data = computed<ECBasicOption>((prev) => {
           itemStyle: { color: colors[index + 1] },
         })),
       ],
-      selected,
       top: 50,
       left: 0,
       icon: 'circle',
