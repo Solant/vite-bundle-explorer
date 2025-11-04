@@ -10,7 +10,14 @@ const ROOT_COLOR = '#e7000b';
 
 <script setup lang="ts">
 import { computed, useTemplateRef, watch } from 'vue';
+import { TitleComponent, TooltipComponent } from 'echarts/components';
+import { TreemapChart } from 'echarts/charts';
+import { CanvasRenderer } from 'echarts/renderers';
+import type { ECBasicOption } from 'echarts/types/dist/shared';
 
+import type { GraphOptions } from '../model/graph.ts';
+
+import { useChart } from '@/shared/lib';
 import {
   type BuildStats,
   formatSize,
@@ -19,13 +26,6 @@ import {
   removeEmptyLeafs,
   removeNodes,
 } from '@/entities/bundle-stats';
-import { useChart } from '@/shared/lib';
-
-import type { GraphOptions } from '../model/graph.ts';
-import { TitleComponent, TooltipComponent } from 'echarts/components';
-import { TreemapChart } from 'echarts/charts';
-import { CanvasRenderer } from 'echarts/renderers';
-import type { ECBasicOption } from 'echarts/types/dist/shared';
 import { accentColors, sourceAccentColor } from '@/shared/config';
 
 const props = defineProps<{ stats: BuildStats }>();
@@ -34,7 +34,12 @@ const options = defineModel<GraphOptions>('options', { required: true });
 const main = useTemplateRef('main');
 const chart = useChart(
   main,
-  [TitleComponent, TooltipComponent, TreemapChart, CanvasRenderer],
+  [
+    TitleComponent,
+    TooltipComponent,
+    TreemapChart,
+    CanvasRenderer,
+  ],
   (c) => {
     c.on('contextmenu', (event) => {
       event.event!.event.preventDefault();
@@ -72,6 +77,7 @@ const chart = useChart(
           },
           label: {
             show: false,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             formatter(info: any) {
               const moduleInfo: string = info.data.name;
               return `${moduleInfo}\n${formatSize(getModuleSize(moduleInfo, props.stats, options.value.metric) ?? 0)}`;
@@ -95,10 +101,10 @@ watch(options, (newValue, oldValue) => {
   }
 
   if (
-    newValue.forceEdgeLength === oldValue.forceEdgeLength &&
-    newValue.forceFriction === oldValue.forceFriction &&
-    newValue.forceEdgeLength === oldValue.forceEdgeLength &&
-    newValue.forceGravity === oldValue.forceGravity
+    newValue.forceEdgeLength === oldValue.forceEdgeLength
+    && newValue.forceFriction === oldValue.forceFriction
+    && newValue.forceEdgeLength === oldValue.forceEdgeLength
+    && newValue.forceGravity === oldValue.forceGravity
   ) {
     return;
   }
@@ -123,7 +129,7 @@ const hiddenModules = computed<(typeof options)['value']['hiddenModules']>((oldV
     return options.value.hiddenModules;
   }
 
-  for (let i = 0; i < oldValue.length; i++) {
+  for (let i = 0; i < oldValue.length; i += 1) {
     if (oldValue[i] !== options.value.hiddenModules[i]) {
       return options.value.hiddenModules;
     }
@@ -187,18 +193,23 @@ const data = computed<ECBasicOption>(() => {
             itemStyle: { color: accentColors[index + 1] },
           })),
         ],
-        edges: edges.map((edge) => {
-          return {
-            source: edge[0],
-            target: edge[1],
-            symbol: EDGE_SYMBOL,
-          };
-        }),
+        edges: edges.map((edge) => ({
+          source: edge[0],
+          target: edge[1],
+          symbol: EDGE_SYMBOL,
+        })),
         data: nodes.map((node, idx) => {
           const isRoot = !edges.some(([_source, target]) => target === idx);
           const size = getModuleSize(node, props.stats, metric.value) ?? 0;
-          const categoryIndex =
-            dependencies.findIndex((el) => el === getModuleDependencyName(node)) + 1;
+          const categoryIndex = dependencies.findIndex((el) => el === getModuleDependencyName(node)) + 1;
+
+          let color: string | undefined;
+          if (isRoot) {
+            color = ROOT_COLOR;
+          } else if (size === 0) {
+            color = '#ffffff';
+          }
+
           return {
             category: categoryIndex,
             id: idx,
@@ -207,7 +218,7 @@ const data = computed<ECBasicOption>(() => {
             symbolSize: minMax(size / 1024, 12, 75),
             itemStyle: {
               borderColor: size === 0 ? colors[categoryIndex % accentColors.length] : undefined,
-              color: isRoot ? ROOT_COLOR : size === 0 ? '#ffffff' : undefined,
+              color,
             },
             emphasis: {
               label: {

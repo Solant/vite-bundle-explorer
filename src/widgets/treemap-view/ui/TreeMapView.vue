@@ -1,27 +1,36 @@
 <script setup lang="ts">
-import { computed, ref, useTemplateRef, watch } from 'vue';
+import {
+  computed, ref, useTemplateRef, watch,
+} from 'vue';
 import * as echarts from 'echarts/core';
+import { LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
+import { GraphChart, TreemapChart } from 'echarts/charts';
+import { CanvasRenderer } from 'echarts/renderers';
 
+import type { TreeMapOptions } from '../model/options.ts';
+import { dfs, type TreeMapChartNode } from '../model/tree-map';
+import { getPath } from '../model/path.ts';
+
+import {
+  accentColors, getColor, palettes, sourcePalette,
+} from '@/shared/config';
+import { useChart } from '@/shared/lib';
+import { BaseContextMenu } from '@/shared/ui';
 import {
   type BuildStats,
   getMetricLabel,
   getModuleSize,
   isDependency,
 } from '@/entities/bundle-stats';
-import type { TreeMapOptions } from '../model/options.ts';
-import { useChart } from '@/shared/lib';
-import { LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
-import { GraphChart, TreemapChart } from 'echarts/charts';
-import { CanvasRenderer } from 'echarts/renderers';
-import { accentColors, getColor, palettes, sourcePalette } from '@/shared/config';
-import { dfs, type TreeMapChartNode } from '../model/tree-map';
-import { BaseContextMenu } from '@/shared/ui';
-import { getPath } from '../model/path.ts';
 
+defineOptions({
+  inheritAttrs: false,
+});
+const props = defineProps<{ stats: BuildStats }>();
 const emit = defineEmits<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   updateView: [view: string, options: Record<any, any>];
 }>();
-const props = defineProps<{ stats: BuildStats }>();
 const options = defineModel<TreeMapOptions>('options', { required: true });
 
 const selectedNode = ref<TreeMapChartNode>();
@@ -80,7 +89,14 @@ function printPath() {
 const main = useTemplateRef('main');
 const chart = useChart(
   main,
-  [TitleComponent, TooltipComponent, LegendComponent, GraphChart, CanvasRenderer, TreemapChart],
+  [
+    TitleComponent,
+    TooltipComponent,
+    LegendComponent,
+    GraphChart,
+    CanvasRenderer,
+    TreemapChart,
+  ],
   (c) => {
     c.on('contextmenu', (event) => {
       event.event!.event.preventDefault();
@@ -114,25 +130,26 @@ const chart = useChart(
     c.setOption({
       color: accentColors,
       tooltip: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         formatter(info: any) {
-          const value = info.value;
-          const treePathInfo = info.treePathInfo;
+          const { value } = info;
+          const { treePathInfo } = info;
           const treePath: string[] = [];
-          for (let i = 1; i < treePathInfo.length; i++) {
+          for (let i = 1; i < treePathInfo.length; i += 1) {
             treePath.push(treePathInfo[i].name);
           }
 
           const result: string[] = [];
           result.push(
-            '<div class="tooltip-title">' +
+            `<div class="tooltip-title">${
               echarts.format.encodeHTML(
-                // @ts-expect-error
+                // @ts-expect-error echarts info is any
                 treePath.length === 1 ? treePath : treePath.slice(1).join('/'),
-              ) +
-              '</div>',
-            `${getMetricLabel(options.value.metric)}: ` +
-              echarts.format.addCommas((value / 1024).toFixed(2)) +
-              ' KB',
+              )
+            }</div>`,
+            `${getMetricLabel(options.value.metric)}: ${
+              echarts.format.addCommas((value / 1024).toFixed(2))
+            } KB`,
           );
 
           const moduleName = treePath.slice(1).join('/');
@@ -143,12 +160,11 @@ const chart = useChart(
             result.push(`<div>Module index: ${currentModuleIndex}</div>`);
           }
 
-          const edges =
-            currentModuleIndex >= 0
-              ? props.stats.importGraph.edges.filter(
-                  ([_source, target]) => target === currentModuleIndex,
-                )
-              : [];
+          const edges = currentModuleIndex >= 0
+            ? props.stats.importGraph.edges.filter(
+              ([_source, target]) => target === currentModuleIndex,
+            )
+            : [];
           const parents = edges.map((edge) => props.stats.moduleFileNames[edge[0]]);
           if (parents.length) {
             result.push('<div class="mt-2">Imported by:</div>', '<ul>');
@@ -186,6 +202,7 @@ const chart = useChart(
             },
             ...Array.from({ length: 30 }).map(level),
           ],
+          // eslint-disable-next-line no-use-before-define
           data: data.value,
         },
       ],
@@ -199,6 +216,7 @@ const data = computed(() => {
     const chunk = props.stats.chunks[chunkIndex];
     const chunkColor = palettes[chunkIndex % palettes.length];
     if (options.value.hiddenChunks.includes(chunk.fileName)) {
+      // eslint-disable-next-line no-continue
       continue;
     }
 
@@ -220,6 +238,7 @@ const data = computed(() => {
     for (const module of chunk.modules) {
       const moduleIndex = module.fileNameIndex;
       if (options.value.hiddenModules.includes(moduleIndex)) {
+        // eslint-disable-next-line no-continue
         continue;
       }
 
@@ -261,6 +280,7 @@ const data = computed(() => {
   // calculate the total size for groups
   dfs(result, (node) => {
     if (node.children.length) {
+      // eslint-disable-next-line no-param-reassign
       node.value = node.children.reduce((acc, cur) => acc + cur.value, 0);
     }
   });
@@ -269,8 +289,11 @@ const data = computed(() => {
   if (options.value.compact) {
     dfs(result, (node) => {
       if (node.children.length === 1) {
+        // eslint-disable-next-line no-param-reassign
         node.path = `${node.path}/${node.children[0].path}`;
+        // eslint-disable-next-line no-param-reassign
         node.name = `${node.name}/${node.children[0].name}`;
+        // eslint-disable-next-line no-param-reassign
         node.children = node.children[0].children;
       }
     });
@@ -289,17 +312,14 @@ watch(data, () => {
   });
 });
 
-defineOptions({
-  inheritAttrs: false,
-});
 </script>
 
 <template>
   <div ref="main" :class="$attrs.class" />
-  <base-context-menu
+  <BaseContextMenu
+    v-model="visible"
     :x="pos.x"
     :y="pos.y"
-    v-model="visible"
     :items="[
       { label: 'Hide', onClick: hideSelectedNode },
       { label: 'Show import path', onClick: printPath },

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
+import type { TreeMapOptions } from '../model/options.ts';
+
 import { type BuildStats, type Chunk, formatSize } from '@/entities/bundle-stats';
 import { BaseButton } from '@/shared/ui';
-
-import type { TreeMapOptions } from '../model/options.ts';
 
 const props = defineProps<{ stats: BuildStats }>();
 
@@ -45,13 +45,13 @@ function getChunkLength(chunk: Chunk) {
 const sortOrder = ref<'' | 'size-asc' | 'name-asc' | 'size-desc' | 'name-desc'>('');
 const sortedChunks = computed<Chunk[]>(() => {
   if (sortOrder.value === 'size-asc') {
-    return props.stats.chunks.sort((a, b) => getChunkLength(a) - getChunkLength(b));
-  } else if (sortOrder.value === 'size-desc') {
-    return props.stats.chunks.sort((a, b) => getChunkLength(b) - getChunkLength(a));
-  } else if (sortOrder.value === 'name-asc') {
-    return props.stats.chunks.sort((a, b) => a.fileName.localeCompare(b.fileName));
-  } else if (sortOrder.value === 'name-desc') {
-    return props.stats.chunks.sort((a, b) => b.fileName.localeCompare(a.fileName));
+    return props.stats.chunks.toSorted((a, b) => getChunkLength(a) - getChunkLength(b));
+  } if (sortOrder.value === 'size-desc') {
+    return props.stats.chunks.toSorted((a, b) => getChunkLength(b) - getChunkLength(a));
+  } if (sortOrder.value === 'name-asc') {
+    return props.stats.chunks.toSorted((a, b) => a.fileName.localeCompare(b.fileName));
+  } if (sortOrder.value === 'name-desc') {
+    return props.stats.chunks.toSorted((a, b) => b.fileName.localeCompare(a.fileName));
   }
 
   return props.stats.chunks;
@@ -61,7 +61,9 @@ const sortedChunks = computed<Chunk[]>(() => {
 <template>
   <div>
     <div class="flex justify-between p-1">
-      <BaseButton @click="toggleAll">Toggle all</BaseButton>
+      <BaseButton @click="toggleAll">
+        Toggle all
+      </BaseButton>
 
       <label>
         Sort by
@@ -78,20 +80,22 @@ const sortedChunks = computed<Chunk[]>(() => {
     <div class="overflow-auto p-1">
       <div
         v-for="chunk in sortedChunks"
-        class="flex gap-1 cursor-pointer hover:bg-gray-300"
-        @click="toggle(chunk, options.hiddenChunks.includes(chunk.fileName))"
         :key="chunk.fileName"
+        class="flex cursor-pointer gap-1 hover:bg-gray-300"
         :title="chunk.fileName"
+        @click="toggle(chunk, options.hiddenChunks.includes(chunk.fileName))"
       >
         <input
           type="checkbox"
           :checked="!options.hiddenChunks.includes(chunk.fileName)"
           @change="toggle(chunk, ($event.target as HTMLInputElement).checked)"
-        />
-        <div class="flex-grow-1 flex-shrink-1 min-w-0 truncate">
+        >
+        <div class="min-w-0 flex-shrink-1 flex-grow-1 truncate">
           {{ chunk.fileName }}
         </div>
-        <div class="ml-auto whitespace-nowrap">{{ formatSize(getChunkLength(chunk)) }}</div>
+        <div class="ml-auto whitespace-nowrap">
+          {{ formatSize(getChunkLength(chunk)) }}
+        </div>
       </div>
     </div>
   </div>

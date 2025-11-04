@@ -1,7 +1,7 @@
 <template>
   <button
     type="button"
-    class="px-2 py-1 bg-blue-600 c-white rounded-md border border-solid border-blue-600 cursor-pointer flex flex-shrink-0 items-center gap-1 justify-center hover:bg-blue-700 active:bg-blue-800 transition-colors"
+    class="flex flex-shrink-0 cursor-pointer items-center justify-center gap-1 border border-blue-600 rounded-md border-solid bg-blue-600 px-2 py-1 c-white transition-colors active:bg-blue-800 hover:bg-blue-700"
   >
     <slot />
   </button>

@@ -13,7 +13,7 @@ import {
     <AccordionItem value="1">
       <AccordionHeader class="my-2">
         <AccordionTrigger
-          class="flex justify-between items-center w-full border-none py-2 bg-white c-slate-800 hover:bg-blue-300 group"
+          class="group w-full flex items-center justify-between border-none bg-white py-2 c-slate-800 hover:bg-blue-300"
         >
           <span>
             <slot name="header" />
@@ -21,7 +21,7 @@ import {
           <span class="i-mdi:chevron-down group-data-[state=open]:rotate-180" />
         </AccordionTrigger>
       </AccordionHeader>
-      <AccordionContent class="border border-solid border-gray-300 p-1">
+      <AccordionContent class="border border-gray-300 border-solid p-1">
         <div>
           <slot />
         </div>

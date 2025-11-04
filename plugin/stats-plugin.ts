@@ -1,13 +1,14 @@
+/* eslint-disable no-console */
 import { join } from 'node:path';
 import { gzip } from 'node:zlib';
 import { promisify } from 'node:util';
 import fs from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 
 import { type Plugin } from 'vite';
 
 import type { BuildStats, Chunk } from '@/entities/bundle-stats/model/stats';
 import { getBundleOverview } from '@/features/overview/model/overview';
-import { fileURLToPath } from 'node:url';
 
 const compress = promisify(gzip);
 
@@ -34,10 +35,10 @@ export function statsPlugin(options?: StatsPluginOptions) {
   const check = options?.check ?? true;
   const failOnWarning = options?.failOnWarning ?? false;
 
-  let root = process.cwd();
-  let outDir = '';
+  const root = process.cwd();
+  const outDir = '';
   let enabled = options?.enabled ?? true;
-  let reportCompressed = true;
+  const reportCompressed = true;
 
   function truncatePath(filePath: string) {
     let index = 0;
@@ -60,11 +61,11 @@ export function statsPlugin(options?: StatsPluginOptions) {
     // vite specific hook
     configResolved(config) {
       // disable during dev mode
-      enabled = enabled && config.env.PROD;
+      enabled &&= config.env.PROD;
     },
     resolveId: {
       order: 'pre',
-      async handler(source, importer, options) {
+      async handler(source, importer, resolveOptions) {
         if (!enabled) {
           return;
         }
@@ -74,7 +75,7 @@ export function statsPlugin(options?: StatsPluginOptions) {
           return;
         }
 
-        const result = await this.resolve(source, importer, { ...options, skipSelf: true });
+        const result = await this.resolve(source, importer, { ...resolveOptions, skipSelf: true });
         if (!result) {
           return;
         }
@@ -92,6 +93,7 @@ export function statsPlugin(options?: StatsPluginOptions) {
 
         for (const [_name, chunk] of Object.entries(bundle)) {
           if (chunk.type !== 'chunk') {
+            // eslint-disable-next-line no-continue
             continue;
           }
 
@@ -122,17 +124,20 @@ export function statsPlugin(options?: StatsPluginOptions) {
     async writeBundle(_options, bundle) {
       for (const [_name, chunk] of Object.entries(bundle)) {
         if (chunk.type !== 'chunk') {
+          // eslint-disable-next-line no-continue
           continue;
         }
 
-        const c = stats.chunks.find((c) => c.fileName === chunk.fileName);
-        if (!c) {
+        const chunkStats = stats.chunks.find((c) => c.fileName === chunk.fileName);
+        if (!chunkStats) {
+          // eslint-disable-next-line no-continue
           continue;
         }
 
-        c.minifiedLength = chunk.code.length;
+        chunkStats.minifiedLength = chunk.code.length;
         if (reportCompressed) {
-          c.compressedLength = (await compress(chunk.code)).length;
+          // eslint-disable-next-line no-await-in-loop
+          chunkStats.compressedLength = (await compress(chunk.code)).length;
         }
       }
     },
@@ -150,7 +155,8 @@ export function statsPlugin(options?: StatsPluginOptions) {
         if (stat.isDirectory()) {
           await fs.rm(target, { recursive: true });
         }
-      } catch (e) {}
+      } catch { /* empty */ }
+
       await fs.mkdir(target);
 
       if (emitHtml) {
@@ -158,9 +164,7 @@ export function statsPlugin(options?: StatsPluginOptions) {
         const names = await fs.readdir(source);
 
         await Promise.all(
-          names.map((name) => {
-            return fs.cp(join(source, name), join(target, name), { recursive: true });
-          }),
+          names.map((name) => fs.cp(join(source, name), join(target, name), { recursive: true })),
         );
 
         let html = await fs.readFile(join(target, 'index.html'), 'utf-8');
@@ -188,6 +192,7 @@ export function statsPlugin(options?: StatsPluginOptions) {
 
         if (failOnWarning && report.hasWarnings) {
           throw new Error(
+            // eslint-disable-next-line vue/max-len
             '[plugin stats-plugin] Cancelling build due to failOnWarning option. Check [plugin stats-plugin] warnings for more details.',
           );
         }

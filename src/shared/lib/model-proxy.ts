@@ -4,6 +4,7 @@ export function useModelProxy<T, K extends keyof T>(model: ModelRef<T>, key: K):
   return computed({
     get: () => model.value[key],
     set: (value) => {
+      // eslint-disable-next-line no-param-reassign
       model.value = { ...model.value, [key]: value };
     },
   });

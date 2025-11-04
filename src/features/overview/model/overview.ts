@@ -12,7 +12,7 @@ interface BundleOverview {
 export function getBundleOverview(stats: BuildStats): BundleOverview {
   const numberOfChunks = stats.chunks.length;
 
-  let numberOfModules = stats.moduleFileNames.length;
+  const numberOfModules = stats.moduleFileNames.length;
   let numberOfVirtualModules = 0;
   for (const chunk of stats.chunks) {
     for (const mod of chunk.modules) {
@@ -26,6 +26,7 @@ export function getBundleOverview(stats: BuildStats): BundleOverview {
   for (const module of stats.moduleFileNames) {
     const dep = getModuleDependencyName(module);
     if (!dep) {
+      // eslint-disable-next-line no-continue
       continue;
     }
 

@@ -1,13 +1,12 @@
-import path from 'node:path';
+import path, { dirname } from 'node:path';
 import fs from 'node:fs';
-import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import UnoCSS from 'unocss/vite';
-// import { statsPlugin } from 'vite-bundle-explorer/plugin';
 
+// eslint-disable-next-line no-underscore-dangle
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
@@ -15,10 +14,6 @@ export default defineConfig({
   plugins: [
     vue(),
     UnoCSS(),
-    // statsPlugin({
-    //   emitJson: true,
-    //   failOnWarning: true,
-    // }),
     {
       name: 'json-proxy',
       configureServer(server) {
@@ -28,7 +23,7 @@ export default defineConfig({
             return res.end(fs.readFileSync(path.resolve(import.meta.dirname, 'stats.json')));
           }
 
-          next();
+          return next();
         });
       },
     },

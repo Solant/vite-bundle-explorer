@@ -8,9 +8,7 @@ const model = defineModel<boolean>({ required: false });
 
 const { escape } = useMagicKeys();
 watch(escape, () => {
-  if (model.value) {
-    model.value = false;
-  }
+  model.value &&= false;
 });
 
 const root = useTemplateRef('root');
@@ -25,14 +23,19 @@ function toggle(item: { label: string; onClick: () => void }) {
 </script>
 
 <template>
-  <div v-if="model" class="fixed" :style="{ left: `${x}px`, top: `${y}px` }" ref="root">
-    <ul role="menu" class="border border-solid border-gray-300">
+  <div
+    v-if="model"
+    ref="root"
+    class="fixed"
+    :style="{ left: `${x}px`, top: `${y}px` }"
+  >
+    <ul role="menu" class="border border-gray-300 border-solid">
       <li
         v-for="item in items"
-        role="menuitem"
         :key="item.label"
+        role="menuitem"
+        class="cursor-pointer bg-white px-2 py-1 hover:bg-blue-700 hover:c-white"
         @click="toggle(item)"
-        class="bg-white px-2 py-1 hover:bg-blue-700 cursor-pointer hover:c-white"
       >
         {{ item.label }}
       </li>

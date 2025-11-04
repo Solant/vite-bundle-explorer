@@ -1,17 +1,18 @@
 <script setup lang="ts" generic="T extends Record<any, any>">
 import { computed, ref, watch } from 'vue';
 
-import { type BuildStats, getModuleSize } from '@/entities/bundle-stats';
-import { BaseButton, BaseContextMenu, OptionGroup } from '@/shared/ui';
 import { getModuleTree, type ModuleTreeNode } from '../model/module-tree';
 import { default as Tree } from './Tree.vue';
+
+import { type BuildStats, getModuleSize } from '@/entities/bundle-stats';
+import { BaseButton, BaseContextMenu, OptionGroup } from '@/shared/ui';
 import { dfs, sort } from '@/shared/graph';
 import { getPath } from '@/widgets/treemap-view/model/path.ts';
 
 const props = defineProps<{ stats: BuildStats; modules: 'bundled' | 'all' }>();
 
 const emit = defineEmits<{
-  updateView: [view: string, options: any];
+  updateView: [view: string, options: Record<string, unknown>];
 }>();
 
 const options = defineModel<T>('options', { required: true });
@@ -31,19 +32,19 @@ function toggle(modules: number[], flag: boolean) {
 }
 
 const modules = computed(() => {
-  const modules: string[] = [];
+  const result: string[] = [];
 
   if (props.modules === 'bundled') {
     for (const chunk of props.stats.chunks) {
       for (const module of chunk.modules) {
-        modules.push(props.stats.moduleFileNames[module.fileNameIndex]);
+        result.push(props.stats.moduleFileNames[module.fileNameIndex]);
       }
     }
   } else {
-    modules.push(...props.stats.moduleFileNames);
+    result.push(...props.stats.moduleFileNames);
   }
 
-  return modules;
+  return result;
 });
 
 function toggleAll() {
@@ -60,10 +61,9 @@ function toggleAll() {
   }
 }
 
-const numberOfModules =
-  props.modules === 'all'
-    ? props.stats.moduleFileNames.length
-    : props.stats.chunks.reduce((acc, cur) => acc + cur.modules.length, 0);
+const numberOfModules = props.modules === 'all'
+  ? props.stats.moduleFileNames.length
+  : props.stats.chunks.reduce((acc, cur) => acc + cur.modules.length, 0);
 
 // prepare a file tree
 const tree = ref(getModuleTree(modules.value, props.stats));
@@ -74,9 +74,11 @@ watch(
       tree.value,
       (node) => {
         if (node.fileName) {
+          // eslint-disable-next-line no-param-reassign
           node.size = getModuleSize(node.fileName, props.stats, metric) ?? 0;
         }
         if (node.children) {
+          // eslint-disable-next-line no-param-reassign
           node.size = node.children?.reduce((acc, cur) => acc + (cur.size ?? 0), 0) ?? 0;
         }
       },
@@ -93,8 +95,10 @@ watch(
     dfs(tree.value, (node) => {
       const index = node.fileName ? props.stats.moduleFileNames.indexOf(node.fileName) : -1;
       if (hiddenModules.includes(index)) {
+        // eslint-disable-next-line no-param-reassign
         node.visible = false;
       } else if (index !== -1) {
+        // eslint-disable-next-line no-param-reassign
         node.visible = true;
       }
     });
@@ -103,6 +107,7 @@ watch(
       tree.value,
       (node) => {
         if (node.children) {
+          // eslint-disable-next-line no-param-reassign
           node.visible = !node.children.every((c) => c.visible === false);
         }
       },
@@ -129,6 +134,7 @@ watch(
 );
 
 function toggleVisibility(node: ModuleTreeNode) {
+  // eslint-disable-next-line no-param-reassign
   node.visible = !node.visible;
 
   if (node.fileName != null) {
@@ -138,6 +144,7 @@ function toggleVisibility(node: ModuleTreeNode) {
   if (node.children) {
     const modulesToHide: Array<number> = [];
     dfs(node.children, (child) => {
+      // eslint-disable-next-line no-param-reassign
       child.visible = node.visible;
       if (child.fileName) {
         modulesToHide.push(props.stats.moduleFileNames.indexOf(child.fileName));
@@ -171,7 +178,7 @@ function printPath() {
     return;
   }
 
-  const fileName = data.fileName;
+  const { fileName } = data;
   if (fileName == null) {
     return;
   }
@@ -186,7 +193,6 @@ function printPath() {
   const hiddenModules = props.stats.moduleFileNames
     .map((_, index) => index)
     .filter((index) => !path.includes(index));
-  console.log(hiddenModules);
   emit('updateView', 'graph', { hiddenModules });
 }
 </script>
@@ -196,7 +202,9 @@ function printPath() {
     :title="`Visible modules (${numberOfModules - options.hiddenModules.length}/${numberOfModules})`"
   >
     <div class="flex justify-between p-1">
-      <BaseButton @click="toggleAll">Toggle all</BaseButton>
+      <BaseButton @click="toggleAll">
+        Toggle all
+      </BaseButton>
 
       <label>
         Sort by

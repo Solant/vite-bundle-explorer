@@ -1,38 +1,40 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
+import type { TreeMapOptions } from '../model/options.ts';
+import ChunkFilter from './ChunkFilter.vue';
+
 import { BaseSwitch, OptionGroup, OptionItem } from '@/shared/ui';
 import { type BuildStats } from '@/entities/bundle-stats';
 import { MetricOption } from '@/features/options/metric';
 import { ModuleFilterOption } from '@/features/options/module';
 import { useModelProxy } from '@/shared/lib';
 
-import type { TreeMapOptions } from '../model/options.ts';
-import ChunkFilter from './ChunkFilter.vue';
-
-const model = defineModel<TreeMapOptions>({ required: true });
-
 defineProps<{ stats: BuildStats }>();
 
 const emit = defineEmits<{
-  updateView: [view: string, options: any];
+  updateView: [view: string, options: unknown];
 }>();
+
+const model = defineModel<TreeMapOptions>({ required: true });
 
 const compact = computed({
   get: () => model.value.compact,
-  set: (value) => (model.value = { ...model.value, compact: value }),
+  set: (value) => {
+    model.value = { ...model.value, compact: value };
+  },
 });
 
 const metric = useModelProxy(model, 'metric');
 
-function updateView(view: string, options: any) {
+function updateView(view: string, options: unknown) {
   emit('updateView', view, options);
 }
 </script>
 
 <template>
   <div>
-    <MetricOption :stats v-model="metric" />
+    <MetricOption v-model="metric" :stats />
     <OptionItem title="Compact">
       <BaseSwitch v-model="compact" />
     </OptionItem>

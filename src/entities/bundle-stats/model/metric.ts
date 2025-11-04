@@ -9,7 +9,7 @@ export const Metric = {
 export type Metric = (typeof Metric)[keyof typeof Metric];
 
 export function getMetricLabel(metric: Metric) {
-  return metric[0].toUpperCase() + metric.slice(1) + ' size';
+  return `${metric[0].toUpperCase() + metric.slice(1)} size`;
 }
 
 export function getAvailableMetrics(stats: BuildStats): Metric[] {
