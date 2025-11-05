@@ -36,7 +36,7 @@ export function statsPlugin(options?: StatsPluginOptions) {
   const failOnWarning = options?.failOnWarning ?? false;
 
   const root = process.cwd();
-  const outDir = '';
+  const outDir: string = '';
   let enabled = options?.enabled ?? true;
   const reportCompressed = true;
 
