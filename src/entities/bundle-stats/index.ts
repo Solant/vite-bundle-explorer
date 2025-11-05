@@ -1,4 +1,4 @@
-export { removeEmptyLeafs, reanymoveNodes } from './model/graph';
+export { removeEmptyLeafs, removeNodes } from './model/graph';
 
 export { formatSize, getModuleSize, getChunkSize } from './model/size';
 import type { BuildStats, Chunk, Module } from './model/stats';
