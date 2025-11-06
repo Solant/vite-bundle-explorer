@@ -18,17 +18,18 @@ export function getChunkSize(
       return chunk.minifiedLength;
     case Metric.Compressed:
       return chunk.compressedLength;
+    default:
+      throw new Error(`Unexpected metric value: ${metric}`);
   }
 }
 
 export function formatSize(size: number) {
   if (size < 1024) {
     return `${Math.ceil(size)} B`;
-  } else if (size < 1024 * 1024) {
+  } if (size < 1024 * 1024) {
     return `${(size / 1024).toFixed(2)} KB`;
-  } else {
-    return `${(size / 1024 / 1024).toFixed(2)} MB`;
   }
+  return `${(size / 1024 / 1024).toFixed(2)} MB`;
 }
 
 export function getModuleSize(
@@ -36,10 +37,9 @@ export function getModuleSize(
   stats: BuildStats,
   metric: Metric,
 ): number | undefined {
-  const index =
-    typeof moduleFileName === 'string'
-      ? stats.moduleFileNames.indexOf(moduleFileName)
-      : moduleFileName;
+  const index = typeof moduleFileName === 'string'
+    ? stats.moduleFileNames.indexOf(moduleFileName)
+    : moduleFileName;
   if (index === -1) {
     return undefined;
   }
@@ -61,4 +61,6 @@ export function getModuleSize(
       }
     }
   }
+
+  return undefined;
 }

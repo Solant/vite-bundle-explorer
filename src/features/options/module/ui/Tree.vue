@@ -1,17 +1,26 @@
 <script lang="ts">
-import { defineComponent, h, type PropType, type VNode } from 'vue';
+import {
+  defineComponent, h, type PropType, type VNode,
+} from 'vue';
+
 import type { ModuleTree } from '../model/module-tree.ts';
+
 import { dfs } from '@/shared/graph';
 import { formatSize } from '@/entities/bundle-stats';
 
 export default defineComponent({
-  emits: ['toggle', 'toggle-visibility', 'hover', 'context-menu'],
   props: {
     data: {
       type: Object as PropType<ModuleTree>,
       required: true,
     },
   },
+  emits: [
+    'toggle',
+    'toggle-visibility',
+    'hover',
+    'context-menu',
+  ],
   setup(props, { emit }) {
     return () => {
       const children: VNode[] = [];
@@ -47,22 +56,20 @@ export default defineComponent({
                 }),
                 node.children
                   ? h('div', {
-                      class: `${node.collapsed ? 'i-mdi:chevron-right' : 'i-mdi:chevron-down'} flex-none`,
-                    })
+                    class: `${node.collapsed ? 'i-mdi:chevron-right' : 'i-mdi:chevron-down'} flex-none`,
+                  })
                   : h('div', { class: 'flex-none w-4 h-4' }),
-                node.icons?.map((icon) =>
-                  h('div', {
-                    class: `inline-block flex-none ${icon} mr-1`,
-                  }),
-                ),
+                node.icons?.map((icon) => h('div', {
+                  class: `inline-block flex-none ${icon} mr-1`,
+                })),
                 h(
                   'div',
                   { class: 'flex-1-1 min-w-0 truncate text-sm', title: node.title },
                   node.title,
                 ),
                 node.query && h('div', { class: 'flex-none ml-1 i-mdi:help', title: node.query }),
-                typeof node.size === 'number' &&
-                  h('div', { class: 'flex-none ml-auto text-sm' }, formatSize(node.size)),
+                typeof node.size === 'number'
+                  && h('div', { class: 'flex-none ml-auto text-sm' }, formatSize(node.size)),
               ],
             ),
           );

@@ -18,9 +18,8 @@ function parseName(file: string): [name: string, query?: string] {
 
   if (query) {
     return [fileName, query];
-  } else {
-    return [fileName];
   }
+  return [fileName];
 }
 
 // @unocss-include
@@ -49,7 +48,7 @@ const EXTENSIONS: Record<string, string> = {
 
 function getModuleIcons(node: ModuleTreeNode, stats: BuildStats) {
   const result: string[] = [];
-  const fileName = node.fileName;
+  const { fileName } = node;
   if (!fileName) {
     return result;
   }
@@ -87,7 +86,7 @@ export function getModuleTree(moduleNames: string[], stats: BuildStats) {
     const parts = name.split('/');
 
     let branch = tree;
-    for (let index = 0; index < parts.length; index++) {
+    for (let index = 0; index < parts.length; index += 1) {
       const item = branch.find((i) => i.title === parts[index]);
       if (!item) {
         const newNode: ModuleTreeNode = {

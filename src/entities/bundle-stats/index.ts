@@ -1,12 +1,10 @@
 export { removeEmptyLeafs, removeNodes } from './model/graph';
 
 export { formatSize, getModuleSize, getChunkSize } from './model/size';
-
-import type { BuildStats, Chunk, Module } from './model/stats.ts';
+import type { BuildStats, Chunk, Module } from './model/stats';
+import { Metric, getMetricLabel, getAvailableMetrics } from './model/metric';
 
 export type { BuildStats, Chunk, Module };
-
-import { Metric, getMetricLabel, getAvailableMetrics } from './model/metric';
 
 export { Metric, getMetricLabel, getAvailableMetrics };
 
@@ -38,9 +36,8 @@ export function getModuleDependencyName(moduleFileName: string): string {
     const parts = moduleFileName.split('/');
     if (parts[4].startsWith('@')) {
       return `${parts[4]}/${parts[5]}`;
-    } else {
-      return parts[4];
     }
+    return parts[4];
   }
 
   // npm default logic
@@ -48,7 +45,6 @@ export function getModuleDependencyName(moduleFileName: string): string {
   const index = parts.lastIndexOf('node_modules');
   if (parts[index + 1].startsWith('@')) {
     return `${parts[index + 1]}/${parts[index + 2]}`;
-  } else {
-    return parts[index + 1];
   }
+  return parts[index + 1];
 }

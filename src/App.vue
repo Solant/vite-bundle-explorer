@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, shallowRef, watch } from 'vue';
+import {
+  computed, nextTick, ref, shallowRef, watch,
+} from 'vue';
 
-import type { BuildStats } from '@/entities/bundle-stats';
 import ViewToggle from './ViewToggle.vue';
-
 import { TreemapView } from './widgets/treemap-view';
 import { GraphView } from './widgets/graph-view';
+
+import type { BuildStats } from '@/entities/bundle-stats';
 import { OverviewModal } from '@/features/overview';
 
 const stats = shallowRef<BuildStats>();
 try {
   const payload = JSON.parse(window.BUNDLE_STATS ?? '');
   stats.value = payload as BuildStats;
-} catch (e) {
+} catch (_e) {
   fetch('stats.json')
     .then((res) => res.json())
     .then((data) => {
@@ -24,7 +26,7 @@ const currentViewKey = ref<'treemap' | 'graph'>('treemap');
 const currentView = computed(() => {
   if (currentViewKey.value === 'treemap') {
     return TreemapView;
-  } else if (currentViewKey.value === 'graph') {
+  } if (currentViewKey.value === 'graph') {
     return GraphView;
   }
 
@@ -45,11 +47,11 @@ watch(
 );
 
 watch(currentView, (newView) => {
-  // @ts-expect-error
+  // @ts-expect-error view changing
   currentViewOptions.value = newView.optionsFactory(stats.value);
 });
 
-function changeView(view: 'treemap' | 'graph', options: any) {
+function changeView(view: 'treemap' | 'graph', options: Record<string, unknown>) {
   currentViewKey.value = view;
   nextTick(() => {
     currentViewOptions.value = { ...currentViewOptions.value, ...options };
@@ -58,15 +60,15 @@ function changeView(view: 'treemap' | 'graph', options: any) {
 </script>
 
 <template>
-  <div class="w-screen h-screen flex bg-gray-200">
-    <div class="w-1/3 max-w-[350px] bg-white rounded-lg m-5 p-2 flex flex-col overflow-auto">
+  <div class="h-screen w-screen flex bg-gray-200">
+    <div class="m-5 max-w-[350px] w-1/3 flex flex-col overflow-auto rounded-lg bg-white p-2">
       <ViewToggle v-model="currentViewKey" />
 
       <currentView.OptionsComponent
         v-if="stats && currentViewOptions"
         v-model="currentViewOptions"
-        @update-view="changeView"
         :stats
+        @update-view="changeView"
       />
 
       <OverviewModal v-if="stats" :stats="stats" class="mt-auto" />
@@ -74,10 +76,10 @@ function changeView(view: 'treemap' | 'graph', options: any) {
 
     <currentView.ViewComponent
       v-if="stats"
-      :stats
-      @update-view="changeView"
       v-model:options="currentViewOptions"
-      class="flex-grow-1 flex-shrink-1"
+      :stats
+      class="flex-shrink-1 flex-grow-1"
+      @update-view="changeView"
     />
   </div>
 </template>

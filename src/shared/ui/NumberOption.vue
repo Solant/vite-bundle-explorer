@@ -4,9 +4,9 @@ import { useEventListener } from '@vueuse/core';
 
 import OptionItem from './OptionItem.vue';
 
-const model = defineModel<number>({ required: true });
-
 const props = defineProps<{ title: string; step?: number; fixed?: number }>();
+
+const model = defineModel<number>({ required: true });
 
 function increment() {
   model.value += props.step ?? 1;
@@ -37,28 +37,28 @@ useEventListener(
 <template>
   <OptionItem :title>
     <div
-      class="flex items-stretch border-1 border-solid border-gray-300 rounded"
+      class="flex items-stretch border-1 border-gray-300 rounded border-solid"
       @mouseenter="scrollEnabled = true"
       @mouseleave="scrollEnabled = false"
     >
       <button
+        class="w-[24px] flex items-center justify-center border-r border-gray-300 border-solid"
         @click="decrement"
-        class="border-r border-solid border-gray-300 w-[24px] flex items-center justify-center"
       >
         <span class="i-mdi:minus block" />
       </button>
       <input
         class="max-w-[70px] appearance-none text-center focus:outline-none"
         :value="model.toFixed(props.fixed ?? 0)"
+        :step
         @update="
           (event: InputEvent) =>
             (model = Number.parseFloat((event.target as HTMLInputElement).value))
         "
-        :step
-      />
+      >
       <button
+        class="w-[24px] flex items-center justify-center border-l border-gray-300 border-solid"
         @click="increment"
-        class="border-l border-solid border-gray-300 w-[24px] flex items-center justify-center"
       >
         <span class="i-mdi:plus block" />
       </button>

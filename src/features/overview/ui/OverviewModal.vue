@@ -9,8 +9,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from 'reka-ui';
-import { getBundleOverview } from '@/features/overview/model/overview.ts';
+
 import type { BuildStats } from '@/entities/bundle-stats';
+import { getBundleOverview } from '@/features/overview/model/overview.ts';
 import { BaseButton } from '@/shared/ui';
 
 const props = defineProps<{ stats: BuildStats }>();
@@ -31,9 +32,11 @@ const overview = getBundleOverview(props.stats);
     <DialogPortal>
       <DialogOverlay class="fixed inset-0 z-30 bg-gray-200 opacity-75" />
       <DialogContent
-        class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] bg-white rounded z-30"
+        class="fixed left-[50%] top-[50%] z-30 max-h-[85vh] max-w-[450px] w-[90vw] translate-x-[-50%] translate-y-[-50%] rounded bg-white"
       >
-        <DialogTitle class="py-2 px-4 flex justify-center">Report</DialogTitle>
+        <DialogTitle class="flex justify-center px-4 py-2">
+          Report
+        </DialogTitle>
         <DialogDescription class="px-4 py-2">
           <div>Number of chunks: {{ overview.numberOfChunks }}</div>
           <div>
@@ -60,7 +63,7 @@ const overview = getBundleOverview(props.stats);
             </li>
           </ul>
         </DialogDescription>
-        <DialogClose class="absolute top-3 right-2">
+        <DialogClose class="absolute right-2 top-3">
           <div class="i-mdi:close" />
         </DialogClose>
       </DialogContent>

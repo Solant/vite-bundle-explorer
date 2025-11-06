@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 import { createServer } from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -13,6 +14,7 @@ const mimeTypes = {
 const server = createServer((req, res) => {
   const { url } = req;
 
+  // eslint-disable-next-line no-undef
   const root = process.argv[2];
   const file = path.join(root, url.slice(1) || 'index.html');
   fs.readFile(file)

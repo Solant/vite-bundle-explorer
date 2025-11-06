@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { useModelProxy } from '@/shared/lib';
-import { BaseSwitch, NumberOption, OptionGroup, OptionItem } from '@/shared/ui';
-import { MetricOption } from '@/features/options/metric';
-import type { BuildStats } from '@/entities/bundle-stats';
-import { ModuleFilterOption } from '@/features/options/module';
-
 import type { GraphOptions } from '../model/graph.ts';
+
+import type { BuildStats } from '@/entities/bundle-stats';
+import { useModelProxy } from '@/shared/lib';
+import {
+  BaseSwitch, NumberOption, OptionGroup, OptionItem,
+} from '@/shared/ui';
+import { MetricOption } from '@/features/options/metric';
+import { ModuleFilterOption } from '@/features/options/module';
 
 defineProps<{ stats: BuildStats }>();
 
@@ -21,17 +23,27 @@ const metric = useModelProxy(model, 'metric');
 
 <template>
   <div>
-    <MetricOption :stats v-model="metric" />
+    <MetricOption v-model="metric" :stats />
     <OptionItem title="Compact">
       <BaseSwitch v-model="compact" />
     </OptionItem>
     <ModuleFilterOption v-model:options="model" :stats modules="all" />
 
     <OptionGroup title="Force layout">
-      <NumberOption title="Repulsion" v-model="forceRepulsion" />
-      <NumberOption title="Edge length" v-model="forceEdgeLength" />
-      <NumberOption title="Friction" v-model="forceFriction" :step="0.01" :fixed="2" />
-      <NumberOption title="Gravity" v-model="forceGravity" :step="0.01" :fixed="2" />
+      <NumberOption v-model="forceRepulsion" title="Repulsion" />
+      <NumberOption v-model="forceEdgeLength" title="Edge length" />
+      <NumberOption
+        v-model="forceFriction"
+        title="Friction"
+        :step="0.01"
+        :fixed="2"
+      />
+      <NumberOption
+        v-model="forceGravity"
+        title="Gravity"
+        :step="0.01"
+        :fixed="2"
+      />
     </OptionGroup>
   </div>
 </template>

@@ -7,9 +7,11 @@ export interface TreeMapOptions {
   hiddenChunks: string[];
 }
 
-export const getDefaultTreeMapOptions = (buildStats: BuildStats): TreeMapOptions => ({
-  metric: getAvailableMetrics(buildStats)[0],
-  compact: true,
-  hiddenModules: [],
-  hiddenChunks: [],
-});
+export function getDefaultTreeMapOptions(buildStats: BuildStats): TreeMapOptions {
+  return {
+    metric: getAvailableMetrics(buildStats)[0],
+    compact: true,
+    hiddenModules: [],
+    hiddenChunks: [],
+  };
+}

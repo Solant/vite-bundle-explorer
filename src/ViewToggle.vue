@@ -6,10 +6,10 @@ const activeRight = 'bg-blue-600 rounded-r-md c-white';
 </script>
 
 <template>
-  <div class="flex border border-solid border-blue-600 rounded-lg overflow-hidden flex-shrink-0">
+  <div class="flex flex-shrink-0 overflow-hidden border border-blue-600 rounded-lg border-solid">
     <button
       type="button"
-      class="flex w-1/2 items-center justify-center py-2 cursor-pointer transition-colors hover:bg-blue-700 hover:c-white active:bg-blue-800"
+      class="w-1/2 flex cursor-pointer items-center justify-center py-2 transition-colors active:bg-blue-800 hover:bg-blue-700 hover:c-white"
       :class="{ [activeLeft]: model === 'treemap' }"
       @click="model = 'treemap'"
     >
@@ -18,7 +18,7 @@ const activeRight = 'bg-blue-600 rounded-r-md c-white';
 
     <button
       type="button"
-      class="flex w-1/2 items-center justify-center py-2 cursor-pointer transition-colors hover:bg-blue-700 hover:c-white active:bg-blue-800"
+      class="w-1/2 flex cursor-pointer items-center justify-center py-2 transition-colors active:bg-blue-800 hover:bg-blue-700 hover:c-white"
       :class="{ [activeRight]: model === 'graph' }"
       @click="model = 'graph'"
     >
