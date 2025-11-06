@@ -40,6 +40,9 @@ export default [
         ...globals.browser,
       },
     },
+    settings: {
+      'import/internal-regex': '^@/',
+    },
     rules: {
       // js
       'func-style': ['error', 'declaration'],

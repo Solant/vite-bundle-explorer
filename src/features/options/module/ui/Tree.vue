@@ -3,10 +3,10 @@ import {
   defineComponent, h, type PropType, type VNode,
 } from 'vue';
 
-import type { ModuleTree } from '../model/module-tree.ts';
-
 import { dfs } from '@/shared/graph';
 import { formatSize } from '@/entities/bundle-stats';
+
+import type { ModuleTree } from '../model/module-tree.ts';
 
 export default defineComponent({
   props: {

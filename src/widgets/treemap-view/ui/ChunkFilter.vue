@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
-import type { TreeMapOptions } from '../model/options.ts';
-
 import { type BuildStats, type Chunk, formatSize } from '@/entities/bundle-stats';
 import { BaseButton } from '@/shared/ui';
+
+import type { TreeMapOptions } from '../model/options.ts';
 
 const props = defineProps<{ stats: BuildStats }>();
 

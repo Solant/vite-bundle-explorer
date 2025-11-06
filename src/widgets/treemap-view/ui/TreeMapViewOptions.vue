@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-import type { TreeMapOptions } from '../model/options.ts';
-import ChunkFilter from './ChunkFilter.vue';
-
 import { BaseSwitch, OptionGroup, OptionItem } from '@/shared/ui';
 import { type BuildStats } from '@/entities/bundle-stats';
 import { MetricOption } from '@/features/options/metric';
 import { ModuleFilterOption } from '@/features/options/module';
 import { useModelProxy } from '@/shared/lib';
+
+import ChunkFilter from './ChunkFilter.vue';
+import type { TreeMapOptions } from '../model/options.ts';
 
 defineProps<{ stats: BuildStats }>();
 
