@@ -7,10 +7,6 @@ import { LegendComponent, TitleComponent, TooltipComponent } from 'echarts/compo
 import { GraphChart, TreemapChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
 
-import type { TreeMapOptions } from '../model/options.ts';
-import { dfs, type TreeMapChartNode } from '../model/tree-map';
-import { getPath } from '../model/path.ts';
-
 import {
   accentColors, getColor, palettes, sourcePalette,
 } from '@/shared/config';
@@ -22,6 +18,10 @@ import {
   getModuleSize,
   isDependency,
 } from '@/entities/bundle-stats';
+
+import { getPath } from '../model/path.ts';
+import { dfs, type TreeMapChartNode } from '../model/tree-map';
+import type { TreeMapOptions } from '../model/options.ts';
 
 defineOptions({
   inheritAttrs: false,

@@ -3,12 +3,12 @@ import {
   computed, nextTick, ref, shallowRef, watch,
 } from 'vue';
 
-import ViewToggle from './ViewToggle.vue';
-import { TreemapView } from './widgets/treemap-view';
-import { GraphView } from './widgets/graph-view';
-
+import { TreemapView } from '@/widgets/treemap-view';
+import { GraphView } from '@/widgets/graph-view';
 import type { BuildStats } from '@/entities/bundle-stats';
 import { OverviewModal } from '@/features/overview';
+
+import ViewToggle from './ViewToggle.vue';
 
 const stats = shallowRef<BuildStats>();
 try {

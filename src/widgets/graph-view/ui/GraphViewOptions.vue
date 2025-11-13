@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { GraphOptions } from '../model/graph.ts';
 
 import type { BuildStats } from '@/entities/bundle-stats';
 import { useModelProxy } from '@/shared/lib';
@@ -8,6 +7,8 @@ import {
 } from '@/shared/ui';
 import { MetricOption } from '@/features/options/metric';
 import { ModuleFilterOption } from '@/features/options/module';
+
+import type { GraphOptions } from '../model/graph.ts';
 
 defineProps<{ stats: BuildStats }>();
 

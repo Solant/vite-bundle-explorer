@@ -15,8 +15,6 @@ import { TreemapChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { ECBasicOption } from 'echarts/types/dist/shared';
 
-import type { GraphOptions } from '../model/graph.ts';
-
 import { useChart } from '@/shared/lib';
 import {
   type BuildStats,
@@ -27,6 +25,8 @@ import {
   removeNodes,
 } from '@/entities/bundle-stats';
 import { accentColors, sourceAccentColor } from '@/shared/config';
+
+import type { GraphOptions } from '../model/graph.ts';
 
 const props = defineProps<{ stats: BuildStats }>();
 const options = defineModel<GraphOptions>('options', { required: true });
