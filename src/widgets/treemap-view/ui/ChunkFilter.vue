@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 
 import { type BuildStats, type Chunk, formatSize } from '@/entities/bundle-stats';
 import { BaseButton } from '@/shared/ui';
+import Dropdown from '@/shared/ui/Dropdown.vue';
 
 import type { TreeMapOptions } from '../model/options.ts';
 
@@ -59,7 +60,7 @@ const sortedChunks = computed<Chunk[]>(() => {
 </script>
 
 <template>
-  <div class="c-gray-700 dark:c-white">
+  <div class="c-gray-900 dark:c-white">
     <div class="flex justify-between p-1">
       <BaseButton @click="toggleAll">
         Toggle all

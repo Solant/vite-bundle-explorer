@@ -3,7 +3,7 @@ const model = defineModel<'treemap' | 'graph'>({ required: true });
 
 const buttonCls = ':uno: w-1/2 flex cursor-pointer items-center justify-center py-2.5 gap-1 dark:c-gray-600 c-gray-400';
 
-const activeCls = ':uno: bg-gray-200 dark:bg-gray-600 dark:c-white c-gray-700';
+const activeCls = ':uno: bg-gray-200 dark:bg-gray-600 dark:c-white c-gray-900';
 </script>
 
 <template>

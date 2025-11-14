@@ -41,7 +41,7 @@ export default defineComponent({
                   event.preventDefault();
                   emit('context-menu', { node, event });
                 },
-                class: 'flex items-center cursor-pointer hover:bg-gray-100 overflow-hidden py-1',
+                class: 'flex items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 overflow-hidden py-1',
               },
               [
                 h('div', {
@@ -78,7 +78,7 @@ export default defineComponent({
         (node) => !!node.collapsed,
         'pre',
       );
-      return h('ul', { role: 'tree' }, children);
+      return h('ul', { role: 'tree', class: 'c-gray-900 dark:c-white' }, children);
     };
   },
 });

@@ -206,9 +206,12 @@ function printPath() {
         Toggle all
       </BaseButton>
 
-      <label>
+      <label class="c-gray-900 dark:c-white">
         Sort by
-        <select v-model="sortOrder">
+        <select
+          v-model="sortOrder"
+          class="border-none bg-transparent capitalize focus:outline-none"
+        >
           <option value="name">Name</option>
           <option value="size">Size</option>
         </select>
