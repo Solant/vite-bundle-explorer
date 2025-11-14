@@ -59,7 +59,7 @@ const sortedChunks = computed<Chunk[]>(() => {
 </script>
 
 <template>
-  <div>
+  <div class="c-gray-700 dark:c-white">
     <div class="flex justify-between p-1">
       <BaseButton @click="toggleAll">
         Toggle all
@@ -67,7 +67,10 @@ const sortedChunks = computed<Chunk[]>(() => {
 
       <label>
         Sort by
-        <select v-model="sortOrder">
+        <select
+          v-model="sortOrder"
+          class="border-none bg-transparent capitalize focus:outline-none"
+        >
           <option value="">-</option>
           <option value="name-asc">Name asc</option>
           <option value="name-desc">Name desc</option>
@@ -81,7 +84,7 @@ const sortedChunks = computed<Chunk[]>(() => {
       <div
         v-for="chunk in sortedChunks"
         :key="chunk.fileName"
-        class="flex cursor-pointer gap-1 hover:bg-gray-300"
+        class="flex cursor-pointer gap-1 hover:bg-gray-300 dark:hover:bg-gray-700"
         :title="chunk.fileName"
         @click="toggle(chunk, options.hiddenChunks.includes(chunk.fileName))"
       >

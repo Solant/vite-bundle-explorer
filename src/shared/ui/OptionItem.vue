@@ -11,7 +11,7 @@ const nested = inject(nestedGroupSymbol, false);
 <template>
   <div
     class="flex justify-between p-2 c-gray-700 dark:c-white"
-    :class="{ 'border-b border-solid border-gray-300': !nested }"
+    :class="{ 'border-b border-solid border-gray-300 dark:border-gray-700': !nested }"
   >
     {{ title }}
 
