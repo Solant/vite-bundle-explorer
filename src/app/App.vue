@@ -2,6 +2,7 @@
 import {
   computed, nextTick, ref, shallowRef, watch,
 } from 'vue';
+import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from 'reka-ui';
 
 import { TreemapView } from '@/widgets/treemap-view';
 import { GraphView } from '@/widgets/graph-view';
@@ -60,26 +61,34 @@ function changeView(view: 'treemap' | 'graph', options: Record<string, unknown>)
 </script>
 
 <template>
-  <div class="h-screen w-screen flex bg-gray-200">
-    <div class="m-5 max-w-[350px] w-1/3 flex flex-col overflow-auto rounded-lg bg-white p-2">
-      <ViewToggle v-model="currentViewKey" />
+  <div class="h-screen w-screen flex bg-white dark:bg-gray-900">
+    <SplitterGroup direction="horizontal">
+      <SplitterPanel :default-size="20">
+        <div class="h-full flex flex-col overflow-auto bg-white p-2 dark:bg-gray-900">
+          <ViewToggle v-model="currentViewKey" />
 
-      <currentView.OptionsComponent
-        v-if="stats && currentViewOptions"
-        v-model="currentViewOptions"
-        :stats
-        @update-view="changeView"
-      />
+          <currentView.OptionsComponent
+            v-if="stats && currentViewOptions"
+            v-model="currentViewOptions"
+            :stats
+            @update-view="changeView"
+          />
 
-      <OverviewModal v-if="stats" :stats="stats" class="mt-auto" />
-    </div>
+          <OverviewModal v-if="stats" :stats="stats" class="mt-auto" />
+        </div>
+      </SplitterPanel>
 
-    <currentView.ViewComponent
-      v-if="stats"
-      v-model:options="currentViewOptions"
-      :stats
-      class="flex-shrink-1 flex-grow-1"
-      @update-view="changeView"
-    />
+      <SplitterResizeHandle class="w-1.5 bg-gray-200 transition-colors dark:bg-gray-700 hover:bg-gray-600 dark:hover:bg-gray-500" />
+
+      <SplitterPanel class="flex">
+        <currentView.ViewComponent
+          v-if="stats"
+          v-model:options="currentViewOptions"
+          :stats
+          class="flex-shrink-1 flex-grow-1"
+          @update-view="changeView"
+        />
+      </SplitterPanel>
+    </SplitterGroup>
   </div>
 </template>

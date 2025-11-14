@@ -20,7 +20,7 @@ provide(nestedGroupSymbol, true);
     <AccordionItem value="1">
       <AccordionHeader>
         <AccordionTrigger
-          class="group w-full flex items-center justify-between border-gray-300 border-solid p-2 c-slate-800 data-[state=closed]:border-b hover:bg-gray-200"
+          class="group w-full flex items-center justify-between border-gray-300 border-solid p-2 c-gray-700 data-[state=closed]:border-b hover:bg-gray-200 dark:c-white"
         >
           <div>{{ title }}</div>
           <span class="i-mdi:chevron-down group-data-[state=open]:rotate-180" />
