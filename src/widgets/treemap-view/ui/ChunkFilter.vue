@@ -3,7 +3,6 @@ import { computed, ref } from 'vue';
 
 import { type BuildStats, type Chunk, formatSize } from '@/entities/bundle-stats';
 import { BaseButton } from '@/shared/ui';
-import Dropdown from '@/shared/ui/Dropdown.vue';
 
 import type { TreeMapOptions } from '../model/options.ts';
 

@@ -26,7 +26,7 @@ provide(nestedGroupSymbol, true);
           <span class="i-mdi:chevron-down group-data-[state=open]:rotate-180" />
         </AccordionTrigger>
       </AccordionHeader>
-      <AccordionContent class="border-b border-gray-300 border-solid">
+      <AccordionContent class="border-b border-gray-300 border-solid dark:border-gray-700">
         <slot />
       </AccordionContent>
     </AccordionItem>
