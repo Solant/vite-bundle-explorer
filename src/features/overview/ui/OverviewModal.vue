@@ -30,9 +30,9 @@ const overview = getBundleOverview(props.stats);
       <slot />
     </DialogTrigger>
     <DialogPortal>
-      <DialogOverlay class="fixed inset-0 z-30 bg-gray-200 opacity-75" />
+      <DialogOverlay class="fixed inset-0 z-30 bg-gray-200 opacity-75 dark:bg-gray-700" />
       <DialogContent
-        class="fixed left-[50%] top-[50%] z-30 max-h-[85vh] max-w-[450px] w-[90vw] translate-x-[-50%] translate-y-[-50%] rounded bg-white"
+        class="fixed left-[50%] top-[50%] z-30 max-h-[85vh] max-w-[450px] w-[90vw] translate-x-[-50%] translate-y-[-50%] rounded bg-white c-gray-900 dark:bg-gray-800 dark:c-white"
       >
         <DialogTitle class="flex justify-center px-4 py-2">
           Report
@@ -45,11 +45,6 @@ const overview = getBundleOverview(props.stats);
           </div>
           <div>Number of dependencies: {{ overview.numberOfDependencies }}</div>
           <div class="flex items-center gap-1">
-            <div
-              v-if="overview.numberOfDependencies > 0"
-              class="i-mdi:alert-circle-outline"
-              :class="overview.duplicatedDependencies.length > 0 ? 'c-yellow-500' : ''"
-            />
             Duplicated dependencies: {{ overview.duplicatedDependencies.length }}
           </div>
           <ul v-if="overview.duplicatedDependencies.length > 0">
