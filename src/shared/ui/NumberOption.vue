@@ -57,7 +57,7 @@ useEventListener(
         "
       >
       <button
-        class="w-[24px] flex items-center justify-center border-r border-gray-300 border-solid dark:border-gray-700"
+        class="w-[24px] flex items-center justify-center border-l border-gray-300 border-solid dark:border-gray-700"
         @click="increment"
       >
         <span class="i-mdi:plus block" />
