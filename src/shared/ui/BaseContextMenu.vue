@@ -29,12 +29,12 @@ function toggle(item: { label: string; onClick: () => void }) {
     class="fixed"
     :style="{ left: `${x}px`, top: `${y}px` }"
   >
-    <ul role="menu" class="border border-gray-300 border-solid">
+    <ul role="menu" class="border border-gray-300 border-solid text-sm shadow-md dark:border-gray-700">
       <li
         v-for="item in items"
         :key="item.label"
         role="menuitem"
-        class="cursor-pointer bg-white px-2 py-1 hover:bg-blue-700 hover:c-white"
+        class="cursor-pointer bg-white px-2 py-1 dark:bg-gray-800 hover:bg-blue-700 dark:c-white hover:c-white"
         @click="toggle(item)"
       >
         {{ item.label }}
