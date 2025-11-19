@@ -3,6 +3,7 @@ import {
   computed, nextTick, ref, shallowRef, watch,
 } from 'vue';
 import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from 'reka-ui';
+import { useDark } from '@vueuse/core';
 
 import { TreemapView } from '@/widgets/treemap-view';
 import { GraphView } from '@/widgets/graph-view';
@@ -10,6 +11,11 @@ import type { BuildStats } from '@/entities/bundle-stats';
 import { OverviewModal } from '@/features/overview';
 
 import ViewToggle from './ViewToggle.vue';
+
+const isDark = useDark();
+function toggleDarkMode() {
+  isDark.value = !isDark.value;
+}
 
 const stats = shallowRef<BuildStats>();
 try {
@@ -62,6 +68,7 @@ function changeView(view: 'treemap' | 'graph', options: Record<string, unknown>)
 
 <template>
   <div class="h-screen w-screen flex bg-white dark:bg-gray-900">
+    <button class="i-mdi:lightbulb-night-outline absolute right-2 top-2 z-20 h-7 w-7 c-gray-900 dark:c-white" @click="toggleDarkMode" />
     <SplitterGroup direction="horizontal">
       <SplitterPanel :default-size="20">
         <div class="h-full flex flex-col overflow-auto bg-white p-2 dark:bg-gray-900">
