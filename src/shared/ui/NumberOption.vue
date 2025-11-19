@@ -37,18 +37,18 @@ useEventListener(
 <template>
   <OptionItem :title>
     <div
-      class="flex items-stretch border-1 border-gray-300 rounded border-solid"
+      class="flex items-stretch border-1 border-gray-300 rounded border-solid dark:border-gray-700"
       @mouseenter="scrollEnabled = true"
       @mouseleave="scrollEnabled = false"
     >
       <button
-        class="w-[24px] flex items-center justify-center border-r border-gray-300 border-solid"
+        class="w-[24px] flex items-center justify-center border-r border-gray-300 border-solid dark:border-gray-700"
         @click="decrement"
       >
         <span class="i-mdi:minus block" />
       </button>
       <input
-        class="max-w-[70px] appearance-none text-center focus:outline-none"
+        class="max-w-[70px] appearance-none text-center dark:bg-gray-700 focus:outline-none"
         :value="model.toFixed(props.fixed ?? 0)"
         :step
         @update="
@@ -57,7 +57,7 @@ useEventListener(
         "
       >
       <button
-        class="w-[24px] flex items-center justify-center border-l border-gray-300 border-solid"
+        class="w-[24px] flex items-center justify-center border-l border-gray-300 border-solid dark:border-gray-700"
         @click="increment"
       >
         <span class="i-mdi:plus block" />

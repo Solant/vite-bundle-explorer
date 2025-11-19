@@ -9,11 +9,14 @@ const ROOT_COLOR = '#e7000b';
 </script>
 
 <script setup lang="ts">
-import { computed, useTemplateRef, watch } from 'vue';
+import {
+  computed, useTemplateRef, watch, watchEffect,
+} from 'vue';
 import { TitleComponent, TooltipComponent } from 'echarts/components';
 import { TreemapChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { ECBasicOption } from 'echarts/types/dist/shared';
+import { useDark } from '@vueuse/core';
 
 import { useChart } from '@/shared/lib';
 import {
@@ -141,6 +144,25 @@ const compact = computed(() => options.value.compact);
 
 const colors = [sourceAccentColor, ...accentColors];
 
+const isDark = useDark();
+watchEffect(() => {
+  if (chart.value) {
+    const color = isDark.value ? '#ffffff' : '#111827';
+    chart.value.setOption({
+      title: {
+        textStyle: {
+          color,
+        },
+      },
+      legend: {
+        textStyle: {
+          color,
+        },
+      },
+    });
+  }
+});
+
 const data = computed<ECBasicOption>(() => {
   let { edges } = props.stats.importGraph;
   let nodes = props.stats.moduleFileNames;
@@ -180,9 +202,7 @@ const data = computed<ECBasicOption>(() => {
       icon: 'circle',
       orient: 'vertical',
       type: 'scroll',
-      backgroundColor: '#e5e7ebd9',
       inactiveColor: '#333',
-      inactiveBorderColor: 'blue',
     },
     series: [
       {

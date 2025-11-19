@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import {
-  computed, ref, useTemplateRef, watch,
+  computed, ref, useTemplateRef, watch, watchEffect,
 } from 'vue';
 import * as echarts from 'echarts/core';
 import { LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
 import { GraphChart, TreemapChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
+import { useDark } from '@vueuse/core';
 
 import {
   accentColors, getColor, palettes, sourcePalette,
@@ -32,6 +33,8 @@ const emit = defineEmits<{
   updateView: [view: string, options: Record<any, any>];
 }>();
 const options = defineModel<TreeMapOptions>('options', { required: true });
+
+const isDark = useDark();
 
 const selectedNode = ref<TreeMapChartNode>();
 const visible = ref(false);
@@ -191,9 +194,6 @@ const chart = useChart(
             formatter: '{b}',
           },
           upperLabel,
-          itemStyle: {
-            borderColor: 'white',
-          },
           levels: [
             {
               itemStyle: {
@@ -209,6 +209,18 @@ const chart = useChart(
     });
   },
 );
+
+watchEffect(() => {
+  chart.value?.setOption({
+    series: [
+      {
+        itemStyle: {
+          borderColor: isDark.value ? '#111827' : '#ffffff',
+        },
+      },
+    ],
+  });
+});
 
 const data = computed(() => {
   const result: TreeMapChartNode[] = [];
