@@ -219,7 +219,7 @@ const data = computed<ECBasicOption>(() => {
           symbol: EDGE_SYMBOL,
         })),
         data: nodes.map((node, idx) => {
-          const isRoot = !edges.some(([_source, target]) => target === idx);
+          const isRoot = props.stats.entryPoints.includes(node);
           const size = getModuleSize(node, props.stats, metric.value) ?? 0;
           const categoryIndex = dependencies.findIndex((el) => el === getModuleDependencyName(node)) + 1;
 

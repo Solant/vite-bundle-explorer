@@ -12,6 +12,7 @@ export interface Chunk {
 }
 
 export interface BuildStats {
+  entryPoints: string [];
   moduleFileNames: string[];
   chunks: Chunk[];
   importGraph: {

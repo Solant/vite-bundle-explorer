@@ -54,7 +54,9 @@ export function statsPlugin(options?: StatsPluginOptions) {
   }
 
   const edges = new Set<string>();
-  const stats: BuildStats = { chunks: [], importGraph: { edges: [] }, moduleFileNames: [] };
+  const stats: BuildStats = {
+    entryPoints: [], chunks: [], importGraph: { edges: [] }, moduleFileNames: [],
+  };
 
   const plugin: Plugin = {
     name: 'stats-plugin',
@@ -73,6 +75,10 @@ export function statsPlugin(options?: StatsPluginOptions) {
         // skip bundle root element
         if (!importer) {
           return;
+        }
+
+        if (stats.entryPoints.length === 0) {
+          stats.entryPoints.push(truncatePath(importer));
         }
 
         const result = await this.resolve(source, importer, { ...resolveOptions, skipSelf: true });
