@@ -159,6 +159,9 @@ watchEffect(() => {
           color,
         },
       },
+      label: {
+        color,
+      },
     });
   }
 });
