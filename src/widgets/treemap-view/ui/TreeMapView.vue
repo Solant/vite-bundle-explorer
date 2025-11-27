@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  computed, ref, useTemplateRef, watch, watchEffect,
+  computed, nextTick, onMounted, ref, useTemplateRef, watch, watchEffect,
 } from 'vue';
 import * as echarts from 'echarts/core';
 import { LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
@@ -324,6 +324,9 @@ watch(data, () => {
   });
 });
 
+onMounted(() => {
+  nextTick(() => window.dispatchEvent(new Event('resize')));
+});
 </script>
 
 <template>

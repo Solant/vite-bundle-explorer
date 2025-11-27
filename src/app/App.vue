@@ -64,6 +64,10 @@ function changeView(view: 'treemap' | 'graph', options: Record<string, unknown>)
     currentViewOptions.value = { ...currentViewOptions.value, ...options };
   });
 }
+
+function resize() {
+  window.dispatchEvent(new Event('resize'));
+}
 </script>
 
 <template>
@@ -87,7 +91,7 @@ function changeView(view: 'treemap' | 'graph', options: Record<string, unknown>)
 
       <SplitterResizeHandle class="w-1.5 bg-gray-200 transition-colors dark:bg-gray-700 hover:bg-gray-600 dark:hover:bg-gray-500" />
 
-      <SplitterPanel class="flex">
+      <SplitterPanel class="flex" @resize="resize">
         <currentView.ViewComponent
           v-if="stats"
           v-model:options="currentViewOptions"
