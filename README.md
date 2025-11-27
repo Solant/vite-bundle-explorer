@@ -1,22 +1,16 @@
 # vite-bundle-explorer
 
-Bundle analyzer and visualizer tool for vite.
+A powerful bundle analyzer and visualizer tool for Vite and any other Rollup-compatible bundler.
 
-- ✅ Supports both applications and libraries
-- ✅ Supports `vite`, `rollup`, `rolldown` and `tsdown`
-- ✅ Chunk treemap
-- ✅ Module import graph
-- ✅ Detect duplicated dependencies
-- ✅ Run checks during build
+Analyze your bundle size, detect duplicate dependencies, and visualize module graphs to optimize your application's performance.
 
-![preview](https://raw.githubusercontent.com/Solant/vite-bundle-explorer/refs/heads/main/preview.gif)
+## Features
 
-## How it works
-
-`vite-bundle-explorer` consists of two main parts:
-
-- Vite Plugin: Gathers detailed build statistics in JSON format
-- CLI Utility: Serves a web interface for visualizing the data.
+- ⚡ **Multi-Bundler Support** – Works with any Rollup-compatible bundler like `vite`, `rollup`, `rolldown`, and `tsdown`.
+- 📦 **Universal** – Supports both Applications and Libraries.
+- 📊 **Visual Insights** – Interactive Chunk Treemap and Module Import Graph.
+- 🔍 **Deep Analysis** – Detect duplicated dependencies, trace dependencies to identify exactly _why_ module is bundled.
+- 🛡️ **Build Checks** – Run checks during the build process.
 
 ## Usage
 
@@ -28,8 +22,7 @@ npm install -D vite-bundle-explorer
 # pnpm add -D vite-bundle-explorer
 ```
 
-Next, add the `statsPlugin` to your vite config. This plugin will generate a `stats.json` file in your output directory
-on successful build, containing all bundle stats.
+Register the plugin (config name depends on your bundler, here is an example for `vite`).
 
 ```javascript
 import { defineConfig } from 'vite';
@@ -43,13 +36,13 @@ export default defineConfig({
 });
 ```
 
-Once your build is complete and `stats.json` is generated, you can launch the web interface using the CLI utility:
+Once your build is complete, you can use CLI or any static file server to see the interactive visualization.
 
 ```shell
-npx vite-bundle-explorer ./dist/stats.json
+npx vite-bundle-explorer bundle-report
 ```
 
-## Options
+## Configuration
 
 You can pass options to stats plugin
 
@@ -63,12 +56,28 @@ export default defineConfig({
 });
 ```
 
-| Parameter              | Type      | Default           | Description                                                                                                |
-|------------------------|-----------|-------------------|------------------------------------------------------------------------------------------------------------|
-| `enabled`              | `boolean` | `true`            | Disables stats collection and report generation. This option is disabled automatically for `vite dev` mode |
-| `reportCompressedSize` | `boolean` | `true`            | Calculate compressed size of chunks. Might affect performance.                                             |
-| `reportDirectoryName`  | `string`  | `"bundle-report"` | Name of the output directory                                                                               |
-| `emitHtml`             | `boolean` | `true`            | Generate interactive HTML report                                                                           |
-| `emitJson`             | `boolean` | `false`           | Generate `stats.json` file                                                                                 |
-| `check`                | `boolean` | `true`            | Run report checks during build                                                                             |
-| `failOnWarning`        | `boolean` | `false`           | Cancel build if bundle has any report warnings                                                             |
+| Option                 | Type      | Default           | Description                                                                                               |
+|------------------------|-----------|-------------------|-----------------------------------------------------------------------------------------------------------|
+| `enabled`              | `boolean` | `true`            | Disable stats collection and report generation. This option is disabled automatically for `vite dev` mode |
+| `reportCompressedSize` | `boolean` | `true`            | Calculate compressed size of chunks. May slightly increase build time.                                    |
+| `reportDirectoryName`  | `string`  | `"bundle-report"` | Name of the output directory                                                                              |
+| `emitHtml`             | `boolean` | `true`            | Generate a standalone interactive HTML report                                                             |
+| `emitJson`             | `boolean` | `false`           | Generate raw `stats.json` file                                                                            |
+| `check`                | `boolean` | `true`            | Run report checks during the build process                                                                |
+| `failOnWarning`        | `boolean` | `false`           | Cancel build if bundle has any report warnings                                                            |
+
+## CI/CD Integration
+
+You can use `vite-bundle-explorer` to run checks in your CI pipeline.
+
+To fail the build when duplicate dependencies or other warnings are found, set `failOnWarning` to `true`:
+
+```javascript
+export default defineConfig({
+  plugins: [
+    statsPlugin({
+      failOnWarning: true,
+    }),
+  ],
+});
+```
