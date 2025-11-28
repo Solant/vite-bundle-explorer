@@ -12,6 +12,8 @@ Analyze your bundle size, detect duplicate dependencies, and visualize module gr
 - 🔍 **Deep Analysis** – Detect duplicated dependencies, trace dependencies to identify exactly _why_ module is bundled.
 - 🛡️ **Build Checks** – Run checks during the build process.
 
+[Example report](https://solant.me/demo/vite-bundle-explorer)
+
 ## Usage
 
 Install the package as a development dependency
