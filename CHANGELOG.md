@@ -1,6 +1,39 @@
 # Changelog
 
 
+## v1.0.0
+
+[compare changes](https://github.com/Solant/vite-bundle-explorer/compare/v0.3.4...v1.0.0)
+
+### 🚀 Enhancements
+
+- Improve graph view legend usability ([#18](https://github.com/Solant/vite-bundle-explorer/pull/18))
+- Show the module import path in a graph view ([#19](https://github.com/Solant/vite-bundle-explorer/pull/19))
+- Implement tree-based module filter ([ee4b382](https://github.com/Solant/vite-bundle-explorer/commit/ee4b382))
+- Hide dependencies by default, enhance graph view legend ([4487277](https://github.com/Solant/vite-bundle-explorer/commit/4487277))
+
+### 🩹 Fixes
+
+- Use a relative base path for some static file servers like Jetbrains ([918dab6](https://github.com/Solant/vite-bundle-explorer/commit/918dab6))
+- Show an accurate number of modules for every view ([01d5745](https://github.com/Solant/vite-bundle-explorer/commit/01d5745))
+- ⚠️  Change entrypoint detection logic ([ed8e2bf](https://github.com/Solant/vite-bundle-explorer/commit/ed8e2bf))
+- Apply dark mode theme for the tooltips ([44de0e5](https://github.com/Solant/vite-bundle-explorer/commit/44de0e5))
+- Remove some production build inconsistencies ([5c26271](https://github.com/Solant/vite-bundle-explorer/commit/5c26271))
+
+### 🏡 Chore
+
+- Replace prettier with stylistic eslint rules ([#21](https://github.com/Solant/vite-bundle-explorer/pull/21))
+- Update readme file ([c5756d3](https://github.com/Solant/vite-bundle-explorer/commit/c5756d3))
+- Add example link ([cdf2c56](https://github.com/Solant/vite-bundle-explorer/commit/cdf2c56))
+
+#### ⚠️ Breaking Changes
+
+- ⚠️  Change entrypoint detection logic ([ed8e2bf](https://github.com/Solant/vite-bundle-explorer/commit/ed8e2bf))
+
+### ❤️ Contributors
+
+- Solant <runner62v6@gmail.com>
+
 ## v0.3.4
 
 [compare changes](https://github.com/Solant/vite-bundle-explorer/compare/v0.3.3...v0.3.4)
