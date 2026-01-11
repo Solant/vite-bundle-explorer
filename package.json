@@ -3,6 +3,7 @@
   "description": "Bundle analyzer and visualizer tool for Vite",
   "version": "1.0.0",
   "type": "module",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "pnpm lint && vue-tsc -b && pnpm build:plugin && vite build",
