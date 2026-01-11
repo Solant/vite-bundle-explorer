@@ -4,15 +4,18 @@ A powerful bundle analyzer and visualizer tool for Vite and any other Rollup-com
 
 Analyze your bundle size, detect duplicate dependencies, and visualize module graphs to optimize your application's performance.
 
-## Features
-
-- ⚡ **Multi-Bundler Support** – Works with any Rollup-compatible bundler like `vite`, `rollup`, `rolldown`, and `tsdown`.
-- 📦 **Universal** – Supports both Applications and Libraries.
-- 📊 **Visual Insights** – Interactive Chunk Treemap and Module Import Graph.
-- 🔍 **Deep Analysis** – Detect duplicated dependencies, trace dependencies to identify exactly _why_ module is bundled.
-- 🛡️ **Build Checks** – Run checks during the build process.
-
 [Example report](https://solant.me/demo/vite-bundle-explorer)
+
+## Why Choose `vite-bundle-explorer`?
+
+While other bundle analysis tools exist for the Vite ecosystem, this package offers a deeper level of insight and broader set of features:
+
+- 📦 **Multi-Bundler Support**: works with any Rollup-compatible bundler like `vite`, `rollup`, `rolldown`, and `tsdown`.
+- 🛠️ **Universal**: supports both applications and libraries.
+- 📊 **Advanced Visualisations:** both an interactive Treemap and a powerful Import Graph.
+- 🔗 **Deep Dependency Tracing:** use "Trace Import" to backtrack the full chain of imports responsible for pulling in any given module.
+- 📏 **Accurate Metrics:** correct chunk size reporting, avoiding known issues in alternative tools.
+- 🛡️ **Build Checks**: run checks during the build process.
 
 ## Usage
 
