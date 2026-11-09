@@ -1,0 +1,6 @@
+allowBuilds:
+  esbuild: true
+  vue-demi: true
+minimumReleaseAge: 4320
+trustPolicy: no-downgrade
+trustPolicyIgnoreAfter: 10080
