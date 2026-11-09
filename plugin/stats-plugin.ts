@@ -6,9 +6,7 @@ import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 import { type Plugin } from 'vite';
-
-import type { BuildStats, Chunk } from '@/entities/bundle-stats/model/stats';
-import { getBundleOverview } from '@/features/overview/model/overview';
+import { type BuildStats, type Chunk, getBundleOverview } from 'shared';
 
 const compress = promisify(gzip);
 

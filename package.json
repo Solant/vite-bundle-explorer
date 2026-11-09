@@ -76,6 +76,7 @@
     "eslint-stylistic-airbnb": "^2.0.1",
     "globals": "^16.4.0",
     "reka-ui": "^2.3.2",
+    "shared": "workspace:*",
     "tsdown": "^0.23.7",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.46.2",

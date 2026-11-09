@@ -223,6 +223,9 @@ importers:
       reka-ui:
         specifier: ^2.3.2
         version: 2.3.2(typescript@5.8.3)(vue@3.5.17(typescript@5.8.3))
+      shared:
+        specifier: workspace:*
+        version: link:packages/shared
       tsdown:
         specifier: ^0.23.7
         version: 0.23.7(@volar/typescript@2.4.15(typescript@5.8.3))(typescript@5.8.3)(vue-tsc@2.2.12(typescript@5.8.3))
