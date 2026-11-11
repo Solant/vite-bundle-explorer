@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite",
-    "build": "pnpm lint && vue-tsc -b && pnpm build:plugin && vite build",
+    "build": "cp -r packages/plugin/dist dist-plugin",
     "build:plugin": "tsdown",
     "format": "prettier src plugin bin vite.config.ts --write",
     "lint": "eslint",
@@ -41,8 +41,8 @@
   ],
   "exports": {
     "./plugin": {
-      "types": "./dist-plugin/stats-plugin.d.ts",
-      "default": "./dist-plugin/stats-plugin.js"
+      "types": "./dist-plugin/stats-plugin.d.mts",
+      "default": "./dist-plugin/stats-plugin.mjs"
     }
   },
   "files": [
