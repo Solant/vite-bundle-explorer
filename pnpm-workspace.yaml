@@ -2,7 +2,7 @@ allowBuilds:
   esbuild: true
   vue-demi: true
 packages:
-  - packages/shared
+  - packages/*
   - .
 minimumReleaseAge: 4320
 trustPolicy: no-downgrade

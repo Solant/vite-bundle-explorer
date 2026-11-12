@@ -6,6 +6,8 @@ import { Metric, getMetricLabel, getAvailableMetrics } from './model/metric';
 
 export type { BuildStats, Chunk, Module };
 
+export { isDependency, getModuleDependencyName } from 'shared';
+
 export { Metric, getMetricLabel, getAvailableMetrics };
 
 export function isVirtual(module: string | number, stats: BuildStats): boolean {

@@ -5,7 +5,8 @@
   "description": "",
   "main": "dist/stats-plugin.mjs",
   "scripts": {
-    "build": "tsdown"
+    "build": "tsdown",
+    "clean": "rm -rf dist"
   },
   "exports": {
     ".": {
@@ -15,5 +16,8 @@
   },
   "keywords": [],
   "author": "",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "shared": "workspace:*"
+  }
 }
