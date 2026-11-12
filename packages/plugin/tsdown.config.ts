@@ -5,6 +5,7 @@ export default defineConfig({
   outDir: 'dist',
   deps: {
     neverBundle: ['vite'],
+    alwaysBundle: ['@vite-bundle-explorer/shared'],
   },
   format: ['esm'],
 });

@@ -1,1 +1,0 @@
-export { getBundleOverview } from 'shared';

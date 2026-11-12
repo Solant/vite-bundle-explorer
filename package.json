@@ -5,12 +5,12 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "dev": "vite",
-    "build": "pnpm run -r build && cp -r packages/plugin/dist dist-plugin && cp -r packages/ui/dist-ui dist-ui",
+    "dev": "pnpm --filter @vite-bundle-explorer/ui dev",
+    "build": "pnpm lint && pnpm typecheck && pnpm run -r build && pnpm clean && cp -r packages/plugin/dist dist-plugin && cp -r packages/ui/dist-ui dist-ui",
     "clean": "rm -rf dist-plugin && rm -rf dist-ui",
-    "format": "prettier src plugin bin vite.config.ts --write",
-    "lint": "eslint",
-    "release": "pnpm build && pnpm changelogen --release --push && pnpm publish"
+    "typecheck": "pnpm run -r typecheck",
+    "format": "prettier \"packages/**/*.{ts,vue}\" bin --write",
+    "lint": "eslint"
   },
   "homepage": "https://github.com/Solant/vite-bundle-explorer#readme",
   "repository": {
@@ -42,14 +42,14 @@
   "exports": {
     "./plugin": {
       "types": "./dist-plugin/stats-plugin.d.mts",
-      "default": "./dist-plugin/stats-plugin.mjs"
+      "import": "./dist-plugin/stats-plugin.mjs"
     }
   },
   "files": [
     "dist-ui/index.html",
     "dist-ui/assets",
-    "dist-plugin/stats-plugin.js",
-    "dist-plugin/stats-plugin.d.ts",
+    "dist-plugin/stats-plugin.mjs",
+    "dist-plugin/stats-plugin.d.mts",
     "bin/index.js"
   ],
   "bin": {
@@ -57,13 +57,14 @@
   },
   "packageManager": "pnpm@12.16.1",
   "devDependencies": {
-    "@types/node": "^24.0.13",
+    "@stylistic/eslint-plugin": "^5.5.0",
+    "@unocss/eslint-config": "^66.5.4",
     "eslint": "^9.38.0",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-vue": "^10.5.1",
     "eslint-stylistic-airbnb": "^2.0.1",
     "globals": "^16.4.0",
-    "tsdown": "^0.23.7",
+    "prettier": "^3.9.10",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.46.2"
   }

@@ -26,5 +26,5 @@
       ]
     }
   },
-  "include": ["vite.config.ts", "./plugin/stats-plugin.ts"]
+  "include": ["vite.config.ts"]
 }
