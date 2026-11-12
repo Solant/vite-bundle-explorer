@@ -1,0 +1,44 @@
+{
+  "name": "ui",
+  "private": true,
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "@vueuse/core": "^13.5.0",
+    "echarts": "^5.6.0",
+    "reka-ui": "^2.3.2",
+    "shared": "workspace:*",
+    "vue": "^3.5.17"
+  },
+  "devDependencies": {
+    "@iconify-json/mdi": "^1.2.3",
+    "@iconify-json/vscode-icons": "^1.2.30",
+    "@stylistic/eslint-plugin": "^5.5.0",
+    "@types/node": "^24.0.13",
+    "@unocss/eslint-config": "^66.5.4",
+    "@unocss/preset-icons": "^66.3.3",
+    "@unocss/preset-wind3": "^66.3.3",
+    "@unocss/reset": "^66.3.3",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "@vue/tsconfig": "^0.7.0",
+    "eslint": "^9.38.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-vue": "^10.5.1",
+    "eslint-stylistic-airbnb": "^2.0.1",
+    "globals": "^16.4.0",
+    "tsdown": "^0.23.7",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.46.2",
+    "unocss": "^66.3.3",
+    "vite": "^7.1.7",
+    "vue-tsc": "^2.2.12"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module"
+}
