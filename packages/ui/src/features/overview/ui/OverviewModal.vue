@@ -9,9 +9,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from 'reka-ui';
+import { getBundleOverview } from '@vite-bundle-explorer/shared';
 
 import type { BuildStats } from '@/entities/bundle-stats';
-import { getBundleOverview } from '@/features/overview/model/overview.ts';
 import { BaseButton } from '@/shared/ui';
 
 const props = defineProps<{ stats: BuildStats }>();

@@ -1,6 +1,53 @@
-import { type BuildStats, getModuleDependencyName } from '@/entities/bundle-stats';
+export interface Module {
+  fileNameIndex: number;
+  renderedLength: number;
+  virtual?: true;
+}
 
-interface BundleOverview {
+export interface Chunk {
+  fileName: string;
+  modules: Module[];
+  minifiedLength: number;
+  compressedLength: number;
+}
+
+export interface BuildStats {
+  entryPoints: string[];
+  moduleFileNames: string[];
+  chunks: Chunk[];
+  importGraph: {
+    edges: Array<[source: number, target: number]>;
+  };
+}
+
+export function isDependency(moduleFileName: string): boolean {
+  return moduleFileName.startsWith('node_modules');
+}
+
+export function getModuleDependencyName(moduleFileName: string): string {
+  if (!isDependency(moduleFileName)) {
+    return '';
+  }
+
+  // pnpm-specific logic
+  if (moduleFileName.startsWith('node_modules/.pnpm')) {
+    const parts = moduleFileName.split('/');
+    if (parts[4].startsWith('@')) {
+      return `${parts[4]}/${parts[5]}`;
+    }
+    return parts[4];
+  }
+
+  // npm default logic
+  const parts = moduleFileName.split('/');
+  const index = parts.lastIndexOf('node_modules');
+  if (parts[index + 1].startsWith('@')) {
+    return `${parts[index + 1]}/${parts[index + 2]}`;
+  }
+  return parts[index + 1];
+}
+
+export interface BundleOverview {
   hasWarnings: boolean;
   numberOfModules: number;
   numberOfVirtualModules: number;

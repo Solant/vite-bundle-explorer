@@ -17,9 +17,15 @@ export default [
     ignores: [
       'bundle-report/',
       'node_modules/',
-      'dist-ui/',
-      'dist-plugin/',
+      '**/dist-ui/',
+      '**/dist-plugin/',
+      '**/dist/',
     ],
+  },
+  {
+    plugins: {
+      '@stylistic': stylistic,
+    },
   },
   modernAirbnb,
   ...tseslint.configs.recommended,
@@ -28,9 +34,6 @@ export default [
   unocss,
   {
     files: ['**/*.{js,mjs,cjs,ts,vue}'],
-    plugins: {
-      '@stylistic': stylistic,
-    },
     languageOptions: {
       sourceType: 'module',
       parserOptions: {

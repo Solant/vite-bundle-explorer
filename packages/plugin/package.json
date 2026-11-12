@@ -1,0 +1,33 @@
+{
+  "name": "@vite-bundle-explorer/plugin",
+  "version": "0.0.0",
+  "private": true,
+  "description": "",
+  "main": "dist/stats-plugin.mjs",
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/stats-plugin.mjs",
+      "types": "./dist/stats-plugin.d.mts"
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "type": "module",
+  "peerDependencies": {
+    "vite": "^7.0.0"
+  },
+  "dependencies": {
+    "@vite-bundle-explorer/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.13",
+    "tsdown": "^0.23.7",
+    "typescript": "~5.8.3",
+    "vite": "^7.1.7"
+  }
+}
