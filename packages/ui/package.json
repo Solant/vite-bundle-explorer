@@ -28,7 +28,7 @@
     "typescript": "catalog:",
     "unocss": "^66.3.3",
     "vite": "catalog:",
-    "vue-tsc": "^2.2.12"
+    "vue-tsc": "^3.3.14"
   },
   "keywords": [],
   "author": "",
