@@ -60,7 +60,7 @@
     "@changesets/cli": "^3.0.3",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@unocss/eslint-config": "^66.5.4",
-    "eslint": "^9.38.0",
+    "eslint": "^10.14.0",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-vue": "^10.12.1",
     "eslint-stylistic-airbnb": "^2.0.1",
