@@ -4,6 +4,8 @@ allowBuilds:
 packages:
   - packages/*
   - .
+catalog:
+  typescript: "^6.0.3"
 minimumReleaseAge: 4320
 trustPolicy: no-downgrade
 trustPolicyIgnoreAfter: 10080
