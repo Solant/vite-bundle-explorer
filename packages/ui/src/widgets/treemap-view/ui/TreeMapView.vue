@@ -202,7 +202,7 @@ const chart = useChart(
             },
             ...Array.from({ length: 30 }).map(level),
           ],
-          // eslint-disable-next-line no-use-before-define
+          // eslint-disable-next-line @typescript-eslint/no-use-before-define
           data: data.value,
         },
       ],
