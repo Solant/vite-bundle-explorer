@@ -2,7 +2,7 @@ import tseslint from 'typescript-eslint';
 import airbnb from 'eslint-stylistic-airbnb';
 import pluginVue from 'eslint-plugin-vue';
 import globals from 'globals';
-import importPlugin from 'eslint-plugin-import';
+import { flatConfigs } from 'eslint-plugin-import-x';
 import unocss from '@unocss/eslint-config/flat';
 
 export default [
@@ -19,7 +19,7 @@ export default [
 
   ...tseslint.configs.recommended,
   ...pluginVue.configs['flat/recommended'],
-  importPlugin.flatConfigs.recommended,
+  flatConfigs.recommended,
   unocss,
 
   airbnb.configs['flat/recommended'],
@@ -43,7 +43,7 @@ export default [
       reportUnusedDisableDirectives: 'error',
     },
     settings: {
-      'import/internal-regex': '^@/',
+      'import-x/internal-regex': '^@/',
     },
     rules: {
       // js
@@ -75,7 +75,7 @@ export default [
         },
       ],
       // imports
-      'import/order': [
+      'import-x/order': [
         'error',
         {
           groups: [
@@ -92,9 +92,9 @@ export default [
           'newlines-between': 'always',
         },
       ],
-      'import/named': ['off'],
-      'import/no-unresolved': ['off'],
-      'import/no-named-as-default': ['off'],
+      'import-x/named': ['off'],
+      'import-x/no-unresolved': ['off'],
+      'import-x/no-named-as-default': ['off'],
       // vue
       'vue/define-macros-order': [
         'error',

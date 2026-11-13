@@ -61,7 +61,7 @@
     "@stylistic/eslint-plugin": "^5.10.0",
     "@unocss/eslint-config": "^66.5.4",
     "eslint": "^10.14.0",
-    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-import-x": "^4.18.1",
     "eslint-plugin-vue": "^10.12.1",
     "eslint-stylistic-airbnb": "^3.2.0",
     "globals": "^17.14.0",
