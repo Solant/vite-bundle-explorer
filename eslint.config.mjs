@@ -1,18 +1,12 @@
 import tseslint from 'typescript-eslint';
-import stylistic from '@stylistic/eslint-plugin';
 import airbnb from 'eslint-stylistic-airbnb';
 import pluginVue from 'eslint-plugin-vue';
 import globals from 'globals';
 import importPlugin from 'eslint-plugin-import';
 import unocss from '@unocss/eslint-config/flat';
 
-const modernAirbnb = structuredClone(airbnb);
-modernAirbnb.rules['no-restricted-syntax'] = modernAirbnb.rules['no-restricted-syntax'].filter(
-  (rule) => rule?.selector !== 'ForOfStatement',
-);
-modernAirbnb.rules['@stylistic/max-len'][1] = 120;
-
 export default [
+  // global ignores
   {
     ignores: [
       'bundle-report/',
@@ -22,16 +16,18 @@ export default [
       '**/dist/',
     ],
   },
-  {
-    plugins: {
-      '@stylistic': stylistic,
-    },
-  },
-  modernAirbnb,
+
   ...tseslint.configs.recommended,
   ...pluginVue.configs['flat/recommended'],
   importPlugin.flatConfigs.recommended,
   unocss,
+
+  airbnb.configs['flat/recommended'],
+  airbnb.configs['flat/addon-typescript'],
+  airbnb.configs['flat/addon-vue'],
+  airbnb.configs['flat/addon-vue-ts'],
+  airbnb.configs['flat/addon-iterators'],
+
   {
     files: ['**/*.{js,mjs,cjs,ts,vue}'],
     languageOptions: {
@@ -43,12 +39,29 @@ export default [
         ...globals.browser,
       },
     },
+    linterOptions: {
+      reportUnusedDisableDirectives: 'error',
+    },
     settings: {
       'import/internal-regex': '^@/',
     },
     rules: {
       // js
       'func-style': ['error', 'declaration'],
+      '@stylistic/max-len': [
+        'error',
+        120,
+        2,
+        {
+          ignoreUrls: true,
+          ignoreComments: false,
+          // ignore long eslint-disable comments
+          ignorePattern: '^\\s*(\\/\\/|\\/\\*) eslint(-disable)?',
+          ignoreRegExpLiterals: true,
+          ignoreStrings: true,
+          ignoreTemplateLiterals: true,
+        },
+      ],
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -83,16 +96,6 @@ export default [
       'import/no-unresolved': ['off'],
       'import/no-named-as-default': ['off'],
       // vue
-      'vue/block-order': [
-        'error',
-        {
-          order: [
-            'script',
-            'template',
-            'style',
-          ],
-        },
-      ],
       'vue/define-macros-order': [
         'error',
         {
@@ -106,7 +109,6 @@ export default [
       ],
       'vue/max-attributes-per-line': ['error', { singleline: { max: 3 }, multiline: { max: 1 } }],
       'vue/multi-word-component-names': ['off'],
-      'vue/component-name-in-template-casing': ['error', 'PascalCase'],
       'vue/max-len': [
         'error',
         {
@@ -115,6 +117,23 @@ export default [
           ignoreHTMLAttributeValues: true,
         },
       ],
+    },
+  },
+  {
+    files: ['bin/**/*.js', 'packages/plugin/**/*.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+  {
+    files: ['**/*.{ts,mts,cts,vue}'],
+    rules: {
+      // TS type/value declaration merging (e.g. `const Metric` + `type Metric`)
+      // trips both rules; duplicate identifiers are already a compile error
+      'no-redeclare': ['off'],
+      '@typescript-eslint/no-redeclare': ['off'],
     },
   },
   {

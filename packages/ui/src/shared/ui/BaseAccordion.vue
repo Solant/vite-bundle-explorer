@@ -9,7 +9,7 @@ import {
 </script>
 
 <template>
-  <AccordionRoot type="single" :collapsible="true">
+  <AccordionRoot type="single" collapsible>
     <AccordionItem value="1">
       <AccordionHeader class="my-2">
         <AccordionTrigger

@@ -16,7 +16,7 @@ provide(nestedGroupSymbol, true);
 </script>
 
 <template>
-  <AccordionRoot type="single" :collapsible="true">
+  <AccordionRoot type="single" collapsible>
     <AccordionItem value="1">
       <AccordionHeader>
         <AccordionTrigger

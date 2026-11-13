@@ -72,7 +72,7 @@ function resize() {
 
 <template>
   <div class="h-screen w-screen flex bg-white dark:bg-gray-900">
-    <button class="i-mdi:lightbulb-night-outline absolute right-2 top-2 z-20 h-7 w-7 c-gray-900 dark:c-white" @click="toggleDarkMode" />
+    <button type="button" class="i-mdi:lightbulb-night-outline absolute right-2 top-2 z-20 h-7 w-7 c-gray-900 dark:c-white" @click="toggleDarkMode" />
     <SplitterGroup direction="horizontal">
       <SplitterPanel :default-size="20">
         <div class="h-full flex flex-col overflow-auto bg-white p-2 dark:bg-gray-900">

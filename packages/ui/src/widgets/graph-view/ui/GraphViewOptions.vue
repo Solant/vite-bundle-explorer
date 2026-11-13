@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import type { BuildStats } from '@/entities/bundle-stats';
 import { useModelProxy } from '@/shared/lib';
 import {
