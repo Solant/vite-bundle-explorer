@@ -3,10 +3,12 @@ allowBuilds:
   vue-demi: true
 packages:
   - packages/*
+  - packages/fixtures/*
   - .
 catalog:
   typescript: "^6.0.3"
   vite: "^8.3.7"
+  tsdown: "^0.23.7"
 minimumReleaseAge: 4320
 trustPolicy: no-downgrade
 trustPolicyIgnoreAfter: 10080

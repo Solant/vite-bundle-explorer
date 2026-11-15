@@ -14,6 +14,7 @@ export default [
       '**/dist-ui/',
       '**/dist-plugin/',
       '**/dist/',
+      'packages/fixtures/**',
     ],
   },
 
