@@ -1,18 +1,9 @@
 <script setup lang="ts">
-import { inject } from 'vue';
-
-import { nestedGroupSymbol } from './group-symbol.ts';
-
 defineProps<{ title: string }>();
-
-const nested = inject(nestedGroupSymbol, false);
 </script>
 
 <template>
-  <div
-    class="flex justify-between p-2 c-gray-900 dark:c-white"
-    :class="{ 'border-b border-solid border-gray-300 dark:border-gray-700': !nested }"
-  >
+  <div class="flex items-center justify-between gap-2 px-2 py-1.5 text-[13px] text-gray-700 dark:text-gray-300">
     {{ title }}
 
     <slot />

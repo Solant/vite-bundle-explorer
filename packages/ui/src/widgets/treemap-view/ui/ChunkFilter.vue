@@ -59,17 +59,17 @@ const sortedChunks = computed<Chunk[]>(() => {
 </script>
 
 <template>
-  <div class="c-gray-900 dark:c-white">
-    <div class="flex justify-between p-1">
+  <div>
+    <div class="flex items-center justify-between gap-2 px-2 pb-1.5">
       <BaseButton @click="toggleAll">
         Toggle all
       </BaseButton>
 
-      <label>
-        Sort by
+      <label class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+        Sort
         <select
           v-model="sortOrder"
-          class="border-none bg-transparent capitalize focus:outline-none"
+          class="cursor-pointer rounded bg-gray-100 px-1 py-0.5 text-xs capitalize transition-colors dark:bg-gray-800 hover:bg-gray-200 focus:outline-none dark:hover:bg-gray-700"
         >
           <option value="">-</option>
           <option value="name-asc">Name asc</option>
@@ -84,19 +84,20 @@ const sortedChunks = computed<Chunk[]>(() => {
       <div
         v-for="chunk in sortedChunks"
         :key="chunk.fileName"
-        class="flex cursor-pointer gap-1 hover:bg-gray-300 dark:hover:bg-gray-700"
+        class="h-6 flex cursor-pointer items-center gap-1.5 rounded px-1.5 hover:bg-gray-100 dark:hover:bg-gray-800"
         :title="chunk.fileName"
         @click="toggle(chunk, options.hiddenChunks.includes(chunk.fileName))"
       >
         <input
           type="checkbox"
+          class="accent-blue-600"
           :checked="!options.hiddenChunks.includes(chunk.fileName)"
           @change="toggle(chunk, ($event.target as HTMLInputElement).checked)"
         >
-        <div class="min-w-0 flex-shrink-1 flex-grow-1 truncate">
+        <div class="min-w-0 flex-shrink-1 flex-grow-1 truncate text-[13px]">
           {{ chunk.fileName }}
         </div>
-        <div class="ml-auto whitespace-nowrap">
+        <div class="ml-auto whitespace-nowrap text-xs text-gray-400 tabular-nums dark:text-gray-500">
           {{ formatSize(getChunkLength(chunk)) }}
         </div>
       </div>

@@ -37,19 +37,19 @@ useEventListener(
 <template>
   <OptionItem :title>
     <div
-      class="flex items-stretch border-1 border-gray-300 rounded border-solid dark:border-gray-700"
+      class="h-6 inline-flex items-stretch overflow-hidden border border-gray-300 rounded dark:border-gray-700"
       @mouseenter="scrollEnabled = true"
       @mouseleave="scrollEnabled = false"
     >
       <button
         type="button"
-        class="w-[24px] flex items-center justify-center border-r border-gray-300 border-solid dark:border-gray-700"
+        class="w-5 flex cursor-pointer items-center justify-center text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
         @click="decrement"
       >
-        <span class="i-mdi:minus block" />
+        <span class="i-mdi:minus block text-xs" />
       </button>
       <input
-        class="max-w-[70px] appearance-none text-center dark:bg-gray-700 focus:outline-none"
+        class="w-11 border-x border-gray-300 bg-transparent text-center text-xs tabular-nums outline-none dark:border-gray-700"
         :value="model.toFixed(props.fixed ?? 0)"
         :step
         @update="
@@ -59,10 +59,10 @@ useEventListener(
       >
       <button
         type="button"
-        class="w-[24px] flex items-center justify-center border-l border-gray-300 border-solid dark:border-gray-700"
+        class="w-5 flex cursor-pointer items-center justify-center text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white"
         @click="increment"
       >
-        <span class="i-mdi:plus block" />
+        <span class="i-mdi:plus block text-xs" />
       </button>
     </div>
   </OptionItem>

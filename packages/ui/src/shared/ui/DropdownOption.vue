@@ -13,7 +13,7 @@ const model = defineModel<T>({ required: true });
   <OptionItem :title>
     <select
       v-model="model"
-      class="border-none bg-transparent capitalize focus:outline-none"
+      class="cursor-pointer rounded bg-gray-100 px-1.5 py-0.5 text-xs capitalize transition-colors dark:bg-gray-800 hover:bg-gray-200 focus:outline-none dark:hover:bg-gray-700"
     >
       <option
         v-for="option in options"

@@ -201,16 +201,16 @@ function printPath() {
   <OptionGroup
     :title="`Visible modules (${numberOfModules - options.hiddenModules.length}/${numberOfModules})`"
   >
-    <div class="flex justify-between p-1">
+    <div class="flex items-center justify-between gap-2 px-2 pb-1.5">
       <BaseButton @click="toggleAll">
         Toggle all
       </BaseButton>
 
-      <label class="c-gray-900 dark:c-white">
-        Sort by
+      <label class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+        Sort
         <select
           v-model="sortOrder"
-          class="border-none bg-transparent capitalize focus:outline-none"
+          class="cursor-pointer rounded bg-gray-100 px-1 py-0.5 text-xs capitalize transition-colors dark:bg-gray-800 hover:bg-gray-200 focus:outline-none dark:hover:bg-gray-700"
         >
           <option value="name">Name</option>
           <option value="size">Size</option>

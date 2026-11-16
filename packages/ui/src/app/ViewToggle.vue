@@ -1,30 +1,26 @@
 <script lang="ts" setup>
 const model = defineModel<'treemap' | 'graph'>({ required: true });
 
-const buttonCls = 'w-1/2 flex cursor-pointer items-center justify-center py-2.5 gap-1 dark:c-gray-600 c-gray-400';
+const treemap = { key: 'treemap', label: 'Treemap', icon: 'i-mdi:chart-tree' } as const;
+const graph = { key: 'graph', label: 'Graph', icon: 'i-mdi:graph' } as const;
 
-// eslint-disable-next-line
-const activeCls = 'w-1/2 flex cursor-pointer items-center justify-center py-2.5 gap-1 bg-gray-200 dark:bg-gray-600 dark:c-white c-gray-900';
+const views = [treemap, graph];
 </script>
 
 <template>
-  <div class="flex flex-shrink-0 overflow-hidden bg-gray-100 text-sm -mx-2 -mt-2 dark:bg-gray-800">
+  <div class="flex flex-shrink-0 gap-0.5 rounded-md bg-gray-100 p-0.5 dark:bg-gray-800">
     <button
+      v-for="view in views"
+      :key="view.key"
       type="button"
-      :class="model === 'treemap' ? activeCls : buttonCls"
-      @click="model = 'treemap'"
+      class="h-6 flex cursor-pointer items-center gap-1 rounded px-2 text-xs font-medium transition-colors"
+      :class="model === view.key
+        ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-600 dark:text-white'
+        : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'"
+      @click="model = view.key"
     >
-      <span class="i-mdi-chart-tree" />
-      Tree Map
-    </button>
-
-    <button
-      type="button"
-      :class="model === 'graph' ? activeCls : buttonCls"
-      @click="model = 'graph'"
-    >
-      <span class="i-mdi-graph" />
-      Graph
+      <span :class="view.icon" class="text-[13px]" />
+      {{ view.label }}
     </button>
   </div>
 </template>

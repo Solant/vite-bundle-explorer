@@ -93,25 +93,42 @@ function fetchStats() {
 </script>
 
 <template>
-  <div class="h-screen w-screen flex bg-white dark:bg-gray-900">
-    <button type="button" class="i-mdi:lightbulb-night-outline absolute right-2 top-2 z-20 h-7 w-7 c-gray-900 dark:c-white" @click="toggleDarkMode" />
-    <SplitterGroup direction="horizontal">
-      <SplitterPanel :default-size="20">
-        <div class="h-full flex flex-col overflow-auto bg-white p-2 dark:bg-gray-900">
-          <ViewToggle v-model="currentViewKey" />
+  <div class="h-screen w-screen flex flex-col bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+    <header class="h-10 flex flex-none items-center gap-3 border-b border-gray-200 px-2 dark:border-gray-800">
+      <div class="flex items-center gap-1.5 pl-1 text-[13px] font-semibold">
+        <span class="i-vscode-icons:file-type-vite" />
+        Bundle Explorer
+      </div>
 
+      <ViewToggle v-model="currentViewKey" />
+
+      <div class="ml-auto flex items-center gap-1.5">
+        <OverviewModal v-if="stats" :stats="stats" />
+
+        <button
+          type="button"
+          class="h-7 w-7 flex cursor-pointer items-center justify-center rounded text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100"
+          :title="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
+          @click="toggleDarkMode"
+        >
+          <span :class="isDark ? 'i-mdi:weather-sunny' : 'i-mdi:weather-night'" />
+        </button>
+      </div>
+    </header>
+
+    <SplitterGroup direction="horizontal" class="min-h-0 flex-1">
+      <SplitterPanel :default-size="20" :min-size="12">
+        <div class="h-full overflow-y-auto bg-gray-50 p-1.5 dark:bg-gray-950/40">
           <currentView.OptionsComponent
             v-if="stats && currentViewOptions"
             v-model="currentViewOptions"
             :stats
             @update-view="changeView"
           />
-
-          <OverviewModal v-if="stats" :stats="stats" class="mt-auto" />
         </div>
       </SplitterPanel>
 
-      <SplitterResizeHandle class="w-1.5 bg-gray-200 transition-colors dark:bg-gray-700 hover:bg-gray-600 dark:hover:bg-gray-500" />
+      <SplitterResizeHandle class="w-1.5 bg-gray-100 outline-none transition-colors dark:bg-gray-800 hover:bg-blue-600" />
 
       <SplitterPanel class="flex" @resize="resize">
         <currentView.ViewComponent
@@ -126,16 +143,17 @@ function fetchStats() {
   </div>
 
   <teleport to="body">
-    <div v-if="selectorVisible" class="fixed inset-0 z-30 flex items-center justify-center bg-gray-200 opacity-75 dark:bg-gray-700">
-      <div
-        class="z-30 max-h-[85vh] max-w-[450px] w-[90vw] rounded bg-white c-gray-900 dark:bg-gray-800 dark:c-white"
-      >
-        <div class="flex justify-center px-4 py-2">
+    <div v-if="selectorVisible" class="fixed inset-0 z-30 flex items-center justify-center bg-black/50 p-4">
+      <div class="max-w-80 w-full border border-gray-200 rounded-lg bg-white p-4 shadow-xl dark:border-gray-800 dark:bg-gray-900">
+        <div class="mb-3 text-sm font-semibold">
           Select a fixture
         </div>
 
-        <div class="flex gap-2 px-4 py-2">
-          <select v-model="selectorValue" class="min-w-0 flex-1 bg-white c-gray-900 dark:bg-gray-700 dark:c-white">
+        <div class="flex gap-2">
+          <select
+            v-model="selectorValue"
+            class="min-w-0 flex-1 cursor-pointer border border-gray-300 rounded bg-white px-2 py-1 text-[13px] outline-none dark:border-gray-700 dark:bg-gray-800"
+          >
             <option v-for="option in selectorOptions" :key="option" :value="option">
               {{ option }}
             </option>
