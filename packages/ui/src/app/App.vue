@@ -9,6 +9,7 @@ import { TreemapView } from '@/widgets/treemap-view';
 import { GraphView } from '@/widgets/graph-view';
 import type { BuildStats } from '@/entities/bundle-stats';
 import { OverviewModal } from '@/features/overview';
+import { BaseButton } from '@/shared/ui';
 
 import ViewToggle from './ViewToggle.vue';
 
@@ -18,16 +19,6 @@ function toggleDarkMode() {
 }
 
 const stats = shallowRef<BuildStats>();
-try {
-  const payload = JSON.parse(window.BUNDLE_STATS ?? '');
-  stats.value = payload as BuildStats;
-} catch (_e) {
-  fetch('stats.json')
-    .then((res) => res.json())
-    .then((data) => {
-      stats.value = data;
-    });
-}
 
 const currentViewKey = ref<'treemap' | 'graph'>('treemap');
 const currentView = computed(() => {
@@ -68,6 +59,37 @@ function changeView(view: 'treemap' | 'graph', options: Record<string, unknown>)
 function resize() {
   window.dispatchEvent(new Event('resize'));
 }
+const selectorVisible = ref(false);
+const selectorValue = ref<string | undefined>();
+const selectorOptions = ref<string[]>([]);
+
+if (import.meta.env.MODE === 'development' && window.location.hash.length <= 1) {
+  selectorVisible.value = true;
+  fetch('/list')
+    .then((res) => res.json())
+    .then((data) => { selectorOptions.value = data.files; })
+    .catch(console.error);
+} else if (import.meta.env.MODE === 'development' && window.location.hash.length > 1) {
+  selectorValue.value = decodeURIComponent(window.location.hash.slice(1));
+  fetchStats();
+} else {
+  const payload = JSON.parse(window.BUNDLE_STATS ?? '');
+  stats.value = payload as BuildStats;
+}
+
+function fetchStats() {
+  if (!selectorValue.value) return;
+
+  const name = encodeURIComponent(selectorValue.value);
+  fetch(`/get?name=${name}`)
+    .then((res) => res.json())
+    .then((data) => {
+      stats.value = data;
+      selectorVisible.value = false;
+      window.location.hash = name;
+    })
+    .catch(console.error);
+}
 </script>
 
 <template>
@@ -102,4 +124,28 @@ function resize() {
       </SplitterPanel>
     </SplitterGroup>
   </div>
+
+  <teleport to="body">
+    <div v-if="selectorVisible" class="fixed inset-0 z-30 flex items-center justify-center bg-gray-200 opacity-75 dark:bg-gray-700">
+      <div
+        class="z-30 max-h-[85vh] max-w-[450px] w-[90vw] rounded bg-white c-gray-900 dark:bg-gray-800 dark:c-white"
+      >
+        <div class="flex justify-center px-4 py-2">
+          Select a fixture
+        </div>
+
+        <div class="flex gap-2 px-4 py-2">
+          <select v-model="selectorValue" class="min-w-0 flex-1 bg-white c-gray-900 dark:bg-gray-700 dark:c-white">
+            <option v-for="option in selectorOptions" :key="option" :value="option">
+              {{ option }}
+            </option>
+          </select>
+
+          <BaseButton :disabled="!selectorValue" @click="fetchStats">
+            Select
+          </BaseButton>
+        </div>
+      </div>
+    </div>
+  </teleport>
 </template>
