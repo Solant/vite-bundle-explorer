@@ -76,6 +76,11 @@ function getModuleIcons(node: ModuleTreeNode, stats: BuildStats) {
     }
   }
 
+  const isBuiltIn = stats.builtInModules?.includes(stats.moduleFileNames.indexOf(node.title ?? ''));
+  if (isBuiltIn) {
+    result.push('i-vscode-icons:file-type-node');
+  }
+
   return result;
 }
 
@@ -83,8 +88,8 @@ export function getModuleTree(moduleNames: string[], stats: BuildStats) {
   const tree: ModuleTree = [];
 
   for (const name of moduleNames) {
-    const parts = name.split('/');
-
+    const isBuiltIn = stats.builtInModules?.includes(stats.moduleFileNames.indexOf(name));
+    const parts = isBuiltIn ? [name] : name.split('/');
     let branch = tree;
     for (let index = 0; index < parts.length; index += 1) {
       const item = branch.find((i) => i.title === parts[index]);

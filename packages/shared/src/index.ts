@@ -14,6 +14,7 @@ export interface Chunk {
 export interface BuildStats {
   entryPoints: string[];
   moduleFileNames: string[];
+  builtInModules: number[];
   chunks: Chunk[];
   importGraph: {
     edges: Array<[source: number, target: number]>;

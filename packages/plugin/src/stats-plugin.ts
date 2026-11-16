@@ -4,6 +4,7 @@ import { gzip } from 'node:zlib';
 import { promisify } from 'node:util';
 import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import { isBuiltin } from 'node:module';
 
 import { type Plugin } from 'vite';
 import { type BuildStats, type Chunk, getBundleOverview } from '@vite-bundle-explorer/shared';
@@ -53,7 +54,7 @@ export function statsPlugin(options?: StatsPluginOptions) {
 
   const edges = new Set<string>();
   const stats: BuildStats = {
-    entryPoints: [], chunks: [], importGraph: { edges: [] }, moduleFileNames: [],
+    entryPoints: [], chunks: [], importGraph: { edges: [] }, moduleFileNames: [], builtInModules: [],
   };
 
   const plugin: Plugin = {
@@ -86,6 +87,9 @@ export function statsPlugin(options?: StatsPluginOptions) {
 
         const parent = upsertNodeIndex(stats.moduleFileNames, truncatePath(importer));
         const child = upsertNodeIndex(stats.moduleFileNames, truncatePath(result.id));
+        if (isBuiltin(truncatePath(result.id)) && !stats.builtInModules.includes(child)) {
+          stats.builtInModules.push(child);
+        }
         edges.add(`${parent},${child}`);
       },
     },
