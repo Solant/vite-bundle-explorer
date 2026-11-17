@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 
 import { type BuildStats, type Chunk, formatSize } from '@/entities/bundle-stats';
 import { BaseButton } from '@/shared/ui';
+import { Tree, type ModuleTreeNode, getModuleIcons } from '@/features/options/module';
 
 import type { TreeMapOptions } from '../model/options.ts';
 
@@ -56,6 +57,17 @@ const sortedChunks = computed<Chunk[]>(() => {
 
   return props.stats.chunks;
 });
+
+const tree = computed<ModuleTreeNode[]>(() => sortedChunks.value.map((c) => {
+  const node: ModuleTreeNode = {
+    title: c.fileName,
+    size: getChunkLength(c),
+    visible: true,
+    fileName: c.fileName,
+  };
+  node.icons = getModuleIcons(node, props.stats);
+  return node;
+}));
 </script>
 
 <template>
@@ -80,27 +92,6 @@ const sortedChunks = computed<Chunk[]>(() => {
       </label>
     </div>
 
-    <div class="overflow-auto p-1">
-      <div
-        v-for="chunk in sortedChunks"
-        :key="chunk.fileName"
-        class="h-6 flex cursor-pointer items-center gap-1.5 rounded px-1.5 hover:bg-gray-100 dark:hover:bg-gray-800"
-        :title="chunk.fileName"
-        @click="toggle(chunk, options.hiddenChunks.includes(chunk.fileName))"
-      >
-        <input
-          type="checkbox"
-          class="accent-blue-600"
-          :checked="!options.hiddenChunks.includes(chunk.fileName)"
-          @change="toggle(chunk, ($event.target as HTMLInputElement).checked)"
-        >
-        <div class="min-w-0 flex-shrink-1 flex-grow-1 truncate text-[13px]">
-          {{ chunk.fileName }}
-        </div>
-        <div class="ml-auto whitespace-nowrap text-xs text-gray-400 tabular-nums dark:text-gray-500">
-          {{ formatSize(getChunkLength(chunk)) }}
-        </div>
-      </div>
-    </div>
+    <Tree :data="tree" />
   </div>
 </template>

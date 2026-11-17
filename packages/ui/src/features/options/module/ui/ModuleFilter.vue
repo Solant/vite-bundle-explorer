@@ -6,7 +6,7 @@ import { BaseButton, BaseContextMenu, OptionGroup } from '@/shared/ui';
 import { dfs, sort } from '@/shared/graph';
 import { getPath } from '@/widgets/treemap-view/model/path.ts';
 
-import { default as Tree } from './Tree.vue';
+import Tree from './Tree.vue';
 import { getModuleTree, type ModuleTreeNode } from '../model/module-tree';
 
 const props = defineProps<{ stats: BuildStats; modules: 'bundled' | 'all' }>();

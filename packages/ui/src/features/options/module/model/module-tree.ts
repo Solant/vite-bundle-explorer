@@ -46,7 +46,7 @@ const EXTENSIONS: Record<string, string> = {
   html: 'i-vscode-icons:file-type-html',
 };
 
-function getModuleIcons(node: ModuleTreeNode, stats: BuildStats) {
+export function getModuleIcons(node: ModuleTreeNode, stats: BuildStats) {
   const result: string[] = [];
   const { fileName } = node;
   if (!fileName) {
