@@ -6,3 +6,5 @@ export { default as NumberOption } from './NumberOption.vue';
 export { default as DropdownOption } from './DropdownOption.vue';
 export { default as OptionGroup } from './OptionGroup.vue';
 export { default as OptionItem } from './OptionItem.vue';
+
+export { default as ThemeSwitcher } from './ThemeSwitcher.vue';

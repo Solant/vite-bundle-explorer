@@ -3,20 +3,14 @@ import {
   computed, nextTick, ref, shallowRef, watch,
 } from 'vue';
 import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from 'reka-ui';
-import { useDark } from '@vueuse/core';
 
 import { TreemapView } from '@/widgets/treemap-view';
 import { GraphView } from '@/widgets/graph-view';
 import type { BuildStats } from '@/entities/bundle-stats';
 import { OverviewModal } from '@/features/overview';
-import { BaseButton } from '@/shared/ui';
+import { BaseButton, ThemeSwitcher } from '@/shared/ui';
 
 import ViewToggle from './ViewToggle.vue';
-
-const isDark = useDark();
-function toggleDarkMode() {
-  isDark.value = !isDark.value;
-}
 
 const stats = shallowRef<BuildStats>();
 
@@ -105,14 +99,7 @@ function fetchStats() {
       <div class="ml-auto flex items-center gap-1.5">
         <OverviewModal v-if="stats" :stats="stats" />
 
-        <button
-          type="button"
-          class="h-7 w-7 flex cursor-pointer items-center justify-center rounded text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100"
-          :title="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
-          @click="toggleDarkMode"
-        >
-          <span :class="isDark ? 'i-mdi:weather-sunny' : 'i-mdi:weather-night'" />
-        </button>
+        <ThemeSwitcher />
       </div>
     </header>
 
