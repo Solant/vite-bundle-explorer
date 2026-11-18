@@ -1,58 +1,28 @@
 <script setup lang="ts">
 import {
-  computed, nextTick, ref, shallowRef, watch,
+  ref, shallowRef,
 } from 'vue';
-import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from 'reka-ui';
 
-import { TreemapView } from '@/widgets/treemap-view';
-import { GraphView } from '@/widgets/graph-view';
 import type { BuildStats } from '@/entities/bundle-stats';
 import { OverviewModal } from '@/features/overview';
-import { BaseButton, ThemeSwitcher } from '@/shared/ui';
-
-import ViewToggle from './ViewToggle.vue';
+import { BaseButton, ThemeSwitcher, BaseToggleGroup } from '@/shared/ui';
 
 const stats = shallowRef<BuildStats>();
 
-const currentViewKey = ref<'treemap' | 'graph'>('treemap');
-const currentView = computed(() => {
-  if (currentViewKey.value === 'treemap') {
-    return TreemapView;
-  } if (currentViewKey.value === 'graph') {
-    return GraphView;
-  }
-
-  return TreemapView;
-});
-
-const currentViewOptions = ref();
-watch(
-  stats,
-  () => {
-    if (!stats.value) {
-      return;
-    }
-
-    currentViewOptions.value = currentView.value.optionsFactory(stats.value);
+const views = [
+  {
+    key: 'treemap',
+    label: 'Treemap',
+    icon: 'i-mdi:chart-tree',
   },
-  { immediate: true },
-);
+  {
+    key: 'graph',
+    label: 'Graph',
+    icon: 'i-mdi:graph',
+  },
+];
+const currentView = ref(views[0].key);
 
-watch(currentView, (newView) => {
-  // @ts-expect-error view changing
-  currentViewOptions.value = newView.optionsFactory(stats.value);
-});
-
-function changeView(view: 'treemap' | 'graph', options: Record<string, unknown>) {
-  currentViewKey.value = view;
-  nextTick(() => {
-    currentViewOptions.value = { ...currentViewOptions.value, ...options };
-  });
-}
-
-function resize() {
-  window.dispatchEvent(new Event('resize'));
-}
 const selectorVisible = ref(false);
 const selectorValue = ref<string | undefined>();
 const selectorOptions = ref<string[]>([]);
@@ -94,7 +64,10 @@ function fetchStats() {
         Bundle Explorer
       </div>
 
-      <ViewToggle v-model="currentViewKey" />
+      <BaseToggleGroup
+        v-model="currentView"
+        :options="views"
+      />
 
       <div class="ml-auto flex items-center gap-1.5">
         <OverviewModal v-if="stats" :stats="stats" />
@@ -103,30 +76,9 @@ function fetchStats() {
       </div>
     </header>
 
-    <SplitterGroup direction="horizontal" class="min-h-0 flex-1">
-      <SplitterPanel :default-size="20" :min-size="12">
-        <div class="h-full overflow-y-auto bg-gray-50 p-1.5 dark:bg-gray-950/40">
-          <currentView.OptionsComponent
-            v-if="stats && currentViewOptions"
-            v-model="currentViewOptions"
-            :stats
-            @update-view="changeView"
-          />
-        </div>
-      </SplitterPanel>
-
-      <SplitterResizeHandle class="w-1.5 bg-gray-100 outline-none transition-colors dark:bg-gray-800 hover:bg-blue-600" />
-
-      <SplitterPanel class="flex" @resize="resize">
-        <currentView.ViewComponent
-          v-if="stats"
-          v-model:options="currentViewOptions"
-          :stats
-          class="flex-shrink-1 flex-grow-1"
-          @update-view="changeView"
-        />
-      </SplitterPanel>
-    </SplitterGroup>
+    <!--
+ <....Page />
+-->
   </div>
 
   <teleport to="body">

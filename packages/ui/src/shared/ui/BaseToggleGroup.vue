@@ -1,16 +1,15 @@
 <script lang="ts" setup>
-const model = defineModel<'treemap' | 'graph'>({ required: true });
+defineProps<{
+  options: { key: string; label: string; icon: string }[];
+}>();
 
-const treemap = { key: 'treemap', label: 'Treemap', icon: 'i-mdi:chart-tree' } as const;
-const graph = { key: 'graph', label: 'Graph', icon: 'i-mdi:graph' } as const;
-
-const views = [treemap, graph];
+const model = defineModel<string>({ required: true });
 </script>
 
 <template>
   <div class="flex flex-shrink-0 gap-0.5 rounded-md bg-gray-100 p-0.5 dark:bg-gray-800">
     <button
-      v-for="view in views"
+      v-for="view in options"
       :key="view.key"
       type="button"
       class="h-6 flex cursor-pointer items-center gap-1 rounded px-2 text-xs font-medium transition-colors"
