@@ -1,1 +1,1 @@
-export { default as GraphPage } from './ui/GraphPage.vue'
+export { default as GraphPage } from './ui/GraphPage.vue';

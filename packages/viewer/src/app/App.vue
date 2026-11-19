@@ -5,7 +5,9 @@ import {
 
 import type { BuildStats } from '@/entities/bundle-stats';
 import { OverviewModal } from '@/features/overview';
-import { BaseButton, BaseDialog, ThemeSwitcher, BaseToggleGroup } from '@/shared/ui';
+import {
+  BaseButton, BaseDialog, ThemeSwitcher, BaseToggleGroup,
+} from '@/shared/ui';
 import { TreeMapPage } from '@/pages/treemap';
 import { GraphPage } from '@/pages/graph';
 
