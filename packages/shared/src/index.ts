@@ -22,21 +22,12 @@ export interface BuildStats {
 }
 
 export function isDependency(moduleFileName: string): boolean {
-  return moduleFileName.startsWith('node_modules');
+  return moduleFileName.lastIndexOf('node_modules') !== -1;
 }
 
 export function getModuleDependencyName(moduleFileName: string): string {
   if (!isDependency(moduleFileName)) {
     return '';
-  }
-
-  // pnpm-specific logic
-  if (moduleFileName.startsWith('node_modules/.pnpm')) {
-    const parts = moduleFileName.split('/');
-    if (parts[4].startsWith('@')) {
-      return `${parts[4]}/${parts[5]}`;
-    }
-    return parts[4];
   }
 
   // npm default logic
