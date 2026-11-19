@@ -1,6 +1,5 @@
 {
-  "name": "@vite-bundle-explorer/ui",
-  "private": true,
+  "name": "@vite-bundle-explorer/viewer",
   "version": "0.0.0",
   "description": "",
   "scripts": {
