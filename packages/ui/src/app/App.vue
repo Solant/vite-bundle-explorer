@@ -6,6 +6,8 @@ import {
 import type { BuildStats } from '@/entities/bundle-stats';
 import { OverviewModal } from '@/features/overview';
 import { BaseButton, ThemeSwitcher, BaseToggleGroup } from '@/shared/ui';
+import { TreeMapPage } from '@/pages/treemap';
+import { GraphPage } from '@/pages/graph';
 
 const stats = shallowRef<BuildStats>();
 
@@ -76,9 +78,10 @@ function fetchStats() {
       </div>
     </header>
 
-    <!--
- <....Page />
--->
+    <template v-if="stats != null">
+      <TreeMapPage v-if="currentView === 'treemap'" :stats />
+      <GraphPage v-if="currentView === 'graph'" :stats />
+    </template>
   </div>
 
   <teleport to="body">
