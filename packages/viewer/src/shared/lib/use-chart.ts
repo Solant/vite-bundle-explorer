@@ -10,21 +10,22 @@ export function useChart(
 ) {
   use(extensions);
   const chart = shallowRef<EChartsType>();
-
-  function resize() {
-    chart.value?.resize();
-  }
+  let observer: ResizeObserver | undefined;
 
   onMounted(() => {
-    chart.value = init(target.value);
+    const el = target.value;
+    if (!el) {
+      return;
+    }
+    chart.value = init(el);
     callback(chart.value);
-    window.addEventListener('resize', resize);
+    observer = new ResizeObserver(() => chart.value?.resize());
+    observer.observe(el);
   });
 
   onUnmounted(() => {
-    window.removeEventListener('resize', resize);
+    observer?.disconnect();
     chart.value?.dispose();
   });
-
   return chart;
 }

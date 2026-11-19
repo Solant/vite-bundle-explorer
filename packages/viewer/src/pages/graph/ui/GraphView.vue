@@ -10,7 +10,7 @@ const ROOT_COLOR = '#e7000b';
 
 <script setup lang="ts">
 import {
-  computed, onMounted, useTemplateRef, watch, watchEffect,
+  computed, useTemplateRef, watch, watchEffect,
 } from 'vue';
 import { TitleComponent, TooltipComponent } from 'echarts/components';
 import { TreemapChart } from 'echarts/charts';
@@ -146,10 +146,6 @@ const colors = [sourceAccentColor, ...accentColors];
 
 const isDark = useDark();
 
-// TODO: remove workaround
-onMounted(() => {
-  setInterval(() => window.dispatchEvent(new Event('resize')), 10);
-});
 watchEffect(() => {
   if (chart.value) {
     const color = isDark.value ? '#ffffff' : '#111827';
