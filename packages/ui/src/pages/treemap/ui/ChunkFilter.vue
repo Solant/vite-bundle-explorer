@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
-import { type BuildStats, type Chunk, formatSize } from '@/entities/bundle-stats';
+import { type BuildStats, type Chunk } from '@/entities/bundle-stats';
 import { BaseButton } from '@/shared/ui';
 import { Tree, type ModuleTreeNode, getModuleIcons } from '@/features/options/module';
 
@@ -10,20 +10,6 @@ import type { TreeMapOptions } from '../model/options.ts';
 const props = defineProps<{ stats: BuildStats }>();
 
 const options = defineModel<TreeMapOptions>('options', { required: true });
-
-function toggle(module: Chunk, value: boolean) {
-  if (!value) {
-    options.value = {
-      ...options.value,
-      hiddenChunks: [...options.value.hiddenChunks, module.fileName],
-    };
-  } else {
-    options.value = {
-      ...options.value,
-      hiddenChunks: options.value.hiddenChunks.filter((m) => m !== module.fileName),
-    };
-  }
-}
 
 function toggleAll() {
   if (options.value.hiddenChunks.length === 0) {

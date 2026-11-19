@@ -4,7 +4,7 @@ import { computed, ref, watch } from 'vue';
 import { type BuildStats, getModuleSize } from '@/entities/bundle-stats';
 import { BaseButton, BaseContextMenu, OptionGroup } from '@/shared/ui';
 import { dfs, sort } from '@/shared/graph';
-import { getPath } from '@/widgets/treemap-view/model/path.ts';
+import { getPath } from '@/pages/treemap/model/path';
 
 import Tree from './Tree.vue';
 import { getModuleTree, type ModuleTreeNode } from '../model/module-tree';

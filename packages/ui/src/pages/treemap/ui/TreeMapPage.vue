@@ -3,22 +3,25 @@ import { ref } from 'vue';
 
 import type { BuildStats } from '@/entities/bundle-stats';
 import SplitLayout from '@/shared/layouts/SplitLayout.vue';
-import { TreemapView } from '@/widgets/treemap-view';
+
+import TreeMapView from './TreeMapView.vue';
+import TreeMapViewOptions from './TreeMapViewOptions.vue';
+import { getDefaultTreeMapOptions } from '../model/options';
 
 const props = defineProps<{
   stats: BuildStats;
 }>();
 
-const options = ref(TreemapView.optionsFactory(props.stats));
+const options = ref(getDefaultTreeMapOptions(props.stats));
 </script>
 
 <template>
   <SplitLayout>
     <template #aside>
-      <TreemapView.OptionsComponent v-model="options" :stats />
+      <TreeMapViewOptions v-model="options" :stats />
     </template>
     <template #main>
-      <TreemapView.ViewComponent :stats :options class="h-full w-full" />
+      <TreeMapView :stats :options class="h-full w-full" />
     </template>
   </SplitLayout>
 </template>
