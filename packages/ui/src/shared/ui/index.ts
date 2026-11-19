@@ -1,5 +1,6 @@
 export { default as BaseButton } from './BaseButton.vue';
 export { default as BaseSwitch } from './BaseSwitch.vue';
+export { default as BaseDialog } from './BaseDialog.vue';
 export { default as BaseContextMenu } from './BaseContextMenu.vue';
 export { default as BaseToggleGroup } from './BaseToggleGroup.vue';
 

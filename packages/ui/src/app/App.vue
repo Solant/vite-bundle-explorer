@@ -5,7 +5,7 @@ import {
 
 import type { BuildStats } from '@/entities/bundle-stats';
 import { OverviewModal } from '@/features/overview';
-import { BaseButton, ThemeSwitcher, BaseToggleGroup } from '@/shared/ui';
+import { BaseButton, BaseDialog, ThemeSwitcher, BaseToggleGroup } from '@/shared/ui';
 import { TreeMapPage } from '@/pages/treemap';
 import { GraphPage } from '@/pages/graph';
 
@@ -84,28 +84,20 @@ function fetchStats() {
     </template>
   </div>
 
-  <teleport to="body">
-    <div v-if="selectorVisible" class="fixed inset-0 z-30 flex items-center justify-center bg-black/50 p-4">
-      <div class="max-w-80 w-full border border-gray-200 rounded-lg bg-white p-4 shadow-xl dark:border-gray-800 dark:bg-gray-900">
-        <div class="mb-3 text-sm font-semibold">
-          Select a fixture
-        </div>
+  <BaseDialog v-model:open="selectorVisible" title="Select a fixture">
+    <div class="flex gap-2">
+      <select
+        v-model="selectorValue"
+        class="min-w-0 flex-1 cursor-pointer border border-gray-300 rounded bg-white px-2 py-1 text-[13px] outline-none dark:border-gray-700 dark:bg-gray-800"
+      >
+        <option v-for="option in selectorOptions" :key="option" :value="option">
+          {{ option }}
+        </option>
+      </select>
 
-        <div class="flex gap-2">
-          <select
-            v-model="selectorValue"
-            class="min-w-0 flex-1 cursor-pointer border border-gray-300 rounded bg-white px-2 py-1 text-[13px] outline-none dark:border-gray-700 dark:bg-gray-800"
-          >
-            <option v-for="option in selectorOptions" :key="option" :value="option">
-              {{ option }}
-            </option>
-          </select>
-
-          <BaseButton :disabled="!selectorValue" @click="fetchStats">
-            Select
-          </BaseButton>
-        </div>
-      </div>
+      <BaseButton :disabled="!selectorValue" @click="fetchStats">
+        Select
+      </BaseButton>
     </div>
-  </teleport>
+  </BaseDialog>
 </template>
