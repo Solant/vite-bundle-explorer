@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "pnpm --filter @vite-bundle-explorer/ui dev",
-    "build": "pnpm lint && pnpm typecheck && pnpm run -r build && pnpm clean && cp -r packages/plugin/dist dist-plugin && cp -r packages/ui/dist-ui dist-ui",
+    "build": "pnpm run -r build",
     "clean": "rm -rf dist-plugin && rm -rf dist-ui",
     "typecheck": "pnpm run -r typecheck",
     "lint": "eslint"
