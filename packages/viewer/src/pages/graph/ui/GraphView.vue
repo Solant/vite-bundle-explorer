@@ -143,11 +143,15 @@ watchEffect(() => {
 const layout = computed(() => {
   const defaultMetric = getAvailableMetrics(props.stats)[0];
 
-  return computeLayout(props.stats, (node) => minMax(
-    (getModuleSize(node, props.stats, defaultMetric) ?? 0) / 1024,
-    MIN_SYMBOL_SIZE,
-    MAX_SYMBOL_SIZE,
-  ));
+  return computeLayout(
+    props.stats,
+    (node) => minMax(
+      (getModuleSize(node, props.stats, defaultMetric) ?? 0) / 1024,
+      MIN_SYMBOL_SIZE,
+      MAX_SYMBOL_SIZE,
+    ),
+    options.value.denseLayout,
+  );
 });
 
 const data = computed<ECBasicOption>(() => {

@@ -5,7 +5,6 @@ import {
   forceSimulation,
   forceX,
   forceY,
-  type SimulationLinkDatum,
 } from 'd3-force';
 
 import { type BuildStats } from '@/entities/bundle-stats';
@@ -22,6 +21,11 @@ interface SimNode {
   radius: number;
 }
 
+interface SimLink {
+  source: SimNode;
+  target: SimNode;
+}
+
 /** Golden-angle phyllotaxis step between successive spiral rings, px. */
 const SPIRAL_STEP = 14;
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
@@ -31,14 +35,38 @@ const MIN_TICKS = 60;
 const MAX_TICKS = 200;
 const LINK_GAP = 20;
 const LINK_STRENGTH = 0.5;
-const CHARGE = -90;
-/** Cuts long-range repulsion so distant clusters do not blow the graph apart. */
-const CHARGE_RANGE = 320;
-/** Coarser Barnes-Hut approximation: 2x faster, no visible quality loss. */
-const CHARGE_THETA = 1.4;
-const COLLIDE_PAD = 2;
-/** Collision kicks in late, once the clusters have settled. */
-const COLLIDE_FROM = 0.6;
+interface LayoutParams {
+  charge: number;
+  chargeRange: number;
+  chargeTheta: number;
+  collidePad: number;
+  collideFrom: number;
+  linkStrength: (fanOut: number) => number;
+}
+
+const LAYOUTS: Record<'dense' | 'spread', LayoutParams> = {
+  /** constant link strength: hubs pull their whole package into a dense ball */
+  dense: {
+    charge: -90,
+    chargeRange: 320,
+    chargeTheta: 1.4,
+    collidePad: 2,
+    collideFrom: 0.6,
+    linkStrength: () => LINK_STRENGTH,
+  },
+  /** degree-normalized link strength keeps dense package clusters inflated */
+  spread: {
+    charge: -120,
+    // cuts long-range repulsion so distant clusters do not blow the graph apart
+    chargeRange: 600,
+    chargeTheta: 1.0,
+    collidePad: 4,
+    // collision kicks in late, once the clusters have settled
+    collideFrom: 0.3,
+    linkStrength: (fanOut: number) => Math.min(1, (LINK_STRENGTH * 3) / fanOut),
+  },
+};
+
 const CENTER_PULL = 0.05;
 
 /**
@@ -71,6 +99,7 @@ function seededRandom(seed: number) {
 export function computeLayout(
   stats: BuildStats,
   symbolSizeOf: (moduleFileName: string) => number,
+  dense = false,
 ): Map<string, Position> {
   const { moduleFileNames: nodes, importGraph } = stats;
   const positions = new Map<string, Position>();
@@ -78,6 +107,7 @@ export function computeLayout(
   if (nodes.length === 0) {
     return positions;
   }
+  const params = dense ? LAYOUTS.dense : LAYOUTS.spread;
 
   // BFS from entry points: seeds the spiral so every subtree starts
   // as a contiguous sector; modules unreachable from an entry get their
@@ -148,12 +178,18 @@ export function computeLayout(
     simNodeByModuleIndex[index] = simNodes[rank];
   });
 
-  const links: SimulationLinkDatum<SimNode>[] = importGraph.edges
+  const links: SimLink[] = importGraph.edges
     .filter(([source, target]) => source !== target)
     .map(([source, target]) => ({
       source: simNodeByModuleIndex[source]!,
       target: simNodeByModuleIndex[target]!,
     }));
+
+  const degree = new Map<SimNode, number>();
+  for (const { source, target } of links) {
+    degree.set(source, (degree.get(source) ?? 0) + 1);
+    degree.set(target, (degree.get(target) ?? 0) + 1);
+  }
 
   // settle within the tick budget no matter the graph size
   const maxTicks = Math.round(
@@ -169,21 +205,30 @@ export function computeLayout(
 
         return source.radius + target.radius + LINK_GAP;
       })
-      .strength(LINK_STRENGTH))
+      .strength((link) => {
+        const source = link.source as SimNode;
+        const target = link.target as SimNode;
+        const fanOut = Math.min(degree.get(source) ?? 1, degree.get(target) ?? 1);
+
+        // spread normalizes like d3's default (1 / min(degree)) so package
+        // clusters stop contracting into a ball; dense pulls every link
+        // with full constant strength
+        return params.linkStrength(fanOut);
+      }))
     .force('charge', forceManyBody()
-      .strength(CHARGE)
-      .distanceMax(CHARGE_RANGE)
-      .theta(CHARGE_THETA))
+      .strength(params.charge)
+      .distanceMax(params.chargeRange)
+      .theta(params.chargeTheta))
     .force('x', forceX(0).strength(CENTER_PULL))
     .force('y', forceY(0).strength(CENTER_PULL))
     .randomSource(seededRandom(42))
     .stop();
 
   simulation.alphaDecay(1 - simulation.alphaMin() ** (1 / maxTicks));
-  const collideTick = Math.floor(maxTicks * COLLIDE_FROM);
+  const collideTick = Math.floor(maxTicks * params.collideFrom);
   for (let tick = 0; tick < maxTicks && simulation.alpha() > simulation.alphaMin(); tick += 1) {
     if (tick === collideTick) {
-      simulation.force('collide', forceCollide((node: SimNode) => node.radius + COLLIDE_PAD));
+      simulation.force('collide', forceCollide((node: SimNode) => node.radius + params.collidePad));
     }
     simulation.tick();
   }

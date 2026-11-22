@@ -9,6 +9,7 @@ import {
 export interface GraphOptions {
   metric: Metric;
   compact: boolean;
+  denseLayout: boolean;
   hiddenModules: number[];
 }
 
@@ -24,6 +25,7 @@ export function optionsFactory(buildStats: BuildStats): GraphOptions {
   return {
     metric: getAvailableMetrics(buildStats)[0],
     compact: false,
+    denseLayout: false,
     hiddenModules,
   };
 }
