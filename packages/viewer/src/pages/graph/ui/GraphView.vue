@@ -148,7 +148,7 @@ const layout = computed(() => {
       MIN_SYMBOL_SIZE,
       MAX_SYMBOL_SIZE,
     ),
-    options.value.denseLayout,
+    !options.value.spreadLayout,
   );
 });
 

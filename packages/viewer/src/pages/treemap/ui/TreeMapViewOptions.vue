@@ -36,6 +36,11 @@ function updateView(view: string, options: unknown) {
   <div>
     <MetricOption v-model="metric" :stats />
     <OptionItem title="Compact">
+      <template #description>
+        Merges groups that contain a single child into one node. A chain like
+        <b>src › lib › ui</b> becomes one <b>src/lib/ui</b> tile instead of three nested ones.
+      </template>
+
       <BaseSwitch v-model="compact" />
     </OptionItem>
     <OptionGroup
