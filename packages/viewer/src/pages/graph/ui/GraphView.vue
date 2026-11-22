@@ -2,8 +2,11 @@
 function minMax(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
+const MIN_SYMBOL_SIZE = 12;
+const MAX_SYMBOL_SIZE = 75;
 
 const EDGE_SYMBOL = [undefined, 'arrow'];
+const EDGE_SYMBOL_SIZE = 6;
 
 const ROOT_COLOR = '#e7000b';
 </script>
@@ -22,6 +25,7 @@ import { useChart } from '@/shared/lib';
 import {
   type BuildStats,
   formatSize,
+  getAvailableMetrics,
   getModuleDependencyName,
   getModuleSize,
   removeEmptyLeafs,
@@ -30,6 +34,7 @@ import {
 import { accentColors, sourceAccentColor } from '@/shared/config';
 
 import type { GraphOptions } from '../model/graph.ts';
+import { computeLayout } from '../model/layout.ts';
 
 const props = defineProps<{ stats: BuildStats }>();
 const options = defineModel<GraphOptions>('options', { required: true });
@@ -64,13 +69,7 @@ const chart = useChart(
       series: [
         {
           type: 'graph',
-          layout: 'force',
-          force: {
-            friction: options.value.forceFriction,
-            repulsion: options.value.forceRepulsion,
-            edgeLength: options.value.forceEdgeLength,
-            gravity: options.value.forceGravity,
-          },
+          layout: 'none',
           emphasis: {
             focus: 'adjacency',
             label: {
@@ -87,9 +86,11 @@ const chart = useChart(
             },
           },
           roam: true,
+          // reduce hairball effect on edges
           lineStyle: {
             width: 0.5,
-            opacity: 0.7,
+            opacity: 0.5,
+            curveness: 0.3,
           },
         },
       ],
@@ -97,34 +98,6 @@ const chart = useChart(
     c.setOption(data.value);
   },
 );
-
-watch(options, (newValue, oldValue) => {
-  if (!chart.value) {
-    return;
-  }
-
-  if (
-    newValue.forceEdgeLength === oldValue.forceEdgeLength
-    && newValue.forceFriction === oldValue.forceFriction
-    && newValue.forceEdgeLength === oldValue.forceEdgeLength
-    && newValue.forceGravity === oldValue.forceGravity
-  ) {
-    return;
-  }
-
-  chart.value.setOption({
-    series: [
-      {
-        force: {
-          friction: newValue.forceFriction,
-          repulsion: newValue.forceRepulsion,
-          edgeLength: newValue.forceEdgeLength,
-          gravity: newValue.forceGravity,
-        },
-      },
-    ],
-  });
-});
 
 const metric = computed(() => options.value.metric);
 const hiddenModules = computed<(typeof options)['value']['hiddenModules']>((oldValue) => {
@@ -141,8 +114,6 @@ const hiddenModules = computed<(typeof options)['value']['hiddenModules']>((oldV
   return oldValue;
 });
 const compact = computed(() => options.value.compact);
-
-const colors = [sourceAccentColor, ...accentColors];
 
 const isDark = useDark();
 
@@ -165,6 +136,20 @@ watchEffect(() => {
       },
     });
   }
+});
+
+const layout = computed(() => {
+  const defaultMetric = getAvailableMetrics(props.stats)[0];
+
+  return computeLayout(
+    props.stats,
+    (node) => minMax(
+      (getModuleSize(node, props.stats, defaultMetric) ?? 0) / 1024,
+      MIN_SYMBOL_SIZE,
+      MAX_SYMBOL_SIZE,
+    ),
+    options.value.denseLayout,
+  );
 });
 
 const data = computed<ECBasicOption>(() => {
@@ -191,16 +176,18 @@ const data = computed<ECBasicOption>(() => {
     }
   }
   const dependencies = Array.from(set);
+  const categories = [
+    { name: 'src', itemStyle: { color: sourceAccentColor } },
+    ...dependencies.map((dep, index) => ({
+      name: dep,
+      // wraps within the accents so a dependency never reuses the src color
+      itemStyle: { color: accentColors[index % accentColors.length] },
+    })),
+  ];
 
   return {
     legend: {
-      data: [
-        { name: 'src', itemStyle: { color: colors[0] } },
-        ...dependencies.map((dep, index) => ({
-          name: dep,
-          itemStyle: { color: colors[index + 1] },
-        })),
-      ],
+      data: categories,
       top: 50,
       left: 0,
       icon: 'circle',
@@ -210,22 +197,19 @@ const data = computed<ECBasicOption>(() => {
     },
     series: [
       {
-        categories: [
-          { name: 'src', itemStyle: { color: colors[0] } },
-          ...dependencies.map((dep, index) => ({
-            name: dep,
-            itemStyle: { color: accentColors[index + 1] },
-          })),
-        ],
+        categories,
         edges: edges.map((edge) => ({
           source: edge[0],
           target: edge[1],
           symbol: EDGE_SYMBOL,
+          symbolSize: EDGE_SYMBOL_SIZE,
         })),
         data: nodes.map((node, idx) => {
           const isRoot = props.stats.entryPoints.includes(node);
           const size = getModuleSize(node, props.stats, metric.value) ?? 0;
           const categoryIndex = dependencies.findIndex((el) => el === getModuleDependencyName(node)) + 1;
+
+          const position = layout.value.get(node)!;
 
           let color: string | undefined;
           if (isRoot) {
@@ -238,10 +222,12 @@ const data = computed<ECBasicOption>(() => {
             category: categoryIndex,
             id: idx,
             name: node,
+            x: position.x,
+            y: position.y,
             // max size should be limited so we don't accidentally create a black hole
-            symbolSize: minMax(size / 1024, 12, 75),
+            symbolSize: minMax(size / 1024, MIN_SYMBOL_SIZE, MAX_SYMBOL_SIZE),
             itemStyle: {
-              borderColor: size === 0 ? colors[categoryIndex % accentColors.length] : undefined,
+              borderColor: size === 0 ? categories[categoryIndex].itemStyle.color : undefined,
               color,
             },
             emphasis: {
