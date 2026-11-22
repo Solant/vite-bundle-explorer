@@ -14,9 +14,9 @@ export function getChunkSize(
   switch (metric) {
     case Metric.Rendered:
       return chunk.modules.reduce((acc, cur) => acc + cur.renderedLength, 0);
-    case Metric.Minified:
+    case Metric.Bundled:
       return chunk.minifiedLength;
-    case Metric.Compressed:
+    case Metric.Gzipped:
       return chunk.compressedLength;
     default:
       throw new Error(`Unexpected metric value: ${metric}`);
@@ -52,10 +52,10 @@ export function getModuleSize(
         }
         const total = getChunkSize(chunk.fileName, stats, Metric.Rendered)!;
         const ratio = mod.renderedLength / total;
-        if (metric === Metric.Minified) {
+        if (metric === Metric.Bundled) {
           return chunk.minifiedLength * ratio;
         }
-        if (metric === Metric.Compressed) {
+        if (metric === Metric.Gzipped) {
           return chunk.compressedLength * ratio;
         }
       }
