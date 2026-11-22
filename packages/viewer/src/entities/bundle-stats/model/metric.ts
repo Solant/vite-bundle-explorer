@@ -2,8 +2,8 @@ import type { BuildStats } from './stats';
 
 export const Metric = {
   Rendered: 'rendered',
-  Minified: 'minified',
-  Compressed: 'compressed',
+  Bundled: 'bundled',
+  Gzipped: 'gzipped',
 };
 
 export type Metric = (typeof Metric)[keyof typeof Metric];
@@ -16,13 +16,13 @@ export function getAvailableMetrics(stats: BuildStats): Metric[] {
   const result: Metric[] = [];
 
   if (stats.chunks.every((c) => c.minifiedLength !== -1)) {
-    result.push(Metric.Minified);
+    result.push(Metric.Bundled);
   }
 
   result.push(Metric.Rendered);
 
   if (stats.chunks.every((c) => c.compressedLength !== -1)) {
-    result.push(Metric.Compressed);
+    result.push(Metric.Gzipped);
   }
 
   return result;

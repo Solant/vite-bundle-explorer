@@ -6,6 +6,9 @@ defineProps<{
   title: string;
 }>();
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+defineSlots<{ description?(): any }>();
+
 const model = defineModel<T>({ required: true });
 </script>
 
@@ -24,5 +27,9 @@ const model = defineModel<T>({ required: true });
         {{ option }}
       </option>
     </select>
+
+    <template v-if="$slots.description" #description>
+      <slot name="description" />
+    </template>
   </OptionItem>
 </template>
