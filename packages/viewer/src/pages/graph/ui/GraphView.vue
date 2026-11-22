@@ -115,8 +115,6 @@ const hiddenModules = computed<(typeof options)['value']['hiddenModules']>((oldV
 });
 const compact = computed(() => options.value.compact);
 
-const colors = [sourceAccentColor, ...accentColors];
-
 const isDark = useDark();
 
 watchEffect(() => {
@@ -178,16 +176,18 @@ const data = computed<ECBasicOption>(() => {
     }
   }
   const dependencies = Array.from(set);
+  const categories = [
+    { name: 'src', itemStyle: { color: sourceAccentColor } },
+    ...dependencies.map((dep, index) => ({
+      name: dep,
+      // wraps within the accents so a dependency never reuses the src color
+      itemStyle: { color: accentColors[index % accentColors.length] },
+    })),
+  ];
 
   return {
     legend: {
-      data: [
-        { name: 'src', itemStyle: { color: colors[0] } },
-        ...dependencies.map((dep, index) => ({
-          name: dep,
-          itemStyle: { color: colors[index + 1] },
-        })),
-      ],
+      data: categories,
       top: 50,
       left: 0,
       icon: 'circle',
@@ -197,13 +197,7 @@ const data = computed<ECBasicOption>(() => {
     },
     series: [
       {
-        categories: [
-          { name: 'src', itemStyle: { color: colors[0] } },
-          ...dependencies.map((dep, index) => ({
-            name: dep,
-            itemStyle: { color: accentColors[index + 1] },
-          })),
-        ],
+        categories,
         edges: edges.map((edge) => ({
           source: edge[0],
           target: edge[1],
@@ -233,7 +227,7 @@ const data = computed<ECBasicOption>(() => {
             // max size should be limited so we don't accidentally create a black hole
             symbolSize: minMax(size / 1024, MIN_SYMBOL_SIZE, MAX_SYMBOL_SIZE),
             itemStyle: {
-              borderColor: size === 0 ? colors[categoryIndex % accentColors.length] : undefined,
+              borderColor: size === 0 ? categories[categoryIndex].itemStyle.color : undefined,
               color,
             },
             emphasis: {
