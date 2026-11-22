@@ -9,7 +9,8 @@
     "build": "pnpm run -r build",
     "clean": "rm -rf dist-plugin && rm -rf dist-ui",
     "typecheck": "pnpm run -r typecheck",
-    "lint": "eslint"
+    "lint": "eslint",
+    "prepare": "husky"
   },
   "homepage": "https://github.com/Solant/vite-bundle-explorer#readme",
   "repository": {
@@ -65,6 +66,7 @@
     "eslint-plugin-vue": "^10.12.1",
     "eslint-stylistic-airbnb": "^3.2.0",
     "globals": "^17.14.0",
+    "husky": "^9.1.7",
     "typescript": "catalog:",
     "typescript-eslint": "^8.72.2"
   }

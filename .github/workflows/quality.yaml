@@ -6,6 +6,10 @@ on:
       - master
   pull_request:
 
+# skip git hooks in CI
+env:
+  HUSKY: 0
+
 permissions:
   contents: read
 
