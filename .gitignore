@@ -9,9 +9,7 @@ lerna-debug.log*
 
 node_modules
 dist
-dist-ssr
-dist-ui
-dist-plugin
+dist-*
 *.local
 
 # Editor directories and files
@@ -27,3 +25,4 @@ dist-plugin
 
 stats.json
 bundle-report
+bundle-report-*
