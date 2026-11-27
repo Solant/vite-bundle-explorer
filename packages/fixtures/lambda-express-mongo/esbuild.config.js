@@ -1,4 +1,5 @@
 import { build } from 'esbuild';
+import { esbuildStatsPlugin } from '@vite-bundle-explorer/plugin/esbuild';
 
 await build({
   entryPoints: ['./src/index.js'],
@@ -7,4 +8,9 @@ await build({
   bundle: true,
   platform: 'node',
   format: 'cjs',
+  plugins: [esbuildStatsPlugin({
+    reportDirectoryName: 'bundle-report-esbuild',
+    emitHtml: false,
+    emitJson: true,
+  })],
 });

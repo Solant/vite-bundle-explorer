@@ -14,6 +14,10 @@
     ".": {
       "import": "./dist/stats-plugin.mjs",
       "types": "./dist/stats-plugin.d.mts"
+    },
+    "./esbuild": {
+      "import": "./dist/esbuild.mjs",
+      "types": "./dist/esbuild.d.mts"
     }
   },
   "keywords": [],
