@@ -1,5 +1,5 @@
 ---
-"@vite-bundle-explorer/viewer": minor
+"vite-bundle-explorer": minor
 ---
 
-rename size metrics and add descriptions
+[viewer] rename size metrics and add descriptions
