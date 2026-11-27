@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.1.0
+
+### Minor Changes
+
+- [#28](https://github.com/Solant/vite-bundle-explorer/pull/28) [`cb6bc5b`](https://github.com/Solant/vite-bundle-explorer/commit/cb6bc5ba4f5ab050d153c9a1c7e4403054c1ecd9) Thanks [@Solant](https://github.com/Solant)! - identify built-in node modules in the module tree
+
+- [#31](https://github.com/Solant/vite-bundle-explorer/pull/31) [`57b86dc`](https://github.com/Solant/vite-bundle-explorer/commit/57b86dce39a57c5624ad9244faea32de72433edc) Thanks [@Solant](https://github.com/Solant)! - precompute graph layout for stable rendering
+
+- [#29](https://github.com/Solant/vite-bundle-explorer/pull/29) [`18ae39e`](https://github.com/Solant/vite-bundle-explorer/commit/18ae39e02dac2181ce5a17e5382e0f9da0d29215) Thanks [@Solant](https://github.com/Solant)! - [viewer] redesign explorer UI: compact header with segmented view toggle, unified gray/blue design system, denser option panels, restyled modals and context menu
+
+- [#35](https://github.com/Solant/vite-bundle-explorer/pull/35) [`9fae732`](https://github.com/Solant/vite-bundle-explorer/commit/9fae7326b55b3ae53f660b89babd599015a14344) Thanks [@Solant](https://github.com/Solant)! - add support for esbuild
+
+- [#33](https://github.com/Solant/vite-bundle-explorer/pull/33) [`f58c879`](https://github.com/Solant/vite-bundle-explorer/commit/f58c87973228c76ba57b98bda5be011a76550f3d) Thanks [@Solant](https://github.com/Solant)! - [viewer] rename size metrics and add descriptions
+
+### Patch Changes
+
+- [`671c8c7`](https://github.com/Solant/vite-bundle-explorer/commit/671c8c7101a3be609f17a772b7958ffe239e5f43) Thanks [@Solant](https://github.com/Solant)! - fix dependency name resolution for pnpm and absolute paths
+
 
 ## v1.0.0
 
