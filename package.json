@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "pnpm --filter @vite-bundle-explorer/viewer dev",
-    "build": "pnpm run -r build",
+    "build": "pnpm run -r build && pnpm clean && cp -r packages/plugin/dist dist-plugin && cp -r packages/viewer/dist-ui dist-ui",
     "clean": "rm -rf dist-plugin && rm -rf dist-ui",
     "typecheck": "pnpm run -r typecheck",
     "lint": "eslint",
@@ -44,15 +44,30 @@
     "./plugin": {
       "types": "./dist-plugin/stats-plugin.d.mts",
       "import": "./dist-plugin/stats-plugin.mjs"
+    },
+    "./plugin/esbuild": {
+      "types": "./dist-plugin/esbuild.d.mts",
+      "import": "./dist-plugin/esbuild.mjs"
     }
   },
   "files": [
     "dist-ui/index.html",
     "dist-ui/assets",
-    "dist-plugin/stats-plugin.mjs",
-    "dist-plugin/stats-plugin.d.mts",
+    "dist-plugin",
     "bin/index.js"
   ],
+  "peerDependencies": {
+    "vite": "^7.0.0 || ^8.0.0",
+    "esbuild": ">=0.9.0"
+  },
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": true
+    },
+    "esbuild": {
+      "optional": true
+    }
+  },
   "bin": {
     "vite-bundle-explorer": "./bin/index.js"
   },

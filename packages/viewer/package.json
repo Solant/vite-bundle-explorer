@@ -1,6 +1,7 @@
 {
   "name": "@vite-bundle-explorer/viewer",
   "version": "0.0.0",
+  "private": true,
   "description": "",
   "scripts": {
     "dev": "vite",
