@@ -29,6 +29,8 @@ npm install -D vite-bundle-explorer
 
 Register the plugin (config name depends on your bundler, here is an example for `vite`).
 
+### vite, rollup, rolldown, tsdown and other Rollup-compatible bundlers
+
 ```javascript
 import { defineConfig } from 'vite';
 import { statsPlugin } from 'vite-bundle-explorer/plugin';
@@ -40,6 +42,8 @@ export default defineConfig({
   ],
 });
 ```
+
+### esbuild
 
 `esbuild` is not Rollup-compatible, so it has a dedicated plugin exposed via the `/plugin/esbuild` subpath export:
 
@@ -56,6 +60,21 @@ await build({
 ```
 
 The plugin requires esbuild `0.9.0` or higher and enables the `metafile` option automatically, so you do not need to set it yourself.
+
+#### tsup
+
+`tsup` is built on esbuild as well and accepts raw esbuild plugins through its `esbuildPlugins` option:
+
+```javascript
+import { defineConfig } from 'tsup';
+import { statsPlugin } from 'vite-bundle-explorer/plugin/esbuild';
+
+export default defineConfig({
+  entry: ['src/index.ts'],
+  format: ['esm'],
+  esbuildPlugins: [statsPlugin()],
+});
+```
 
 Once your build is complete, you can use CLI or any static file server to see the interactive visualization.
 
