@@ -37,7 +37,8 @@
     "treemap",
     "rollup",
     "performance",
-    "build"
+    "build",
+    "esbuild-plugin"
   ],
   "exports": {
     "./plugin": {

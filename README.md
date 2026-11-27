@@ -1,6 +1,6 @@
 # vite-bundle-explorer
 
-A powerful bundle analyzer and visualizer tool for Vite and any other Rollup-compatible bundler.
+A powerful bundle analyzer and visualizer tool for Vite, any other Rollup-compatible bundler, and esbuild.
 
 Analyze your bundle size, detect duplicate dependencies, and visualize module graphs to optimize your application's performance.
 
@@ -10,7 +10,7 @@ Analyze your bundle size, detect duplicate dependencies, and visualize module gr
 
 While other bundle analysis tools exist for the Vite ecosystem, this package offers a deeper level of insight and broader set of features:
 
-- 📦 **Multi-Bundler Support**: works with any Rollup-compatible bundler like `vite`, `rollup`, `rolldown`, and `tsdown`.
+- 📦 **Multi-Bundler Support**: works with any Rollup-compatible bundler like `vite`, `rollup`, `rolldown`, and `tsdown`, plus a dedicated plugin for `esbuild`.
 - 🛠️ **Universal**: supports both applications and libraries.
 - 📊 **Advanced Visualisations:** both an interactive Treemap and a powerful Import Graph.
 - 🔗 **Deep Dependency Tracing:** use "Trace Import" to backtrack the full chain of imports responsible for pulling in any given module.
@@ -29,6 +29,8 @@ npm install -D vite-bundle-explorer
 
 Register the plugin (config name depends on your bundler, here is an example for `vite`).
 
+### vite, rollup, rolldown, tsdown and other Rollup-compatible bundlers
+
 ```javascript
 import { defineConfig } from 'vite';
 import { statsPlugin } from 'vite-bundle-explorer/plugin';
@@ -38,6 +40,39 @@ export default defineConfig({
     // ...other plugins
     statsPlugin(),
   ],
+});
+```
+
+### esbuild
+
+`esbuild` is not Rollup-compatible, so it has a dedicated plugin exposed via the `/plugin/esbuild` subpath export:
+
+```javascript
+import { build } from 'esbuild';
+import { statsPlugin } from 'vite-bundle-explorer/plugin/esbuild';
+
+await build({
+  entryPoints: ['./src/index.js'],
+  outdir: 'dist',
+  bundle: true,
+  plugins: [statsPlugin()],
+});
+```
+
+The plugin requires esbuild `0.9.0` or higher and enables the `metafile` option automatically, so you do not need to set it yourself.
+
+#### tsup
+
+`tsup` is built on esbuild as well and accepts raw esbuild plugins through its `esbuildPlugins` option:
+
+```javascript
+import { defineConfig } from 'tsup';
+import { statsPlugin } from 'vite-bundle-explorer/plugin/esbuild';
+
+export default defineConfig({
+  entry: ['src/index.ts'],
+  format: ['esm'],
+  esbuildPlugins: [statsPlugin()],
 });
 ```
 
@@ -70,6 +105,8 @@ export default defineConfig({
 | `emitJson`             | `boolean` | `false`           | Generate raw `stats.json` file                                                                            |
 | `check`                | `boolean` | `true`            | Run report checks during the build process                                                                |
 | `failOnWarning`        | `boolean` | `false`           | Cancel build if bundle has any report warnings                                                            |
+
+Esbuild plugin accepts the same options, except for `enabled` and `reportCompressedSize`, which are not available for esbuild.
 
 ## CI/CD Integration
 

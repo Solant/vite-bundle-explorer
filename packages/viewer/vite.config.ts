@@ -17,7 +17,7 @@ export default defineConfig({
         const fixturesPath = resolve(import.meta.dirname, '..', 'fixtures');
 
         const files: string[] = [];
-        const it = glob('*/bundle-report/stats.json', {
+        const it = glob('*/bundle-report-*/stats.json', {
           cwd: fixturesPath,
         });
         for await (const file of it) {

@@ -7,12 +7,17 @@
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "test": "vitest"
   },
   "exports": {
     ".": {
       "import": "./dist/stats-plugin.mjs",
       "types": "./dist/stats-plugin.d.mts"
+    },
+    "./esbuild": {
+      "import": "./dist/esbuild.mjs",
+      "types": "./dist/esbuild.d.mts"
     }
   },
   "keywords": [],
@@ -26,8 +31,10 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.13",
+    "esbuild": "^0.28.2",
     "tsdown": "^0.23.7",
     "typescript": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "vitest": "^5.1.1"
   }
 }

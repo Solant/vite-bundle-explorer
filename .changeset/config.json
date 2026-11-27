@@ -10,7 +10,7 @@
     }
   ],
   "commit": false,
-  "ignore": [],
+  "ignore": ["@vite-bundle-explorer/viewer"],
   "fixed": [],
   "linked": [],
   "updateInternalDependencies": "patch"
