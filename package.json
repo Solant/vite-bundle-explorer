@@ -56,6 +56,15 @@
     "dist-plugin",
     "bin/index.js"
   ],
+  "peerDependencies": {
+    "vite": "^7.0.0 || ^8.0.0",
+    "esbuild": ">=0.9.0"
+  },
+  "peerDependenciesMeta": {
+    "esbuild": {
+      "optional": true
+    }
+  },
   "bin": {
     "vite-bundle-explorer": "./bin/index.js"
   },
